@@ -1,1 +1,1 @@
-# hikeapp-mobile
+# HikeApp-mobile
