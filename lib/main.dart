@@ -1,99 +1,82 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert' show json;
 
-import 'screen/authentication_screen.dart';
-import 'screen/loading_screen.dart';
-import 'screen/main_screen.dart';
-import 'service/auth_service.dart';
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const MaterialApp(
+      title: 'Google Sign In',
+      home: SignInDemo(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+GoogleSignIn googleSignIn = GoogleSignIn(
+  serverClientId: '125789040129-i90b31ck9jagtob63ts73ntpnfvh7at7.apps.googleusercontent.com',
+  scopes: <String>[
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+    'https://www.googleapis.com/auth/userinfo.profile'
+  ],
+);
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+void _signOut() async {
+  googleSignIn.signOut();
+}
+
+void _signInUsingGoogle() async {
+
+  print(googleSignIn);
+  bool isSignedIn = await googleSignIn.isSignedIn();
+
+  // after 1st time signin
+  if (isSignedIn) {
+    print("user name signed in");
+  } else {
+    // first-time sign in
+    GoogleSignInAccount? signInAccount = await googleSignIn.signIn();
+    GoogleSignInAuthentication? signInAuthentication = await signInAccount?.authentication;
+    print('TOKEN: ${signInAuthentication?.accessToken}');
+    print('ID TOKEN: ${signInAuthentication?.idToken}');
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
 
-  final String title;
+class SignInDemo extends StatefulWidget {
+  const SignInDemo({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State createState() => SignInDemoState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-
-  bool isProgressing = false;
-  bool isLoggedIn = false;
+class SignInDemoState extends State<SignInDemo> {
 
   @override
   void initState() {
-    initAuth();
     super.initState();
-  }
-
-  initAuth() async {
-    setLoadingState();
-    final bool isAuthenticated = await AuthService.instance.initAuth();
-    if (isAuthenticated) {
-      setAuthenticatedState();
-    } else {
-      setUnauthenticatedState();
-    }
-  }
-
-  setLoadingState() {
-    setState(() {
-      isProgressing = true;
-    });
-  }
-
-  setAuthenticatedState() {
-    setState(() {
-      isProgressing = false;
-      isLoggedIn = true;
-    });
-  }
-
-  setUnauthenticatedState() {
-    setState(() {
-      isProgressing = false;
-      isLoggedIn = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Builder(
-        builder: (context) {
-          if (isProgressing) {
-            return const LoadingScreen();
-          } else if (isLoggedIn) {
-            return MainScreen(
-              setUnauthenticatedState: setUnauthenticatedState,
-            );
-          } else {
-            return AuthenticationScreen(
-              setLoadingState: setLoadingState,
-              setAuthenticatedState: setAuthenticatedState,
-              setUnauthenticatedState: setUnauthenticatedState,
-            );
-          }
-        },
-      ),
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Google Sign In'),
+        ),
+        body: Row(
+          children: [
+            TextButton(
+              child: Text('Sign in'),
+              onPressed: () => _signInUsingGoogle(),
+            ),
+            TextButton(
+              child: Text('Sign OUT'),
+              onPressed: () => _signOut(),
+            )
+          ],
+        )
     );
   }
 }

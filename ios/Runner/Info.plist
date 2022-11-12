@@ -47,20 +47,5 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>CFBundleURLTypes</key>
-        <array>
-            <dict>
-                <key>CFBundleTypeRole</key>
-                <string>Editor</string>
-                <key>CFBundleURLSchemes</key>
-                <array>
-                    <string>com.googleusercontent.apps.125789040129-62uibo24q827792gnd846cc1jdoo752s.apps.googleusercontent.com</string>
-                </array>
-            </dict>
-        </array>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-       <key>NSAllowsArbitraryLoads</key><true/>
-    </dict>
 </dict>
 </plist>
