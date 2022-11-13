@@ -1,82 +1,49 @@
-import 'dart:async';
-import 'dart:convert' show json;
-
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
+import 'package:hikeappmobile/service/auth_service.dart';
+import 'package:hikeappmobile/widget/sign_in_widget.dart';
+import 'package:hikeappmobile/widget/sign_out_widget.dart';
+
 
 void main() {
   runApp(
     const MaterialApp(
-      title: 'Google Sign In',
-      home: SignInDemo(),
+      title: 'HikeApp',
+      home: Main(),
     ),
   );
 }
 
-GoogleSignIn googleSignIn = GoogleSignIn(
-  serverClientId: '125789040129-i90b31ck9jagtob63ts73ntpnfvh7at7.apps.googleusercontent.com',
-  scopes: <String>[
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-    'https://www.googleapis.com/auth/userinfo.profile'
-  ],
-);
-
-void _signOut() async {
-  googleSignIn.signOut();
-}
-
-void _signInUsingGoogle() async {
-
-  print(googleSignIn);
-  bool isSignedIn = await googleSignIn.isSignedIn();
-
-  // after 1st time signin
-  if (isSignedIn) {
-    print("user name signed in");
-  } else {
-    // first-time sign in
-    GoogleSignInAccount? signInAccount = await googleSignIn.signIn();
-    GoogleSignInAuthentication? signInAuthentication = await signInAccount?.authentication;
-    print('TOKEN: ${signInAuthentication?.accessToken}');
-    print('ID TOKEN: ${signInAuthentication?.idToken}');
-  }
-}
-
-
-class SignInDemo extends StatefulWidget {
-  const SignInDemo({Key? key}) : super(key: key);
+class Main extends StatefulWidget {
+  const Main({Key? key}) : super(key: key);
 
   @override
-  State createState() => SignInDemoState();
+  State createState() => MainState();
 }
 
-class SignInDemoState extends State<SignInDemo> {
+class MainState extends State<Main> {
+
+  final AuthService authService = AuthService();
+  late bool isLogged = true;
 
   @override
-  void initState() {
-    super.initState();
+  void initState() { super.initState();
+    authService.checkSignIn().then((value) => isLogged = value);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Google Sign In'),
-        ),
-        body: Row(
-          children: [
-            TextButton(
-              child: Text('Sign in'),
-              onPressed: () => _signInUsingGoogle(),
-            ),
-            TextButton(
-              child: Text('Sign OUT'),
-              onPressed: () => _signOut(),
-            )
-          ],
-        )
+      body: Container(
+        alignment: Alignment.center,
+        //TODO to be modified with loginScreen / homeScreen
+        child: !isLogged ? SignInWidget(authService, _toggleIsLogged) : SignOutWidget(authService, _toggleIsLogged)
+      )
     );
+  }
+
+  _toggleIsLogged(val) {
+    setState(() {
+      isLogged = val;
+    });
   }
 }
