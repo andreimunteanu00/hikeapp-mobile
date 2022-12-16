@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:hikeappmobile/service/auth_service.dart';
 import 'package:hikeappmobile/widget/sign_in_widget.dart';
 import 'package:hikeappmobile/widget/sign_out_widget.dart';
@@ -27,7 +29,21 @@ class MainState extends State<Main> {
 
   @override
   void initState() { super.initState();
-    authService.checkSignIn().then((value) => isLogged = value);
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _asyncMethod();
+    });
+  }
+
+  _asyncMethod() async {
+    authService.checkSignIn().then((value) => _toggleIsLogged(value));
+    if (isLogged) {
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("token");
+      if (token == null || token.isEmpty) {
+        _toggleIsLogged(await authService.signOut());
+      }
+    }
   }
 
   @override
