@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:hikeappmobile/service/auth_service.dart';
 import 'package:hikeappmobile/widget/sign_in_widget.dart';
 import 'package:hikeappmobile/widget/sign_out_widget.dart';
@@ -28,6 +30,18 @@ class MainState extends State<Main> {
   @override
   void initState() { super.initState();
     authService.checkSignIn().then((value) => isLogged = value);
+    if (isLogged) {
+      print("ceva");
+      Future<SharedPreferences> sharedPreferences = SharedPreferences.getInstance();
+      sharedPreferences.then((value) => {
+        if(value.getString("token") == null) {
+          print("sign out"),
+          authService.signOut()
+        } else {
+          print("are token lol")
+        }
+      });
+    }
   }
 
   @override
