@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hikeappmobile/widget/home.widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:hikeappmobile/service/auth_service.dart';
+import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:hikeappmobile/widget/sign_in_widget.dart';
 import 'package:hikeappmobile/widget/sign_out_widget.dart';
 
@@ -52,7 +53,7 @@ class MainState extends State<Main> {
       body: Container(
         alignment: Alignment.center,
         //TODO to be modified with loginScreen / homeScreen
-        child: !isLogged ? SignInWidget(authService, _toggleIsLogged) : SignOutWidget(authService, _toggleIsLogged)
+        child: !isLogged ? SignInWidget(authService, _toggleIsLogged) : HomeWidget(authService, _toggleIsLogged)
       )
     );
   }

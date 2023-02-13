@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hikeappmobile/model/user.model.dart';
+import 'package:hikeappmobile/util/my_http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../util/constants.dart' as constants;
@@ -12,6 +16,15 @@ class AuthService {
     serverClientId: '125789040129-i90b31ck9jagtob63ts73ntpnfvh7at7.apps.googleusercontent.com',
     scopes: <String>[constants.email]
   );
+
+  Future<User> getCurrentUser() async {
+    final response = await MyHttp.getClient().get(Uri.parse('${constants.localhost}/auth/currentUser'));
+    if (response.statusCode == 200) {
+      return User.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load user');
+    }
+  }
 
   Future<bool> checkSignIn() async {
     return googleSignIn.isSignedIn();
