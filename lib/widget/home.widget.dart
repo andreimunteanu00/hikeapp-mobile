@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hikeappmobile/widget/first_login.widget.dart';
 
 import '../model/user.model.dart';
 import '../service/auth.service.dart';
-import 'package:hikeappmobile/widget/sign_out_widget.dart';
+import 'package:hikeappmobile/widget/sign_out.widget.dart';
 
 
 class HomeWidget extends StatefulWidget {
@@ -29,7 +30,7 @@ class HomeWidgetState extends State<HomeWidget> {
           future: widget.authService.getCurrentUser(),
           builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Text(snapshot.data!.firstLogin.toString());
+            return FirstLoginWidget(snapshot.data!);
           } else if (snapshot.hasError) {
             return Text('${snapshot.error}');
           }

@@ -3,8 +3,8 @@ import 'package:hikeappmobile/widget/home.widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:hikeappmobile/service/auth.service.dart';
-import 'package:hikeappmobile/widget/sign_in_widget.dart';
-import 'package:hikeappmobile/widget/sign_out_widget.dart';
+import 'package:hikeappmobile/widget/sign_in.widget.dart';
+import 'package:hikeappmobile/widget/sign_out.widget.dart';
 
 
 void main() {

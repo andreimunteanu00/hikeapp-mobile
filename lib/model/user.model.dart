@@ -1,17 +1,21 @@
 class User {
   bool? firstLogin;
-  String? firstName;
-  String? lastName;
+  String? username;
   String? googleId;
 
-  User({this.firstLogin, this.firstName, this.lastName, this.googleId});
+  User({this.firstLogin, this.username, this.googleId});
+
+  Map<String, dynamic> toJson() => {
+    'username': username,
+    'googleId': googleId,
+    'firstLogin': firstLogin,
+  };
 
   factory User.fromJson(Map<String, dynamic> json) {
     print(json);
     return User(
-        firstLogin: json['firstLogin'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
+      firstLogin: json['firstLogin'],
+      username: json['username'],
       googleId: json['googleId']
     );
   }
