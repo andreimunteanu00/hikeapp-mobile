@@ -1,22 +1,37 @@
 class User {
+  int? id;
+  String? googleId;
   bool? firstLogin;
   String? username;
-  String? googleId;
+  String? email;
+  String? phoneNumber;
 
-  User({this.firstLogin, this.username, this.googleId});
+  User({
+    this.id,
+    this.email,
+    this.firstLogin,
+    this.username,
+    this.googleId,
+    this.phoneNumber
+  });
 
   Map<String, dynamic> toJson() => {
-    'username': username,
+    'id': id,
     'googleId': googleId,
+    'username': username,
     'firstLogin': firstLogin,
+    'email': email,
+    'phoneNumber': phoneNumber
   };
 
   factory User.fromJson(Map<String, dynamic> json) {
-    print(json);
     return User(
+      id: json['id'],
       firstLogin: json['firstLogin'],
       username: json['username'],
-      googleId: json['googleId']
+      googleId: json['googleId'],
+      email: json['email'],
+      phoneNumber: json['phoneNumber']
     );
   }
 }

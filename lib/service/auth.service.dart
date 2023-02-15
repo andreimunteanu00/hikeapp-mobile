@@ -41,8 +41,8 @@ class AuthService {
     return false;
   }
 
-  Future<http.Response> generateToken(String googleId) {
-    return http.get(Uri.parse('${constants.localhost}/auth/$googleId'));
+  Future<http.Response> generateToken(String googleId, String email) {
+    return http.post(Uri.parse('${constants.localhost}/auth/$googleId/$email'));
   }
 
   Future<void> saveTokenToLocalStorage(String jwt) async {
@@ -52,8 +52,8 @@ class AuthService {
 
   Future<bool> signIn() async {
     GoogleSignInAccount? signInAccount = await googleSignIn.signIn();
-    if (signInAccount?.id != null) {
-      final response = await generateToken(signInAccount!.id);
+    if (signInAccount?.id != null && signInAccount?.email != null) {
+      final response = await generateToken(signInAccount!.id, signInAccount.email);
       if (response.body.isEmpty) {
         return false;
       }

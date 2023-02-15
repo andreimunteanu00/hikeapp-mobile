@@ -8,8 +8,13 @@ import '../util/constants.dart' as constants;
 class UserService {
 
   Future<void> saveUserData(User user) async {
-    print(json.encode(user.toJson()));
-    final response = await MyHttp.getClient().put(Uri.parse('${constants.localhost}/user/save'), body: json.encode(user.toJson()));
+    final response = await MyHttp.getClient().post(
+      Uri.parse('${constants.localhost}/user/save'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: json.encode(user.toJson())
+    );
     if (response.statusCode == 200) {
       // success
     } else {
