@@ -5,19 +5,19 @@ class CustomTextFormField extends StatelessWidget {
   final double? labelWidth;
   final String? initialValue;
   final String? labelText;
-  final String? validatorText;
   final TextInputType? keyboardType;
   final Function? onChange;
   final bool? enabled;
+  final String? Function(String?)? validator;
 
   const CustomTextFormField({super.key,
     this.labelWidth,
     this.initialValue,
     this.labelText,
-    this.validatorText,
     this.keyboardType,
     this.onChange,
-    this.enabled
+    this.enabled,
+    this.validator
   });
 
   @override
@@ -57,12 +57,13 @@ class CustomTextFormField extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
         keyboardType: keyboardType,
-        validator: (value) {
+        validator: validator,
+            /*(value) {
           if (value!.isEmpty) {
             return validatorText;
           }
           return null;
-        },
+        },*/
         onSaved: (value) => onChange!(value),
       ),
     );

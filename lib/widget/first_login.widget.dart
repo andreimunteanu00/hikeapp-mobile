@@ -18,6 +18,27 @@ class FirstLoginWidget extends StatefulWidget {
 class FirstLoginState extends State<FirstLoginWidget> {
   final _formKey = GlobalKey<FormState>();
 
+  bool _isPhoneNumberValid(String phoneNumber) {
+    final RegExp phoneExp = RegExp(r'^(?:[+0]9)?[0-9]{10}$');
+    return phoneExp.hasMatch(phoneNumber);
+  }
+
+  String? _usernameTextValidator(String? value) {
+    if (value!.isEmpty) {
+      return 'Username is required';
+    }
+  }
+
+  String? _phoneValidator(String? value) {
+    if (value!.isEmpty) {
+      return 'Phone number is required';
+    }
+    if (_isPhoneNumberValid(value) == false) {
+      return 'Phone number is invalid';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -36,7 +57,7 @@ class FirstLoginState extends State<FirstLoginWidget> {
             labelWidth: screenWidth - screenWidth / 4,
             keyboardType: TextInputType.text,
             labelText: 'Username',
-            validatorText: 'Username is required',
+            validator: _usernameTextValidator,
             onChange: (value) => {
               widget.user.username = value
             },
@@ -48,10 +69,10 @@ class FirstLoginState extends State<FirstLoginWidget> {
             labelWidth: screenWidth - screenWidth / 4,
             keyboardType: TextInputType.number,
             labelText: 'Phone number',
-            validatorText: 'Phone number is required',
+            validator: _phoneValidator,
             onChange: (value) => {
               widget.user.phoneNumber = value
-            },
+            }
           ),
           SizedBox(height: screenWidth / 20),
           CustomTextFormField(
@@ -60,7 +81,6 @@ class FirstLoginState extends State<FirstLoginWidget> {
             labelWidth: screenWidth - screenWidth / 4,
             keyboardType: TextInputType.text,
             labelText: 'Email',
-            validatorText: 'Email is required',
             onChange: (value) => {
               widget.user.email = value
             },
@@ -79,7 +99,7 @@ class FirstLoginState extends State<FirstLoginWidget> {
                 }
               }
             },
-            child: Text('Save'),
+            child: const Text('Save'),
           )
         ],
       ),
