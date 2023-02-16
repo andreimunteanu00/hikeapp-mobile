@@ -3,6 +3,7 @@ import 'package:hikeappmobile/service/user.service.dart';
 import 'package:hikeappmobile/widget/custom_text_form_field.widget.dart';
 
 import '../model/user.model.dart';
+import 'avatar.widget.dart';
 
 class FirstLoginWidget extends StatefulWidget {
 
@@ -51,6 +52,8 @@ class FirstLoginState extends State<FirstLoginWidget> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
         children: [
+          AvatarWidget(widget.user),
+          SizedBox(height: screenWidth / 20),
           CustomTextFormField(
             enabled: true,
             initialValue: widget.user.username,

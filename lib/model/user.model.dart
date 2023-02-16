@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class User {
   int? id;
   String? googleId;
@@ -5,6 +7,7 @@ class User {
   String? username;
   String? email;
   String? phoneNumber;
+  String? profilePicture;
 
   User({
     this.id,
@@ -12,7 +15,8 @@ class User {
     this.firstLogin,
     this.username,
     this.googleId,
-    this.phoneNumber
+    this.phoneNumber,
+    this.profilePicture
   });
 
   Map<String, dynamic> toJson() => {
@@ -21,7 +25,8 @@ class User {
     'username': username,
     'firstLogin': firstLogin,
     'email': email,
-    'phoneNumber': phoneNumber
+    'phoneNumber': phoneNumber,
+    'profilePicture': profilePicture
   };
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -31,7 +36,8 @@ class User {
       username: json['username'],
       googleId: json['googleId'],
       email: json['email'],
-      phoneNumber: json['phoneNumber']
+      phoneNumber: json['phoneNumber'],
+      profilePicture: json['profilePicture']
     );
   }
 }
