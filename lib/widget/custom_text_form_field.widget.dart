@@ -58,13 +58,7 @@ class CustomTextFormField extends StatelessWidget {
         ),
         keyboardType: keyboardType,
         validator: validator,
-            /*(value) {
-          if (value!.isEmpty) {
-            return validatorText;
-          }
-          return null;
-        },*/
-        onSaved: (value) => onChange!(value),
+        onChanged: (value) => onChange!(value)
       ),
     );
   }

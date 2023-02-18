@@ -12,7 +12,7 @@ class SignInWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      child: const Text('Sign in'),
+      child: const Text('Log In'),
       onPressed: () async {
         authService.signIn().then((value) => onChange(value));
       }

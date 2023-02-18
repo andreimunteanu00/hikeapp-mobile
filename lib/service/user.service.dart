@@ -22,4 +22,14 @@ class UserService {
     }
   }
 
+  Future<bool> checkFieldDuplicate(String columnName, String value) async {
+    final response = await MyHttp.getClient().get(
+      Uri.parse('${constants.localhost}/user/checkFieldDuplicate/${columnName}/${value}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      }
+    );
+    return response.body == 'true' ? true : false;
+  }
+
 }

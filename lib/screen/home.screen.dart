@@ -1,25 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hikeappmobile/widget/first_login.widget.dart';
+import 'package:hikeappmobile/screen/first_login.screen.dart';
 
 import '../model/user.model.dart';
 import '../service/auth.service.dart';
 import 'package:hikeappmobile/widget/sign_out.widget.dart';
 
+import 'home_logged.screen.dart';
 
-class HomeWidget extends StatefulWidget {
+
+class HomeScreen extends StatefulWidget {
 
   final AuthService authService;
   final Function onChange;
 
-  const HomeWidget(this.authService, this.onChange, {super.key});
+  const HomeScreen(this.authService, this.onChange, {super.key});
 
   @override
-  State createState() => HomeWidgetState();
+  State createState() => HomeScreenState();
 
 }
 
-class HomeWidgetState extends State<HomeWidget> {
+class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class HomeWidgetState extends State<HomeWidget> {
           future: widget.authService.getCurrentUser(),
           builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return FirstLoginWidget(snapshot.data!);
+            return snapshot.data?.firstLogin == true ? FirstLoginScreen(snapshot.data!) : const HomeLoggedScreen();
           } else if (snapshot.hasError) {
             return Text('${snapshot.error}');
           }
