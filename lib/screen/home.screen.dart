@@ -39,7 +39,7 @@ class HomeScreenState extends State<HomeScreen> {
             return const CircularProgressIndicator();
           }
         ),
-        SignOutWidget(widget.authService, widget.onChange)
+        SignOutWidget(widget.onChange)
       ],
     );
   }

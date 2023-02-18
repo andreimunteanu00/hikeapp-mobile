@@ -23,7 +23,7 @@ class Main extends StatefulWidget {
 
 class MainState extends State<Main> {
 
-  final AuthService authService = AuthService();
+  final AuthService authService = AuthService.instance;
   late bool isLogged = true;
 
   @override
@@ -51,7 +51,7 @@ class MainState extends State<Main> {
       body: Container(
         alignment: Alignment.center,
         //TODO to be modified with loginScreen / homeScreen
-        child: !isLogged ? SignInWidget(authService, _toggleIsLogged) : HomeScreen(authService, _toggleIsLogged)
+        child: !isLogged ? SignInWidget(_toggleIsLogged) : HomeScreen(authService, _toggleIsLogged)
       )
     );
   }

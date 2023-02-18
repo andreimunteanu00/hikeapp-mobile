@@ -7,10 +7,10 @@ import '../util/my_http.dart';
 
 class SignOutWidget extends StatefulWidget {
 
-  final AuthService authService;
+  final AuthService authService = AuthService.instance;
   final Function onChange;
 
-  const SignOutWidget(this.authService, this.onChange, {super.key});
+  SignOutWidget(this.onChange, {super.key});
 
   @override
   State createState() => SignOutWidgetState();

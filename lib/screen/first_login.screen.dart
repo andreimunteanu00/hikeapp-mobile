@@ -8,7 +8,7 @@ import '../widget/avatar.widget.dart';
 class FirstLoginScreen extends StatefulWidget {
 
   final User user;
-  final UserService userService = UserService();
+  final UserService userService = UserService.instance;
 
   FirstLoginScreen(this.user, {super.key});
 
@@ -49,14 +49,6 @@ class FirstLoginState extends State<FirstLoginScreen> {
       return 'Phone number already exists';
     }
     return null;
-  }
-
-  Future<void> checkForDuplicates(prevVal, currentValue, columnName, checkDuplicate) async {
-    if (prevVal.isEmpty || prevVal != currentValue!) {
-      prevVal = currentValue!;
-      checkDuplicate = await widget.userService.checkFieldDuplicate(columnName, currentValue!);
-    }
-    _formKey.currentState!.validate();
   }
 
   @override

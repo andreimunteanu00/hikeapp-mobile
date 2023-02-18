@@ -7,6 +7,15 @@ import '../util/constants.dart' as constants;
 
 class UserService {
 
+  static UserService? _instance;
+
+  UserService._(); // Private constructor
+
+  static UserService get instance {
+    _instance ??= UserService._();
+    return _instance!;
+  }
+
   Future<void> saveUserData(User user) async {
     final response = await MyHttp.getClient().post(
       Uri.parse('${constants.localhost}/user/save'),
