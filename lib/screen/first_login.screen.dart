@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hikeappmobile/service/user.service.dart';
 import 'package:hikeappmobile/widget/custom_text_form_field.widget.dart';
 
+import '../main.dart';
 import '../model/user.model.dart';
 import '../widget/avatar.widget.dart';
 
@@ -18,7 +19,7 @@ class FirstLoginScreen extends StatefulWidget {
 
 class FirstLoginState extends State<FirstLoginScreen> {
   bool usernameCheckDuplicate = false;
-  bool phoneCheckDuplicate = false;
+  /*bool phoneCheckDuplicate = false;*/
 
   bool isPhoneNumberValid(String phoneNumber) {
     final RegExp phoneExp = RegExp(r'^(?:[+0]9)?[0-9]{10}$');
@@ -35,7 +36,7 @@ class FirstLoginState extends State<FirstLoginScreen> {
     return null;
   }
 
-  String? phoneValidator(String? value) {
+  /*String? phoneValidator(String? value) {
     if (value!.isEmpty) {
       return 'Phone number is required';
     }
@@ -46,49 +47,50 @@ class FirstLoginState extends State<FirstLoginScreen> {
       return 'Phone number already exists';
     }
     return null;
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
 
     final formKey = GlobalKey<FormState>();
     final formKeyUsername = GlobalKey<FormState>();
-    final formKeyPhoneNumber = GlobalKey<FormState>();
+    /*final formKeyPhoneNumber = GlobalKey<FormState>();*/
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Form(
-      key: formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          AvatarWidget(widget.user),
-          SizedBox(height: screenWidth / 20),
-          Focus(
-            child: Form(
-              key: formKeyUsername,
-              child: CustomTextFormField(
-                key: const Key('formKeyUsername'),
-                readOnly: false,
-                initialValue: widget.user.username,
-                labelWidth: screenWidth - screenWidth / 4,
-                keyboardType: TextInputType.text,
-                labelText: 'Username',
-                validator: usernameTextValidator,
-                onChange: (value) {
-                  widget.user.username = value;
-                },
+    return SingleChildScrollView(
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            AvatarWidget(widget.user),
+            SizedBox(height: screenWidth / 20),
+            Focus(
+              child: Form(
+                key: formKeyUsername,
+                child: CustomTextFormField(
+                  key: const Key('formKeyUsername'),
+                  readOnly: false,
+                  initialValue: widget.user.username,
+                  labelWidth: screenWidth - screenWidth / 4,
+                  keyboardType: TextInputType.text,
+                  labelText: 'Username',
+                  validator: usernameTextValidator,
+                  onChange: (value) {
+                    widget.user.username = value;
+                  },
+                ),
               ),
+              onFocusChange: (hasFocus) async {
+                if (!hasFocus) {
+                  usernameCheckDuplicate = await widget.userService.checkFieldDuplicate('username', widget.user.username);
+                  formKeyUsername.currentState!.validate();
+                }
+              },
             ),
-            onFocusChange: (hasFocus) async {
-              if (!hasFocus) {
-                usernameCheckDuplicate = await widget.userService.checkFieldDuplicate('username', widget.user.username);
-                formKeyUsername.currentState!.validate();
-              }
-            },
-          ),
-          SizedBox(height: screenWidth / 20),
-          Focus(
+            SizedBox(height: screenWidth / 20),
+            /*Focus(
             child: Form(
               key: formKeyPhoneNumber,
               child: CustomTextFormField(
@@ -110,36 +112,37 @@ class FirstLoginState extends State<FirstLoginScreen> {
                 formKeyPhoneNumber.currentState!.validate();
               }
             },
-          ),
-          SizedBox(height: screenWidth / 20),
-          CustomTextFormField(
-            readOnly: true,
-            initialValue: widget.user.email,
-            labelWidth: screenWidth - screenWidth / 4,
-            keyboardType: TextInputType.text,
-            labelText: 'Email',
-            onChange: (value) {
-              widget.user.email = value;
-            }
-          ),
-          SizedBox(height: screenWidth / 5),
-          ElevatedButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate()) {
-                formKey.currentState!.save();
-                try {
-                  widget.user.firstLogin = false;
-                  await widget.userService.saveUserData(widget.user);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Data saved')));
-                } catch (error) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+          ),*/
+            /*SizedBox(height: screenWidth / 20),*/
+            CustomTextFormField(
+                readOnly: true,
+                initialValue: widget.user.email,
+                labelWidth: screenWidth - screenWidth / 4,
+                keyboardType: TextInputType.text,
+                labelText: 'Email',
+                onChange: (value) {
+                  widget.user.email = value;
                 }
-              }
-            },
-            child: const Text('Finish setup'),
-          )
-        ],
-      ),
+            ),
+            SizedBox(height: screenWidth / 10),
+            ElevatedButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  formKey.currentState!.save();
+                  try {
+                    widget.user.firstLogin = false;
+                    await widget.userService.saveUserData(widget.user);
+                    Navigator.pushNamed(navigatorKey.currentContext!, '/home');
+                  } catch (error) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+                  }
+                }
+              },
+              child: const Text('Finish setup'),
+            )
+          ],
+        ),
+      )
     );
   }
 }
