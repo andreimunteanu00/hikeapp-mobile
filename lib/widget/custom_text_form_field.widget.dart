@@ -7,7 +7,7 @@ class CustomTextFormField extends StatelessWidget {
   final String? labelText;
   final TextInputType? keyboardType;
   final Function? onChange;
-  final bool? enabled;
+  final bool? readOnly;
   final String? Function(String?)? validator;
 
   const CustomTextFormField({super.key,
@@ -16,7 +16,7 @@ class CustomTextFormField extends StatelessWidget {
     this.labelText,
     this.keyboardType,
     this.onChange,
-    this.enabled,
+    this.readOnly,
     this.validator
   });
 
@@ -25,7 +25,9 @@ class CustomTextFormField extends StatelessWidget {
     return SizedBox(
       width: labelWidth,
       child: TextFormField(
-        enabled: enabled,
+        readOnly: readOnly!,
+        key: key,
+        enabled: true,
         initialValue: initialValue,
         decoration: InputDecoration(
           labelText: labelText,
