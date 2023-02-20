@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../service/auth.service.dart';
+import '../util/singe_page_route.dart';
 
 class SignOutWidget extends StatefulWidget {
 
@@ -29,7 +30,12 @@ class SignOutWidgetState extends State<SignOutWidget> {
           child: const Text('Sign Out'),
           onPressed: () async {
             await widget.authService.signOut();
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const Main()));
+            Navigator.pushReplacement(
+              context,
+              SlidePageRoute(
+                widget: const Main(),
+              ),
+            );
           }
         )
       ],

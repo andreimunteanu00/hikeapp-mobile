@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../service/auth.service.dart';
+import '../util/singe_page_route.dart';
 
 class LogInWidget extends StatelessWidget {
 
@@ -15,7 +16,12 @@ class LogInWidget extends StatelessWidget {
       child: const Text('Log In'),
       onPressed: () async {
         await authService.signIn();
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const Main()));
+        Navigator.pushReplacement(
+          context,
+          SlidePageRoute(
+            widget: const Main(),
+          ),
+        );
       }
     );
   }

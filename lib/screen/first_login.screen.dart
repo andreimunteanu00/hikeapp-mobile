@@ -4,6 +4,7 @@ import 'package:hikeappmobile/widget/custom_text_form_field.widget.dart';
 
 import '../main.dart';
 import '../model/user.model.dart';
+import '../util/singe_page_route.dart';
 import '../widget/avatar.widget.dart';
 import '../widget/sign_out.widget.dart';
 
@@ -100,7 +101,12 @@ class FirstLoginState extends State<FirstLoginScreen> {
                       try {
                         widget.user.firstLogin = false;
                         await widget.userService.saveUserData(widget.user);
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const Main()));
+                        Navigator.pushReplacement(
+                          context,
+                          SlidePageRoute(
+                            widget: const Main(),
+                          ),
+                        );
                       } catch (error) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
                       }
