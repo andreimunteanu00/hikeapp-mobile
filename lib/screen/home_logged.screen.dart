@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../service/auth.service.dart';
-
 class HomeLoggedScreen extends StatefulWidget {
 
   const HomeLoggedScreen({super.key});

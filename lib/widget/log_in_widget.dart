@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 
+import '../main.dart';
 import '../service/auth.service.dart';
 
-class SignInWidget extends StatelessWidget {
+class LogInWidget extends StatelessWidget {
 
   final AuthService authService = AuthService.instance;
-  final Function onChange;
 
-  SignInWidget(this.onChange, {super.key});
+  LogInWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       child: const Text('Log In'),
       onPressed: () async {
-        authService.signIn().then((value) => onChange(value));
+        await authService.signIn();
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const Main()));
       }
     );
   }

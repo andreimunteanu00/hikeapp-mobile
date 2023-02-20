@@ -30,19 +30,21 @@ class CustomTextFormField extends StatelessWidget {
         enabled: true,
         initialValue: initialValue,
         decoration: InputDecoration(
+          filled: readOnly,
+          fillColor: Colors.grey.shade200,
           labelText: labelText,
           labelStyle: TextStyle(
-            color: Colors.grey.shade500,
+            color: Colors.green.shade500,
             fontSize: 16.0,
             fontWeight: FontWeight.bold,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(color: Colors.grey.shade300),
+            borderSide: BorderSide(color: Colors.green.shade300),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(color: Colors.blue.shade300),
+            borderSide: BorderSide(color: Colors.green.shade500),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),

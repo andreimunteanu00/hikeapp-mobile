@@ -39,9 +39,20 @@ class AvatarWidgetState extends State<AvatarWidget> {
       onTap: () {
         getImage(widget.user!);
       },
-      child: CircleAvatar(
-        radius: 50,
-        backgroundImage: giveBackgroundImage())
+      child: Container(
+        width: 100.0,
+        height: 100.0,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.green.shade300,
+            width: 2.0,
+          ),
+        ),
+        child: CircleAvatar(
+          backgroundImage: giveBackgroundImage(),
+        ),
+      ),
     );
   }
 }

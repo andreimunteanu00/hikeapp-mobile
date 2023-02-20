@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/screen/home.screen.dart';
-import 'package:hikeappmobile/screen/sign_in.screen.dart';
+import 'package:hikeappmobile/widget/log_in_widget.dart';
 import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import './util/routes.dart';
 
 void main() {
   runApp(
-    const MaterialApp(
+    MaterialApp(
       title: 'HikeApp',
-      home: Main(),
+      home: const Main(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.green,
+        ),
+      ),
+      initialRoute: '/',
+      onGenerateRoute: (settings) {
+        final String? name = settings.name;
+        final Function? pageBuilder = Routes.routes[name];
+        if (pageBuilder != null) {
+          return MaterialPageRoute(builder: (context) => pageBuilder(context));
+        }
+        return null;
+      },
     ),
   );
 }
@@ -51,7 +65,7 @@ class MainState extends State<Main> {
       body: Container(
         alignment: Alignment.center,
         //TODO to be modified with loginScreen / homeScreen
-        child: !isLogged ? SignInWidget(_toggleIsLogged) : HomeScreen(authService, _toggleIsLogged)
+        child: !isLogged ? LogInWidget() : HomeScreen()
       )
     );
   }

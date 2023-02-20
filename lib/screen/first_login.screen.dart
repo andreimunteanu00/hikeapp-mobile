@@ -19,16 +19,16 @@ class FirstLoginScreen extends StatefulWidget {
 
 class FirstLoginState extends State<FirstLoginScreen> {
   bool usernameCheckDuplicate = false;
-  /*bool phoneCheckDuplicate = false;*/
-
-  bool isPhoneNumberValid(String phoneNumber) {
-    final RegExp phoneExp = RegExp(r'^(?:[+0]9)?[0-9]{10}$');
-    return phoneExp.hasMatch(phoneNumber);
-  }
 
   String? usernameTextValidator(String? value) {
     if (value!.isEmpty) {
       return 'Username is required';
+    }
+    if (value.contains(RegExp(r'\s'))) {
+      return 'Username shouldn\'t have white spaces';
+    }
+    if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value)) {
+      return 'Username should only have letters and digits';
     }
     if (usernameCheckDuplicate == true) {
       return 'Username already exists';
@@ -36,25 +36,11 @@ class FirstLoginState extends State<FirstLoginScreen> {
     return null;
   }
 
-  /*String? phoneValidator(String? value) {
-    if (value!.isEmpty) {
-      return 'Phone number is required';
-    }
-    if (isPhoneNumberValid(value) == false) {
-      return 'Phone number is invalid';
-    }
-    if (phoneCheckDuplicate == true) {
-      return 'Phone number already exists';
-    }
-    return null;
-  }*/
-
   @override
   Widget build(BuildContext context) {
 
     final formKey = GlobalKey<FormState>();
     final formKeyUsername = GlobalKey<FormState>();
-    /*final formKeyPhoneNumber = GlobalKey<FormState>();*/
     final screenWidth = MediaQuery.of(context).size.width;
 
     return SingleChildScrollView(
@@ -90,30 +76,6 @@ class FirstLoginState extends State<FirstLoginScreen> {
               },
             ),
             SizedBox(height: screenWidth / 20),
-            /*Focus(
-            child: Form(
-              key: formKeyPhoneNumber,
-              child: CustomTextFormField(
-                  readOnly: false,
-                  key: const Key('formKeyPhoneNumber'),
-                  initialValue: widget.user.phoneNumber,
-                  labelWidth: screenWidth - screenWidth / 4,
-                  keyboardType: TextInputType.number,
-                  labelText: 'Phone number',
-                  validator: phoneValidator,
-                  onChange: (value) {
-                    widget.user.phoneNumber = value;
-                  }
-              ),
-            ),
-            onFocusChange: (hasFocus) async {
-              if (!hasFocus) {
-                phoneCheckDuplicate = await widget.userService.checkFieldDuplicate('phone_number', widget.user.phoneNumber);
-                formKeyPhoneNumber.currentState!.validate();
-              }
-            },
-          ),*/
-            /*SizedBox(height: screenWidth / 20),*/
             CustomTextFormField(
                 readOnly: true,
                 initialValue: widget.user.email,
@@ -127,12 +89,15 @@ class FirstLoginState extends State<FirstLoginScreen> {
             SizedBox(height: screenWidth / 10),
             ElevatedButton(
               onPressed: () async {
-                if (formKey.currentState!.validate()) {
+                if (usernameCheckDuplicate == false) {
+                  usernameCheckDuplicate = await widget.userService.checkFieldDuplicate('username', widget.user.username);
+                }
+                if (formKeyUsername.currentState!.validate()) {
                   formKey.currentState!.save();
                   try {
                     widget.user.firstLogin = false;
                     await widget.userService.saveUserData(widget.user);
-                    Navigator.pushNamed(navigatorKey.currentContext!, '/home');
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const Main()));
                   } catch (error) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
                   }

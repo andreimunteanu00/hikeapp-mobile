@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
+import '../main.dart';
 import '../service/auth.service.dart';
-import '../util/constants.dart' as constants;
-import '../util/my_http.dart';
 
 class SignOutWidget extends StatefulWidget {
 
   final AuthService authService = AuthService.instance;
-  final Function onChange;
 
-  SignOutWidget(this.onChange, {super.key});
+  SignOutWidget({super.key});
 
   @override
   State createState() => SignOutWidgetState();
@@ -31,8 +28,8 @@ class SignOutWidgetState extends State<SignOutWidget> {
         TextButton(
           child: const Text('Sign Out'),
           onPressed: () async {
-            bool val = await widget.authService.signOut();
-            widget.onChange(val);
+            await widget.authService.signOut();
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const Main()));
           }
         )
       ],
