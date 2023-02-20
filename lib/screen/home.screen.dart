@@ -4,8 +4,6 @@ import 'package:hikeappmobile/screen/first_login.screen.dart';
 
 import '../model/user.model.dart';
 import '../service/auth.service.dart';
-import 'package:hikeappmobile/widget/sign_out.widget.dart';
-
 import 'account_suspended.screen.dart';
 import 'home_logged.screen.dart';
 
@@ -43,7 +41,6 @@ class HomeScreenState extends State<HomeScreen> {
               return const CircularProgressIndicator();
             }
         ),
-        SignOutWidget()
       ],
     );
   }

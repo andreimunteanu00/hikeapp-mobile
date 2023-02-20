@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/screen/home.screen.dart';
-import 'package:hikeappmobile/widget/log_in_widget.dart';
+import 'package:hikeappmobile/screen/log_in_screen.dart';
 import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import './util/routes.dart';
 
 void main() {
@@ -64,8 +65,7 @@ class MainState extends State<Main> {
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
-        //TODO to be modified with loginScreen / homeScreen
-        child: !isLogged ? LogInWidget() : HomeScreen()
+        child: !isLogged ? const LogInScreen() : HomeScreen()
       )
     );
   }
