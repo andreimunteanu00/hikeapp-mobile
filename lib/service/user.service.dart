@@ -17,8 +17,8 @@ class UserService {
   }
 
   Future<void> saveUserData(User user) async {
-    final response = await MyHttp.getClient().post(
-      Uri.parse('${constants.localhost}/user/save'),
+    final response = await MyHttp.getClient().put(
+      Uri.parse('${constants.localhost}/user/update'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

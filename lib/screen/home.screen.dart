@@ -6,6 +6,7 @@ import '../model/user.model.dart';
 import '../service/auth.service.dart';
 import 'package:hikeappmobile/widget/sign_out.widget.dart';
 
+import 'account_suspended.screen.dart';
 import 'home_logged.screen.dart';
 
 
@@ -31,7 +32,11 @@ class HomeScreenState extends State<HomeScreen> {
             future: widget.authService.getCurrentUser(),
             builder: (_, snapshot) {
               if (snapshot.hasData) {
-                return snapshot.data?.firstLogin == true ? FirstLoginScreen(snapshot.data!) : const HomeLoggedScreen();
+                if (snapshot.data?.blocked == true) {
+                  return const AccountSuspendedScreen();
+                } else {
+                  return snapshot.data?.firstLogin == true ? FirstLoginScreen(snapshot.data!) : const HomeLoggedScreen();
+                }
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
               }
