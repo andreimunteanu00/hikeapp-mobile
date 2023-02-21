@@ -64,7 +64,7 @@ class MainState extends State<Main> {
       } else {
         User user = await authService.getCurrentUser();
         setState(() {
-          afterFirstLogIn = isLogged && !user.firstLogin!;
+          afterFirstLogIn = isLogged && !user.firstLogin! && user.active!;
         });
       }
     }
@@ -86,8 +86,8 @@ class MainState extends State<Main> {
         child: !isLogged ? const LogInScreen() : (afterFirstLogIn ? _widgetOptions[_selectedIndex] : HomeScreen())
       ),
       bottomNavigationBar: afterFirstLogIn ? BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        child: Container(
+        shape: const CircularNotchedRectangle(),
+        child: SizedBox(
           height: 56.0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

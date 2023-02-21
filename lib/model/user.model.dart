@@ -1,7 +1,7 @@
 class User {
   String? googleId;
   bool? firstLogin;
-  bool? blocked;
+  bool? active;
   String? username;
   String? email;
   String? profilePicture;
@@ -9,7 +9,7 @@ class User {
   User({
     this.email,
     this.firstLogin,
-    this.blocked,
+    this.active,
     this.username,
     this.googleId,
     this.profilePicture
@@ -19,7 +19,7 @@ class User {
     'googleId': googleId,
     'username': username,
     'firstLogin': firstLogin,
-    'blocked': blocked,
+    'active': active,
     'email': email,
     'profilePicture': profilePicture
   };
@@ -28,7 +28,7 @@ class User {
     return User(
       firstLogin: json['firstLogin'],
       username: json['username'],
-      blocked: json['blocked'],
+        active: json['active'],
       googleId: json['googleId'],
       email: json['email'],
       profilePicture: json['profilePicture']

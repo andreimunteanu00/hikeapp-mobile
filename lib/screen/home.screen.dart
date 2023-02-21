@@ -30,7 +30,7 @@ class HomeScreenState extends State<HomeScreen> {
             future: widget.authService.getCurrentUser(),
             builder: (_, snapshot) {
               if (snapshot.hasData) {
-                if (snapshot.data?.blocked == true) {
+                if (snapshot.data?.active == false) {
                   return const AccountSuspendedScreen();
                 } else {
                   return snapshot.data?.firstLogin == true ? FirstLoginScreen(snapshot.data!) : const HomeLoggedScreen();
