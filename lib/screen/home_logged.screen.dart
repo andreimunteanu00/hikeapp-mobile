@@ -15,6 +15,7 @@ class HomeLoggedScreenState extends State<HomeLoggedScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text('logged!'),
         SignOutWidget()

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:hikeappmobile/screen/account_suspended.screen.dart';
 import 'package:hikeappmobile/screen/home.screen.dart';
+import 'package:hikeappmobile/screen/home_logged.screen.dart';
 import 'package:hikeappmobile/screen/log_in_screen.dart';
+import 'package:hikeappmobile/screen/settings.screen.dart';
 import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './util/routes.dart';
+import 'model/user.model.dart';
 
 void main() {
   runApp(
@@ -40,6 +44,7 @@ class MainState extends State<Main> {
 
   final AuthService authService = AuthService.instance;
   late bool isLogged = true;
+  late bool afterFirstLogIn = false;
 
   @override
   void initState() { super.initState();
@@ -56,17 +61,55 @@ class MainState extends State<Main> {
       String? token = sharedPreferences.getString("token");
       if (token == null || token.isEmpty) {
         _toggleIsLogged(await authService.signOut());
+      } else {
+        User user = await authService.getCurrentUser();
+        setState(() {
+          afterFirstLogIn = isLogged && !user.firstLogin!;
+        });
       }
     }
   }
+
+  int _selectedIndex = 1;
+
+  static final List<Widget> _widgetOptions = <Widget>[
+    const AccountSuspendedScreen(),
+    const HomeLoggedScreen(),
+    const SettingsScreen()
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
-        child: !isLogged ? const LogInScreen() : HomeScreen()
-      )
+        child: !isLogged ? const LogInScreen() : (afterFirstLogIn ? _widgetOptions[_selectedIndex] : HomeScreen())
+      ),
+      bottomNavigationBar: afterFirstLogIn ? BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        child: Container(
+          height: 56.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              _buildNavItem(Icons.account_balance, 0),
+              _buildNavItem(Icons.home, 1),
+              _buildNavItem(Icons.settings, 2),
+            ],
+          ),
+        ),
+      ) : null,
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, int index) {
+    return IconButton(
+      icon: Icon(icon, color: _selectedIndex == index ? Colors.blue : Colors.grey),
+      onPressed: () {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
     );
   }
 

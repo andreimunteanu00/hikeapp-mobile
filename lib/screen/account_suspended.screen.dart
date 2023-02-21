@@ -7,6 +7,7 @@ class AccountSuspendedScreen extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: const [
         Text('This account is suspended!'),
         Text('For more details contact the support!')
