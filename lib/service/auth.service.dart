@@ -11,10 +11,19 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
 
+  static AuthService? _instance;
+
+  AuthService._(); // Private constructor
+
+  static AuthService get instance {
+    _instance ??= AuthService._();
+    return _instance!;
+  }
+
   final GoogleSignIn googleSignIn = GoogleSignIn(
     // TODO should be env variable + switch between android and ios
     serverClientId: '125789040129-i90b31ck9jagtob63ts73ntpnfvh7at7.apps.googleusercontent.com',
-    scopes: <String>[constants.email]
+    scopes: <String>['email']
   );
 
   Future<User> getCurrentUser() async {

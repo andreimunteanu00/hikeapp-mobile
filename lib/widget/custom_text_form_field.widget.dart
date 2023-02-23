@@ -7,7 +7,7 @@ class CustomTextFormField extends StatelessWidget {
   final String? labelText;
   final TextInputType? keyboardType;
   final Function? onChange;
-  final bool? enabled;
+  final bool? readOnly;
   final String? Function(String?)? validator;
 
   const CustomTextFormField({super.key,
@@ -16,7 +16,7 @@ class CustomTextFormField extends StatelessWidget {
     this.labelText,
     this.keyboardType,
     this.onChange,
-    this.enabled,
+    this.readOnly,
     this.validator
   });
 
@@ -25,22 +25,26 @@ class CustomTextFormField extends StatelessWidget {
     return SizedBox(
       width: labelWidth,
       child: TextFormField(
-        enabled: enabled,
+        readOnly: readOnly!,
+        key: key,
+        enabled: true,
         initialValue: initialValue,
         decoration: InputDecoration(
+          filled: readOnly,
+          fillColor: Colors.grey.shade200,
           labelText: labelText,
           labelStyle: TextStyle(
-            color: Colors.grey.shade500,
+            color: Colors.green.shade500,
             fontSize: 16.0,
             fontWeight: FontWeight.bold,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(color: Colors.grey.shade300),
+            borderSide: BorderSide(color: Colors.green.shade300),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(color: Colors.blue.shade300),
+            borderSide: BorderSide(color: Colors.green.shade500),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
@@ -58,13 +62,7 @@ class CustomTextFormField extends StatelessWidget {
         ),
         keyboardType: keyboardType,
         validator: validator,
-            /*(value) {
-          if (value!.isEmpty) {
-            return validatorText;
-          }
-          return null;
-        },*/
-        onSaved: (value) => onChange!(value),
+        onChanged: (value) => onChange!(value)
       ),
     );
   }

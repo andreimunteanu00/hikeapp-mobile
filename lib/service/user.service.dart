@@ -7,9 +7,18 @@ import '../util/constants.dart' as constants;
 
 class UserService {
 
+  static UserService? _instance;
+
+  UserService._(); // Private constructor
+
+  static UserService get instance {
+    _instance ??= UserService._();
+    return _instance!;
+  }
+
   Future<void> saveUserData(User user) async {
-    final response = await MyHttp.getClient().post(
-      Uri.parse('${constants.localhost}/user/save'),
+    final response = await MyHttp.getClient().put(
+      Uri.parse('${constants.localhost}/user/update'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -20,6 +29,16 @@ class UserService {
     } else {
       throw Exception('Failed to save data');
     }
+  }
+
+  Future<bool> checkFieldDuplicate(String columnName, String? value) async {
+    final response = await MyHttp.getClient().get(
+      Uri.parse('${constants.localhost}/user/checkFieldDuplicate/${columnName}/${value}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      }
+    );
+    return response.body == 'true' ? true : false;
   }
 
 }
