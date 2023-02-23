@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hikeappmobile/screen/account_suspended.screen.dart';
+import 'package:hikeappmobile/screen/hike_list.screen.dart';
 import 'package:hikeappmobile/screen/home.screen.dart';
 import 'package:hikeappmobile/screen/home_logged.screen.dart';
 import 'package:hikeappmobile/screen/log_in_screen.dart';
@@ -73,7 +73,7 @@ class MainState extends State<Main> {
   int _selectedIndex = 1;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const AccountSuspendedScreen(),
+    const HikeListScreen(),
     const HomeLoggedScreen(),
     const SettingsScreen()
   ];
