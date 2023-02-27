@@ -8,6 +8,15 @@ import '../util/constants.dart' as constants;
 
 class HikeService {
 
+  static HikeService? _instance;
+
+  HikeService._(); // Private constructor
+
+  static HikeService get instance {
+    _instance ??= HikeService._();
+    return _instance!;
+  }
+
   Future<List<Hike>> getAllEntities({String title = '', String sortField = 'title', int page = 0, int size = 10}) async {
     final response = await MyHttp.getClient().get(Uri.parse('${constants.localhost}/hike?title=$title&page=$page&size=$size&sortField=$sortField'));
 

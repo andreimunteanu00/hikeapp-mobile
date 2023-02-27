@@ -81,6 +81,9 @@ class MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Hike App'),
+      ),
       body: Container(
         alignment: Alignment.center,
         child: !isLogged ? const LogInScreen() : (afterFirstLogIn ? _widgetOptions[_selectedIndex] : HomeScreen())

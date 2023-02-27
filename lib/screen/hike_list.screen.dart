@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hikeappmobile/main.dart';
+import 'package:hikeappmobile/screen/hike_detail.screen.dart';
 
 import '../model/hike.model.dart';
 import '../service/hike.service.dart';
+import '../util/singe_page_route.dart';
 
 class HikeListScreen extends StatefulWidget {
   const HikeListScreen({Key? key}) : super(key: key);
@@ -11,7 +14,7 @@ class HikeListScreen extends StatefulWidget {
 }
 
 class HikeListScreenState extends State<HikeListScreen> {
-  final HikeService _entityService = HikeService();
+  final HikeService _entityService = HikeService.instance;
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<Hike> _entities = [];
@@ -25,13 +28,6 @@ class HikeListScreenState extends State<HikeListScreen> {
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      Future.delayed(const Duration(milliseconds: 2000), () {
-        // your code here
-      });
-    });
-
     _loadEntities();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
@@ -54,7 +50,7 @@ class HikeListScreenState extends State<HikeListScreen> {
         });
       } catch (e) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load entities')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to load entities')));
       }
     }
   }
@@ -74,36 +70,42 @@ class HikeListScreenState extends State<HikeListScreen> {
 
     return Column(
       children: [
-        SizedBox(height: screenHeight / 10),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(hintText: 'Search by name'),
-                  onChanged: (value) {
-                    _searchTerm = value;
-                    _resetEntities();
-                  },
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(hintText: 'Search by name'),
+                    onChanged: (value) {
+                      _searchTerm = value;
+                      if (_searchTerm.isEmpty) {
+                        _resetEntities();
+                      }
+                    },
+                  ),
                 ),
+              ElevatedButton(
+                onPressed: () {
+                  _resetEntities();
+                },
+                child: const Icon(Icons.search)
               ),
-              const SizedBox(width: 8.0),
               DropdownButton<String>(
-                value: _sortBy,
-                items: const [
-                  DropdownMenuItem(value: 'title', child: Text('Sort by title')),
-                  DropdownMenuItem(value: 'allRatings', child: Text('Sort by rating')),
-                  DropdownMenuItem(value: 'numberRatings', child: Text('Sort by popularity')),
-                ],
-                onChanged: (String? value) {
-                  if (value != null) {
-                    _sortBy = value;
-                    _resetEntities();
-                  }
-              },
-              ),
+                  value: _sortBy,
+                  items: const [
+                    DropdownMenuItem(value: 'title', child: Text('Sort by title')),
+                    DropdownMenuItem(value: 'allRatings', child: Text('Sort by rating')),
+                    DropdownMenuItem(value: 'numberRatings', child: Text('Sort by popularity')),
+                  ],
+                  onChanged: (String? value) {
+                    if (value != null) {
+                      _sortBy = value;
+                      _resetEntities();
+                    }
+                },
+                ),
             ],
           ),
         ),
@@ -113,19 +115,38 @@ class HikeListScreenState extends State<HikeListScreen> {
             itemCount: _entities.length + (_hasMore ? 1 : 0),
             itemBuilder: (BuildContext context, int index) {
               if (index == _entities.length) {
-                return _isLoading ? Center(child: CircularProgressIndicator()) : SizedBox();
+                return _isLoading ? const Center(child: CircularProgressIndicator()) : const SizedBox();
               }
               final entity = _entities[index];
-              return ListTile(
-                title: Text(entity.title!),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Description: ${entity.description}'),
-                    Text('Rating: ${entity.allRatings}'),
-                    Text('No ratings: ${entity.numberRatings}')
-                  ],
-                ),
+              return GestureDetector(
+                onTap: () {
+
+                },
+                child: Card(
+                  child: Row(
+                    children: [
+                      Container(
+                          width:100,
+                          height: 100,
+                          child: Image.network('https://www.google.com/search?q=Image+Decoration+deprecated+flutter&rlz=1C1GCEU_enRO1027RO1027&sxsrf=AJOqlzUggdOqsdmzx1JhxFgfupfFaKfDbA:1677518002812&source=lnms&tbm=isch&sa=X&ved=2ahUKEwi5uKXFmbb9AhVUtKQKHbb9B6oQ_AUoAXoECAEQAw&biw=1920&bih=929&dpr=1#imgrc=GfQxngkfsluSLM')
+                      ),
+                      SizedBox(
+                        width: 200,
+                        child: ListTile(
+                            title: Text(entity.title!),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Description: ${entity.description}'),
+                                Text('Rating: ${entity.allRatings}'),
+                                Text('No ratings: ${entity.numberRatings}')
+                              ],
+                            )
+                        ),
+                      )
+                    ],
+                  )
+                )
               );
             }
           )
