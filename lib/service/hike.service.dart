@@ -28,4 +28,13 @@ class HikeService {
       throw Exception('Failed to load hikes');
     }
   }
+
+  Future<Hike> getHikeByTitle(String hikeTitle) async {
+    final response = await MyHttp.getClient().get(Uri.parse('${constants.localhost}/hike/$hikeTitle'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    }  else {
+      throw Exception('Failed to load hike');
+    }
+  }
 }

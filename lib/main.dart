@@ -45,14 +45,12 @@ class MainState extends State<Main> {
   final AuthService authService = AuthService.instance;
   late bool isLogged = true;
   late bool afterFirstLogIn = false;
-
-  @override
-  void initState() { super.initState();
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      _asyncMethod();
-    });
-  }
+  int _selectedIndex = 1;
+  static final List<Widget> _widgetOptions = <Widget>[
+    const HikeListScreen(),
+    const HomeLoggedScreen(),
+    const SettingsScreen()
+  ];
 
   _asyncMethod() async {
     authService.checkSignIn().then((value) => _toggleIsLogged(value));
@@ -70,13 +68,30 @@ class MainState extends State<Main> {
     }
   }
 
-  int _selectedIndex = 1;
+  Widget _buildNavItem(IconData icon, int index) {
+    return IconButton(
+      icon: Icon(icon, color: _selectedIndex == index ? Colors.blue : Colors.grey),
+      onPressed: () {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+    );
+  }
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const HikeListScreen(),
-    const HomeLoggedScreen(),
-    const SettingsScreen()
-  ];
+  _toggleIsLogged(val) {
+    setState(() {
+      isLogged = val;
+    });
+  }
+
+  @override
+  void initState() { super.initState();
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _asyncMethod();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,22 +118,5 @@ class MainState extends State<Main> {
         ),
       ) : null,
     );
-  }
-
-  Widget _buildNavItem(IconData icon, int index) {
-    return IconButton(
-      icon: Icon(icon, color: _selectedIndex == index ? Colors.blue : Colors.grey),
-      onPressed: () {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-    );
-  }
-
-  _toggleIsLogged(val) {
-    setState(() {
-      isLogged = val;
-    });
   }
 }

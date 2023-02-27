@@ -24,6 +24,7 @@ class HikeListScreenState extends State<HikeListScreen> {
   bool _hasMore = true;
   int _page = 0;
   int _pageSize = 10;
+  var _selectedEntity = null;
 
   @override
   void initState() {
@@ -68,7 +69,9 @@ class HikeListScreenState extends State<HikeListScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
+    return _selectedEntity != null ? Column(children: [HikeDetailScreen(hikeTitle: _selectedEntity.title), SizedBox(height: screenHeight / 30), ElevatedButton(onPressed: () {setState(() {
+      _selectedEntity = null;
+    });}, child: Text('go back'))]) : Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -120,7 +123,9 @@ class HikeListScreenState extends State<HikeListScreen> {
               final entity = _entities[index];
               return GestureDetector(
                 onTap: () {
-
+                  setState(() {
+                    _selectedEntity = entity;
+                  });
                 },
                 child: Card(
                   child: Row(
