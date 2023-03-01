@@ -57,9 +57,11 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
   @override
   Widget build(BuildContext context) {
 
-    return Expanded(
-      child: ListView.builder(
-        controller: _scrollController,
+    return Column(
+      children: [
+    Expanded(
+    child: ListView.builder(
+    controller: _scrollController,
         itemCount: _entities.length + (_hasMore ? 1 : 0),
         itemBuilder: (BuildContext context, int index) {
           if (index == _entities.length) {
@@ -68,7 +70,9 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
           final entity = _entities[index];
           return UserCommentWidget(rating: entity);
         }
-      )
+    )
+    )
+      ],
     );
   }
 }

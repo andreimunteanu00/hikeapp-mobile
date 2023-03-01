@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hikeappmobile/main.dart';
 import 'package:hikeappmobile/screen/hike_detail.screen.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import '../model/hike.model.dart';
 import '../service/hike.service.dart';
-import '../util/singe_page_route.dart';
 
 class HikeListScreen extends StatefulWidget {
   const HikeListScreen({Key? key}) : super(key: key);
@@ -24,7 +23,6 @@ class HikeListScreenState extends State<HikeListScreen> {
   bool _hasMore = true;
   int _page = 0;
   int _pageSize = 10;
-  var _selectedEntity = null;
 
   @override
   void initState() {
@@ -69,9 +67,7 @@ class HikeListScreenState extends State<HikeListScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return _selectedEntity != null ? Column(children: [HikeDetailScreen(hikeTitle: _selectedEntity.title), SizedBox(height: screenHeight / 30), ElevatedButton(onPressed: () {setState(() {
-      _selectedEntity = null;
-    });}, child: Text('go back'))]) : Column(
+    return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -120,12 +116,15 @@ class HikeListScreenState extends State<HikeListScreen> {
               if (index == _entities.length) {
                 return _isLoading ? const Center(child: CircularProgressIndicator()) : const SizedBox();
               }
-              final entity = _entities[index];
+              final Hike entity = _entities[index];
               return GestureDetector(
                 onTap: () {
-                  setState(() {
-                    _selectedEntity = entity;
-                  });
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: HikeDetailScreen(hikeTitle: entity.title!),
+                    withNavBar: true,
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
                 },
                 child: Card(
                   child: Row(
