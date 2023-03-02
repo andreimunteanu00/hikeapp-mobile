@@ -32,7 +32,8 @@ class HikeService {
   Future<Hike> getHikeByTitle(String hikeTitle) async {
     final response = await MyHttp.getClient().get(Uri.parse('${constants.localhost}/hike/$hikeTitle'));
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      Hike x = Hike.fromJsonPictureList(json.decode(response.body));
+      return x;
     }  else {
       throw Exception('Failed to load hike');
     }

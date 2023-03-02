@@ -24,13 +24,13 @@ class AvatarWidgetState extends State<AvatarWidget> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-        widget.user?.profilePicture = Methods.fileToBase64(_image);
+        widget.user?.profilePicture!.base64 = Methods.fileToBase64(_image);
       }
     });
   }
 
   giveBackgroundImage() {
-    return widget.user!.profilePicture == null ? FileImage(_image) : MemoryImage(base64Decode(widget.user!.profilePicture!));
+    return widget.user!.profilePicture == null ? FileImage(_image) : MemoryImage(base64Decode(widget.user!.profilePicture!.base64!));
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/screen/hike_detail.screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -67,13 +69,15 @@ class HikeListScreenState extends State<HikeListScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(
+    return Scaffold(
+      appBar: AppBar(title: const Text('HikeApp')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
                   child: TextField(
                     controller: _searchController,
                     decoration: const InputDecoration(hintText: 'Search by name'),
@@ -85,13 +89,13 @@ class HikeListScreenState extends State<HikeListScreen> {
                     },
                   ),
                 ),
-              ElevatedButton(
-                onPressed: () {
-                  _resetEntities();
-                },
-                child: const Icon(Icons.search)
-              ),
-              DropdownButton<String>(
+                ElevatedButton(
+                    onPressed: () {
+                      _resetEntities();
+                    },
+                    child: const Icon(Icons.search)
+                ),
+                DropdownButton<String>(
                   value: _sortBy,
                   items: const [
                     DropdownMenuItem(value: 'title', child: Text('Sort by title')),
@@ -103,60 +107,61 @@ class HikeListScreenState extends State<HikeListScreen> {
                       _sortBy = value;
                       _resetEntities();
                     }
-                },
+                  },
                 ),
-            ],
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: _entities.length + (_hasMore ? 1 : 0),
-            itemBuilder: (BuildContext context, int index) {
-              if (index == _entities.length) {
-                return _isLoading ? const Center(child: CircularProgressIndicator()) : const SizedBox();
-              }
-              final Hike entity = _entities[index];
-              return GestureDetector(
-                onTap: () {
-                  PersistentNavBarNavigator.pushNewScreen(
-                    context,
-                    screen: HikeDetailScreen(hikeTitle: entity.title!),
-                    withNavBar: true,
-                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                  );
-                },
-                child: Card(
-                  child: Row(
-                    children: [
-                      Container(
-                          width:100,
-                          height: 100,
-                          child: Image.network('https://www.google.com/search?q=Image+Decoration+deprecated+flutter&rlz=1C1GCEU_enRO1027RO1027&sxsrf=AJOqlzUggdOqsdmzx1JhxFgfupfFaKfDbA:1677518002812&source=lnms&tbm=isch&sa=X&ved=2ahUKEwi5uKXFmbb9AhVUtKQKHbb9B6oQ_AUoAXoECAEQAw&biw=1920&bih=929&dpr=1#imgrc=GfQxngkfsluSLM')
-                      ),
-                      SizedBox(
-                        width: 200,
-                        child: ListTile(
-                            title: Text(entity.title!),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+          Expanded(
+              child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: _entities.length + (_hasMore ? 1 : 0),
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == _entities.length) {
+                      return _isLoading ? const Center(child: CircularProgressIndicator()) : const SizedBox();
+                    }
+                    final Hike entity = _entities[index];
+                    return GestureDetector(
+                        onTap: () {
+                          PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: HikeDetailScreen(hikeTitle: entity.title!),
+                            withNavBar: true,
+                            pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                          );
+                        },
+                        child: Card(
+                            child: Row(
                               children: [
-                                Text('Description: ${entity.description}'),
-                                Text('Rating: ${entity.allRatings}'),
-                                Text('No ratings: ${entity.numberRatings}')
+                                Container(
+                                    width:100,
+                                    height: 100,
+                                    child: entity.mainPicture?.base64 != null ? Image.memory(base64Decode(entity.mainPicture!.base64!)) : Image.network('https://www.google.com/search?q=Image+Decoration+deprecated+flutter&rlz=1C1GCEU_enRO1027RO1027&sxsrf=AJOqlzUggdOqsdmzx1JhxFgfupfFaKfDbA:1677518002812&source=lnms&tbm=isch&sa=X&ved=2ahUKEwi5uKXFmbb9AhVUtKQKHbb9B6oQ_AUoAXoECAEQAw&biw=1920&bih=929&dpr=1#imgrc=GfQxngkfsluSLM')
+                                ),
+                                SizedBox(
+                                  width: 200,
+                                  child: ListTile(
+                                      title: Text(entity.title!),
+                                      subtitle: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('Description: ${entity.description}'),
+                                          Text('Rating: ${entity.allRatings}'),
+                                          Text('No ratings: ${entity.numberRatings}')
+                                        ],
+                                      )
+                                  ),
+                                )
                               ],
                             )
-                        ),
-                      )
-                    ],
-                  )
-                )
-              );
-            }
-          )
-        ),
-        SizedBox(height: screenHeight / 100),
-      ]
+                        )
+                    );
+                  }
+              )
+          ),
+          SizedBox(height: screenHeight / 100),
+        ]
+      )
     );
   }
 }
