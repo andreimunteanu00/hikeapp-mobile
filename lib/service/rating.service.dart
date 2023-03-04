@@ -22,7 +22,19 @@ class RatingService {
       final entities = (jsonResponse['content'] as List).map((json) => Rating.fromJson(json)).toList();
       return entities;
     } else {
-      throw Exception('Failed to load hikes');
+      throw Exception('Failed to load rating for current hike!');
+    }
+  }
+
+  Future<Rating> getRatingForCurrentUser(String hikeTitle) async {
+    final response = await MyHttp.getClient().get(Uri.parse('${constants.localhost}/rating/byCurrentUser/$hikeTitle'));
+    if (response.statusCode == 200) {
+      if (response.body.isEmpty) {
+        return Rating();
+      }
+      return Rating.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load rating for current user!');
     }
   }
 }

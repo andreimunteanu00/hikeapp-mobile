@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:hikeappmobile/service/hike.service.dart';
 import 'package:hikeappmobile/service/rating.service.dart';
+import 'package:hikeappmobile/widget/current_user_comment.widget.dart';
 
 import '../model/hike.model.dart';
 import '../model/rating.model.dart';
@@ -8,19 +10,17 @@ import '../widget/hike_detail.widget.dart';
 import '../widget/user_comment.widget.dart';
 
 class HikeDetailScreen extends StatefulWidget {
-
   final String hikeTitle;
-  final HikeService hikeService = HikeService.instance;
 
   HikeDetailScreen({super.key, required this.hikeTitle});
 
   @override
   State createState() => HikeDetailScrenState();
-
 }
 
 class HikeDetailScrenState extends State<HikeDetailScreen> {
-
+  final HikeService hikeService = HikeService.instance;
+  final AuthService authService = AuthService.instance;
   final RatingService ratingService = RatingService.instance;
   final ScrollController _scrollController = ScrollController();
   List<Rating> _entities = [];
@@ -34,7 +34,8 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
     super.initState();
     _fetchData();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
         _fetchData();
       }
     });
@@ -64,40 +65,74 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('HikeApp')),
-        body: Column(
-      children: [
-        SizedBox(
-          height: screenHeight / 2,
-          child: FutureBuilder<Hike>(
-            future: widget.hikeService.getHikeByTitle(widget.hikeTitle),
-            builder: (_, snapshot) {
-              if (snapshot.hasData) {
-                return HikeDetailWidget(hike: snapshot.data!);
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              } else {
-                return const CircularProgressIndicator();
-              }
-            }
-          )
-        ),
-        SizedBox(
-          height: screenHeight / 2 - screenHeight / 5,
-          child: Expanded(
-            child: ListView.builder(
-            controller: _scrollController,
-                itemCount: _entities.length + (_hasMore ? 1 : 0),
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == _entities.length) {
-                    return _isLoading ? const Center(child: CircularProgressIndicator()) : const SizedBox();
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: screenHeight + screenHeight / 4,
+          child: Column(
+            children: [
+              SizedBox(height: screenHeight / 60),
+              FutureBuilder<Hike>(
+                future:
+                    hikeService.getHikeByTitle(widget.hikeTitle),
+                builder: (_, snapshot) {
+                  if (snapshot.hasData) {
+                    return HikeDetailWidget(hike: snapshot.data!);
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  } else {
+                    return const CircularProgressIndicator();
                   }
-                  final entity = _entities[index];
-                  return UserCommentWidget(rating: entity);
                 }
-            )
-          ),
+              ),
+              const Text(
+                "Your rating",
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              FutureBuilder<Rating>(
+                  future:
+                  ratingService.getRatingForCurrentUser(widget.hikeTitle),
+                  builder: (_, snapshot) {
+                    if (snapshot.hasData) {
+                      return CurrentUserCommentWidget(rating: snapshot.data!, hikeTitle: widget.hikeTitle);
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    } else {
+                      return const CircularProgressIndicator();
+                    }
+                  }
+              ),
+              const Text(
+                "Comments",
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: _entities.length + (_hasMore ? 1 : 0),
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == _entities.length) {
+                      return _isLoading
+                          ? const Center(
+                          child: CircularProgressIndicator())
+                          : const SizedBox();
+                    }
+                    final entity = _entities[index];
+                    return UserCommentWidget(entity);
+                  }
+                )
+              ),
+              SizedBox(height: screenHeight / 60),
+            ],
+          )
         )
-      ],
-    ));
+      )
+    );
   }
 }
