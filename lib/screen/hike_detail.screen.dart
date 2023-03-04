@@ -114,7 +114,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              Expanded(
+              _entities.length == 0 ? const Text('no rating yet!') : Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
                   itemCount: _entities.length + (_hasMore ? 1 : 0),

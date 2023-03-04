@@ -69,6 +69,7 @@ class HikeListScreenState extends State<HikeListScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(title: const Text('HikeApp')),
@@ -136,17 +137,19 @@ class HikeListScreenState extends State<HikeListScreen> {
                               children: [
                                 Container(
                                     width:100,
-                                    height: 100,
+                                    height: 150,
+                                    // TODO change it with default
                                     child: entity.mainPicture?.base64 != null ? Image.memory(base64Decode(entity.mainPicture!.base64!)) : Image.network('https://www.google.com/search?q=Image+Decoration+deprecated+flutter&rlz=1C1GCEU_enRO1027RO1027&sxsrf=AJOqlzUggdOqsdmzx1JhxFgfupfFaKfDbA:1677518002812&source=lnms&tbm=isch&sa=X&ved=2ahUKEwi5uKXFmbb9AhVUtKQKHbb9B6oQ_AUoAXoECAEQAw&biw=1920&bih=929&dpr=1#imgrc=GfQxngkfsluSLM')
                                 ),
                                 SizedBox(
-                                  width: 200,
+                                  width: screenWidth / 2,
                                   child: ListTile(
-                                      title: Text(entity.title!),
-                                      subtitle: Column(
+                                      title: Center(child: Text(entity.title!)),
+                                      subtitle: Center(child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text('Description: ${entity.description}', overflow: TextOverflow.ellipsis, maxLines: 5),
+                                          SizedBox(height: 16),
+                                          Text('Difficulty: ${entity.difficulty?.toLowerCase()}'),
                                           Row(children: [Text('Rating: '), RatingBarIndicator(
                                             rating: entity.allRatings!,
                                             itemBuilder: (context, index) => const Icon(
@@ -159,6 +162,7 @@ class HikeListScreenState extends State<HikeListScreen> {
                                           )]),
                                           Text('No ratings: ${entity.numberRatings}')
                                         ],
+                                      )
                                       )
                                   ),
                                 )

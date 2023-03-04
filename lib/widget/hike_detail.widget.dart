@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:expandable_text/expandable_text.dart';
 
 import '../model/hike.model.dart';
 import 'carousel_slider_hike.widget.dart';
@@ -35,13 +36,14 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
           SizedBox(height: 8.0),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
+            child:
+            ExpandableText(
               widget.hike.description!,
-              style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.grey[600],
-              ),
-            ),
+              maxLines: 5,
+              expandText: 'Read more',
+              collapseText: 'Read less',
+              linkColor: Colors.green
+            )
           ),
           SizedBox(height: 16.0),
           Padding(
