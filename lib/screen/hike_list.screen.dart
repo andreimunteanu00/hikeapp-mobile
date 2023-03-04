@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hikeappmobile/screen/hike_detail.screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
@@ -145,8 +146,17 @@ class HikeListScreenState extends State<HikeListScreen> {
                                       subtitle: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text('Description: ${entity.description}'),
-                                          Text('Rating: ${entity.allRatings}'),
+                                          Text('Description: ${entity.description}', overflow: TextOverflow.ellipsis, maxLines: 5),
+                                          Row(children: [Text('Rating: '), RatingBarIndicator(
+                                            rating: entity.allRatings!,
+                                            itemBuilder: (context, index) => const Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                            ),
+                                            itemCount: 5,
+                                            itemSize: 20,
+                                            direction: Axis.horizontal,
+                                          )]),
                                           Text('No ratings: ${entity.numberRatings}')
                                         ],
                                       )

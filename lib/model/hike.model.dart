@@ -7,6 +7,7 @@ class Hike {
   int? numberRatings;
   Picture? mainPicture;
   List<Picture?>? pictureList;
+  String? difficulty;
 
   Hike({
     this.title,
@@ -14,7 +15,8 @@ class Hike {
     this.allRatings,
     this.numberRatings,
     this.mainPicture,
-    this.pictureList
+    this.pictureList,
+    this.difficulty
   });
 
   Map<String, dynamic> toJson() => {
@@ -23,7 +25,8 @@ class Hike {
     'allRatings': allRatings,
     'numberRatings': numberRatings,
     'mainPicture': mainPicture,
-    'pictureList': pictureList
+    'pictureList': pictureList,
+    'difficulty': difficulty
   };
 
   factory Hike.fromJson(Map<String, dynamic> json) {
@@ -32,7 +35,8 @@ class Hike {
         description: json['description'],
         allRatings: json['allRatings'],
         numberRatings: json['numberRatings'],
-        mainPicture: Picture.fromJson(json['mainPicture'])
+        mainPicture: Picture.fromJson(json['mainPicture']),
+        difficulty: json['difficulty']
     );
   }
 
@@ -44,7 +48,8 @@ class Hike {
         numberRatings: json['numberRatings'],
         pictureList: (json['pictureList'] as List<dynamic>)
             .map((e) => e == null ? null : Picture.fromJson(e))
-            .toList()
+            .toList(),
+        difficulty: json['difficulty']
     );
   }
 }

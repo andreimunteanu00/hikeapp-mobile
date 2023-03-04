@@ -48,19 +48,30 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               children: [
-                RatingBar.builder(
-                  initialRating: widget.hike.allRatings!,
-                  minRating: 0,
-                  direction: Axis.horizontal,
-                  allowHalfRating: true,
-                  itemCount: 5,
-                  itemSize: 20.0,
-                  itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
-                  itemBuilder: (context, _) => Icon(
+                Text(
+                  'Difficulty: ${widget.hike.difficulty!.toLowerCase()}',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.0),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                RatingBarIndicator(
+                  rating: widget.hike.allRatings!,
+                  itemBuilder: (context, index) => const Icon(
                     Icons.star,
                     color: Colors.amber,
                   ),
-                  onRatingUpdate: (value) {},
+                  itemCount: 5,
+                  itemSize: 20,
+                  direction: Axis.horizontal,
                 ),
                 SizedBox(width: 8.0),
                 Text(
