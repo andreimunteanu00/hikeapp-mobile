@@ -7,9 +7,11 @@ import 'package:intl/intl.dart';
 import '../model/rating.model.dart';
 
 class UserCommentWidget extends StatelessWidget {
-  final Rating rating;
+  final Rating? rating;
+  final bool? fromCurrentUser;
+  final Function? rate;
 
-  const UserCommentWidget(this.rating, {super.key});
+  const UserCommentWidget({this.rating, this.fromCurrentUser = false, this.rate, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class UserCommentWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CircleAvatar(
-          backgroundImage: MemoryImage(base64.decode(rating.user!.profilePicture!.base64!)),
+          backgroundImage: MemoryImage(base64.decode(rating!.user!.profilePicture!.base64!)),
           radius: 20,
         ),
         const SizedBox(width: 10),
@@ -29,14 +31,14 @@ class UserCommentWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    rating.user!.username!,
+                    rating!.user!.username!,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
                   Text(
-                    DateFormat('dd/MM/yyyy HH:mm').format(rating.dateTimeRate!),
+                    DateFormat('dd/MM/yyyy HH:mm').format(rating!.dateTimeRate!),
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 12,
@@ -45,10 +47,34 @@ class UserCommentWidget extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 5),
-              Text(rating.comment!),
+              Text(rating!.comment!),
               const SizedBox(height: 5),
-              RatingBarIndicator(
-                rating: rating.rating!,
+              fromCurrentUser == true ? Row(
+                children: [
+                  RatingBarIndicator(
+                    rating: rating!.rating!,
+                    itemBuilder: (context, index) => const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    ),
+                    itemCount: 5,
+                    itemSize: 20,
+                    direction: Axis.horizontal,
+                  ),
+                  const Spacer(),
+                  InkWell(
+                    onTap: () {
+                      rate!();
+                    },
+                    child: const Icon(
+                      Icons.edit,
+                      color: Colors.grey,
+                      size: 24.0,
+                    )
+                  )
+                ],
+              ) : RatingBarIndicator(
+                rating: rating!.rating!,
                 itemBuilder: (context, index) => const Icon(
                   Icons.star,
                   color: Colors.amber,

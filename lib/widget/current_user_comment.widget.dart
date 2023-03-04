@@ -8,8 +8,9 @@ class CurrentUserCommentWidget extends StatefulWidget {
 
   final Rating rating;
   final String hikeTitle;
+  final Function refresh;
 
-  const CurrentUserCommentWidget({Key? key, required this.rating, required this.hikeTitle}) : super(key: key);
+  const CurrentUserCommentWidget({Key? key, required this.rating, required this.hikeTitle, required this.refresh}) : super(key: key);
 
   @override
   State createState() => CurrentUserCommentWidgetState();
@@ -22,23 +23,34 @@ class CurrentUserCommentWidgetState extends State<CurrentUserCommentWidget> {
     showDialog(
       context: context,
       builder: (context) {
+        print(widget.rating.comment);
         return CommentModal(hikeTitle: widget.hikeTitle);
       },
-    );
+    ).then((_) {
+      widget.refresh();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return widget.rating.user == null ? ElevatedButton(
-      onPressed: rate,
-      child: Text('ADD COMMENT'),
+      onPressed: rate,style: ElevatedButton.styleFrom(
+      padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+      child: Text(
+        'Rate Hike',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     ) : Column(
       children: [
-        UserCommentWidget(widget.rating),
-        ElevatedButton(
-          onPressed: rate,
-          child: Text('EDIT COMMENT'),
-        )
+        UserCommentWidget(rating: widget.rating, fromCurrentUser: true, rate: rate),
       ],
     );
   }

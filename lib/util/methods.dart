@@ -19,9 +19,9 @@ class Methods {
     }
     final parts = token.split('.');
     final String encodedPayload = parts[1];
-    String decoded = utf8.decode(base64Url.decode(encodedPayload));
-    Map<String, dynamic> payload = json.decode(decoded);
-    String username = payload['username'];
+    final payloadData = utf8.fuse(base64).decode(base64.normalize(encodedPayload));
+    Map<String, dynamic> payload = json.decode(payloadData);
+    String username = payload['sub'];
     return username;
   }
 

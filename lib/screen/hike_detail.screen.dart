@@ -3,6 +3,8 @@ import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:hikeappmobile/service/hike.service.dart';
 import 'package:hikeappmobile/service/rating.service.dart';
 import 'package:hikeappmobile/widget/current_user_comment.widget.dart';
+import '../util/methods.dart';
+
 
 import '../model/hike.model.dart';
 import '../model/rating.model.dart';
@@ -46,6 +48,8 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
       setState(() => _isLoading = true);
       try {
         final entities = await ratingService.getRatingForHikeTitle(hikeTitle: widget.hikeTitle, page: _page, size: _pageSize);
+        final googleId = await Methods.giveUsernameFromToken();
+        entities.removeWhere((entity) => entity.user!.googleId! == googleId);
         setState(() {
           _entities.addAll(entities);
           _page++;
@@ -63,11 +67,15 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
+    void refresh() {
+      setState(() {}); // refresh the widget
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('HikeApp')),
       body: SingleChildScrollView(
         child: SizedBox(
-          height: screenHeight + screenHeight / 4,
+          height: screenHeight + screenHeight / 2,
           child: Column(
             children: [
               SizedBox(height: screenHeight / 60),
@@ -84,19 +92,12 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                   }
                 }
               ),
-              const Text(
-                "Your rating",
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              SizedBox(height: 16),
               FutureBuilder<Rating>(
-                  future:
-                  ratingService.getRatingForCurrentUser(widget.hikeTitle),
+                  future: ratingService.getRatingForCurrentUser(widget.hikeTitle),
                   builder: (_, snapshot) {
                     if (snapshot.hasData) {
-                      return CurrentUserCommentWidget(rating: snapshot.data!, hikeTitle: widget.hikeTitle);
+                      return CurrentUserCommentWidget(rating: snapshot.data!, hikeTitle: widget.hikeTitle, refresh: refresh);
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else {
@@ -104,8 +105,9 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                     }
                   }
               ),
+              SizedBox(height: 16),
               const Text(
-                "Comments",
+                "User's ratings",
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
@@ -124,7 +126,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                           : const SizedBox();
                     }
                     final entity = _entities[index];
-                    return UserCommentWidget(entity);
+                    return UserCommentWidget(rating: entity);
                   }
                 )
               ),
