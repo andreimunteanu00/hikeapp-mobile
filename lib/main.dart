@@ -8,11 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import './util/routes.dart';
 import 'model/user.model.dart';
 import 'screen/main.screen.dart';
+import './util/constants.dart' as constants;
 
 void main() {
   runApp(
     MaterialApp(
-      title: 'HikeApp',
+      title: constants.appTitle,
       home: const Main(),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(

@@ -89,6 +89,37 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                 }
               ),
               const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  // Preview button
+                  SizedBox(
+                    width: 125,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        // Add code to handle the preview button press
+                        print('Preview button pressed');
+                      },
+                      label: Text('Preview'),
+                      icon: Icon(Icons.map),
+                    ),
+                  ),
+                  const SizedBox(width: 16,),
+                  // Share button
+                  SizedBox(
+                    width: 125,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        // Add code to handle the share button press
+                        print('Share button pressed');
+                      },
+                      label: Text('Share'),
+                      icon: Icon(Icons.share)
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               FutureBuilder<Rating>(
                 future: ratingService.getRatingForCurrentUser(widget.hikeTitle),
                 builder: (_, snapshot) {

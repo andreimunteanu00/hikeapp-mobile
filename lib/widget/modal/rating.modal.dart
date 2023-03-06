@@ -80,8 +80,10 @@ class RatingModalState extends State<RatingModal> {
               rating.rating = _rating;
               if (!(_rating == widget.rating && (_comment == '' || _comment == widget.comment))) {
                 await ratingService.rate(widget.hikeTitle, rating);
+                Navigator.of(context).pop(true);
+              } else {
+                Navigator.of(context).pop(false);
               }
-              Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Comment added'),

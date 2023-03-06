@@ -43,8 +43,10 @@ class CurrentUserCommentWidgetState extends State<CurrentUserCommentWidget> {
       builder: (context) {
         return RatingModal(hikeTitle: widget.hikeTitle, comment: widget.rating.comment, rating: widget.rating.rating);
       },
-    ).then((_) {
-      widget.refresh();
+    ).then((value) {
+      if (value) {
+        widget.refresh();
+      }
     });
   }
 
