@@ -78,7 +78,9 @@ class RatingModalState extends State<RatingModal> {
               var rating = Rating();
               rating.comment = _comment;
               rating.rating = _rating;
-              await ratingService.rate(widget.hikeTitle, rating);
+              if (!(_rating == widget.rating && (_comment == '' || _comment == widget.comment))) {
+                await ratingService.rate(widget.hikeTitle, rating);
+              }
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
