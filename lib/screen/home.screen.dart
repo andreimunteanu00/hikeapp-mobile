@@ -1,18 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hikeappmobile/screen/first_login.screen.dart';
-
-import '../model/user.model.dart';
-import '../service/auth.service.dart';
-import 'account_suspended.screen.dart';
-import 'home_logged.screen.dart';
-
+import 'package:hikeappmobile/widget/sign_out.widget.dart';
 
 class HomeScreen extends StatefulWidget {
 
-  final AuthService authService = AuthService.instance;
-
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State createState() => HomeScreenState();
@@ -26,23 +17,9 @@ class HomeScreenState extends State<HomeScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        FutureBuilder<User>(
-            future: widget.authService.getCurrentUser(),
-            builder: (_, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data?.active == false) {
-                  return const AccountSuspendedScreen();
-                } else {
-                  return snapshot.data?.firstLogin == true ? FirstLoginScreen(snapshot.data!) : const HomeLoggedScreen();
-                }
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-              return const CircularProgressIndicator();
-            }
-        ),
+        const Text('logged!'),
+        SignOutWidget()
       ],
     );
   }
-
 }

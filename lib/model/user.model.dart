@@ -1,10 +1,12 @@
+import 'package:hikeappmobile/model/picture.model.dart';
+
 class User {
   String? googleId;
   bool? firstLogin;
   bool? active;
   String? username;
   String? email;
-  String? profilePicture;
+  Picture? profilePicture;
 
   User({
     this.email,
@@ -28,10 +30,10 @@ class User {
     return User(
       firstLogin: json['firstLogin'],
       username: json['username'],
-        active: json['active'],
+      active: json['active'],
       googleId: json['googleId'],
       email: json['email'],
-      profilePicture: json['profilePicture']
+      profilePicture: Picture.fromJson(json['profilePicture'])
     );
   }
 }

@@ -14,7 +14,6 @@ class LogInScreenState extends State<LogInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return LogInWidget();
-
+    return Scaffold(body: Center(child: LogInWidget()));
   }
 }

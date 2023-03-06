@@ -13,7 +13,7 @@ class AuthService {
 
   static AuthService? _instance;
 
-  AuthService._(); // Private constructor
+  AuthService._();
 
   static AuthService get instance {
     _instance ??= AuthService._();

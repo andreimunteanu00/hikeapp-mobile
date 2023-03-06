@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import '../model/hike.model.dart';
+import '../screen/hike_detail.screen.dart';
 import '../service/hike.service.dart';
+import '../util/constants.dart' as constants;
+import '../widget/hike_item_list.widget.dart';
+
 
 class HikeListScreen extends StatefulWidget {
   const HikeListScreen({Key? key}) : super(key: key);
@@ -11,27 +16,20 @@ class HikeListScreen extends StatefulWidget {
 }
 
 class HikeListScreenState extends State<HikeListScreen> {
-  final HikeService _entityService = HikeService();
+  final HikeService _entityService = HikeService.instance;
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<Hike> _entities = [];
+  final int _pageSize = 10;
   String _sortBy = 'title';
   String _searchTerm = '';
   bool _isLoading = false;
   bool _hasMore = true;
   int _page = 0;
-  int _pageSize = 10;
 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      Future.delayed(const Duration(milliseconds: 2000), () {
-        // your code here
-      });
-    });
-
     _loadEntities();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
@@ -43,7 +41,6 @@ class HikeListScreenState extends State<HikeListScreen> {
   Future<void> _loadEntities() async {
     if (!_isLoading && _hasMore) {
       setState(() => _isLoading = true);
-
       try {
         final entities = await _entityService.getAllEntities(title: _searchTerm, sortField: _sortBy, page: _page, size: _pageSize);
         setState(() {
@@ -54,7 +51,7 @@ class HikeListScreenState extends State<HikeListScreen> {
         });
       } catch (e) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load entities')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(constants.failedToLoadData)));
       }
     }
   }
@@ -71,67 +68,78 @@ class HikeListScreenState extends State<HikeListScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-    return Column(
-      children: [
-        SizedBox(height: screenHeight / 10),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(hintText: 'Search by name'),
-                  onChanged: (value) {
-                    _searchTerm = value;
-                    _resetEntities();
+    return Scaffold(
+      appBar: AppBar(title: const Text(constants.appTitle)),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(hintText: 'Search by name'),
+                    onChanged: (value) {
+                      _searchTerm = value;
+                      if (_searchTerm.isEmpty) {
+                        _resetEntities();
+                      }
+                    },
+                  ),
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      _resetEntities();
+                    },
+                    child: const Icon(Icons.search)
+                ),
+                // TODO make a dropdown with icons
+                DropdownButton<String>(
+                  value: _sortBy,
+                  items: const [
+                    DropdownMenuItem(value: 'title', child: Text('Sort by title')),
+                    DropdownMenuItem(value: 'allRatings', child: Text('Sort by rating')),
+                    DropdownMenuItem(value: 'numberRatings', child: Text('Sort by popularity')),
+                  ],
+                  onChanged: (String? value) {
+                    if (value != null) {
+                      _sortBy = value;
+                      _resetEntities();
+                    }
                   },
                 ),
-              ),
-              const SizedBox(width: 8.0),
-              DropdownButton<String>(
-                value: _sortBy,
-                items: const [
-                  DropdownMenuItem(value: 'title', child: Text('Sort by title')),
-                  DropdownMenuItem(value: 'allRatings', child: Text('Sort by rating')),
-                  DropdownMenuItem(value: 'numberRatings', child: Text('Sort by popularity')),
-                ],
-                onChanged: (String? value) {
-                  if (value != null) {
-                    _sortBy = value;
-                    _resetEntities();
-                  }
-              },
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: _entities.length + (_hasMore ? 1 : 0),
-            itemBuilder: (BuildContext context, int index) {
-              if (index == _entities.length) {
-                return _isLoading ? Center(child: CircularProgressIndicator()) : SizedBox();
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: _entities.length + (_hasMore ? 1 : 0),
+              itemBuilder: (BuildContext context, int index) {
+                if (index == _entities.length) {
+                  return _isLoading ? const Center(child: CircularProgressIndicator()) : const SizedBox();
+                }
+                final Hike entity = _entities[index];
+                return GestureDetector(
+                  onTap: () {
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen: HikeDetailScreen(hikeTitle: entity.title!),
+                      withNavBar: true,
+                      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                    );
+                  },
+                  child: HikeItemList(entity: entity, screenWidth: screenWidth)
+                );
               }
-              final entity = _entities[index];
-              return ListTile(
-                title: Text(entity.title!),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Description: ${entity.description}'),
-                    Text('Rating: ${entity.allRatings}'),
-                    Text('No ratings: ${entity.numberRatings}')
-                  ],
-                ),
-              );
-            }
-          )
-        ),
-        SizedBox(height: screenHeight / 100),
-      ]
+            )
+          ),
+          SizedBox(height: screenHeight / 100),
+        ]
+      )
     );
   }
 }

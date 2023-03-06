@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hikeappmobile/screen/log_in_screen.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
-import '../main.dart';
 import '../service/auth.service.dart';
-import '../util/singe_page_route.dart';
 
 class SignOutWidget extends StatefulWidget {
 
@@ -30,11 +30,11 @@ class SignOutWidgetState extends State<SignOutWidget> {
           child: const Text('Sign Out'),
           onPressed: () async {
             await widget.authService.signOut();
-            Navigator.pushReplacement(
+            PersistentNavBarNavigator.pushNewScreen(
               context,
-              SlidePageRoute(
-                widget: const Main(),
-              ),
+              screen: const LogInScreen(),
+              withNavBar: false, // OPTIONAL VALUE. True by default.
+              pageTransitionAnimation: PageTransitionAnimation.cupertino,
             );
           }
         )
