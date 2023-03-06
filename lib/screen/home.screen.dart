@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/widget/sign_out.widget.dart';
 
-class HomeLoggedScreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
 
-  const HomeLoggedScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
-  State createState() => HomeLoggedScreenState();
+  State createState() => HomeScreenState();
 
 }
 
-class HomeLoggedScreenState extends State<HomeLoggedScreen> {
+class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:expandable_text/expandable_text.dart';
@@ -24,18 +23,18 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
       children: [
         CarouselSliderHike(pictureList: widget.hike.pictureList!),
         Card(child: Column(children: [Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
             widget.hike.title!,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24.0,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child:
             ExpandableText(
               widget.hike.description!,
@@ -45,9 +44,9 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
               linkColor: Colors.green
             )
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               children: [
                 Text(
@@ -60,9 +59,9 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
               ],
             ),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               children: [
                 RatingBarIndicator(
@@ -75,7 +74,7 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
                   itemSize: 20,
                   direction: Axis.horizontal,
                 ),
-                SizedBox(width: 8.0),
+                const SizedBox(width: 8.0),
                 Text(
                   '(${widget.hike.numberRatings})',
                   style: TextStyle(
@@ -86,7 +85,7 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
               ],
             ),
           ),
-          SizedBox(height: 16.0),]))
+          const SizedBox(height: 16.0),]))
       ],
     );
   }

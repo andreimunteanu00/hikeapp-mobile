@@ -9,13 +9,14 @@ class UserService {
 
   static UserService? _instance;
 
-  UserService._(); // Private constructor
+  UserService._();
 
   static UserService get instance {
     _instance ??= UserService._();
     return _instance!;
   }
 
+  // TODO refactor this
   Future<void> saveUserData(User user) async {
     final response = await MyHttp.getClient().put(
       Uri.parse('${constants.localhost}/user/update'),
@@ -24,9 +25,7 @@ class UserService {
       },
       body: json.encode(user.toJson())
     );
-    if (response.statusCode == 200) {
-      // success
-    } else {
+    if (response.statusCode != 200) {
       throw Exception('Failed to save data');
     }
   }

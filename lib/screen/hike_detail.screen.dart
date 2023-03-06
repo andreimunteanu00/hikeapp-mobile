@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+
 import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:hikeappmobile/service/hike.service.dart';
 import 'package:hikeappmobile/service/rating.service.dart';
-import 'package:hikeappmobile/widget/current_user_comment.widget.dart';
 import '../util/methods.dart';
-
-
 import '../model/hike.model.dart';
 import '../model/rating.model.dart';
 import '../widget/hike_detail.widget.dart';
 import '../widget/user_comment.widget.dart';
+import '../widget/current_user_comment.widget.dart';
+import '../util/constants.dart' as constants;
+
 
 class HikeDetailScreen extends StatefulWidget {
   final String hikeTitle;
 
-  HikeDetailScreen({super.key, required this.hikeTitle});
+  const HikeDetailScreen({super.key, required this.hikeTitle});
 
   @override
   State createState() => HikeDetailScrenState();
@@ -25,11 +26,11 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
   final AuthService authService = AuthService.instance;
   final RatingService ratingService = RatingService.instance;
   final ScrollController _scrollController = ScrollController();
-  List<Rating> _entities = [];
+  final List<Rating> _entities = [];
+  final int _pageSize = 10;
   bool _isLoading = false;
   bool _hasMore = true;
   int _page = 0;
-  int _pageSize = 10;
 
   @override
   void initState() {
@@ -58,7 +59,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
         });
       } catch (e) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to load entities')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(constants.failedToLoadData)));
       }
     }
   }
@@ -67,12 +68,8 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    void refresh() {
-      setState(() {}); // refresh the widget
-    }
-
     return Scaffold(
-      appBar: AppBar(title: const Text('HikeApp')),
+      appBar: AppBar(title: const Text(constants.appTitle)),
       body: SingleChildScrollView(
         child: SizedBox(
           height: screenHeight + screenHeight / 2,
@@ -80,8 +77,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
             children: [
               SizedBox(height: screenHeight / 60),
               FutureBuilder<Hike>(
-                future:
-                    hikeService.getHikeByTitle(widget.hikeTitle),
+                future: hikeService.getHikeByTitle(widget.hikeTitle),
                 builder: (_, snapshot) {
                   if (snapshot.hasData) {
                     return HikeDetailWidget(hike: snapshot.data!);
@@ -92,20 +88,20 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                   }
                 }
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               FutureBuilder<Rating>(
-                  future: ratingService.getRatingForCurrentUser(widget.hikeTitle),
-                  builder: (_, snapshot) {
-                    if (snapshot.hasData) {
-                      return CurrentUserCommentWidget(rating: snapshot.data!, hikeTitle: widget.hikeTitle, refresh: refresh);
-                    } else if (snapshot.hasError) {
-                      return Text('${snapshot.error}');
-                    } else {
-                      return const CircularProgressIndicator();
-                    }
+                future: ratingService.getRatingForCurrentUser(widget.hikeTitle),
+                builder: (_, snapshot) {
+                  if (snapshot.hasData) {
+                    return CurrentUserCommentWidget(rating: snapshot.data!, hikeTitle: widget.hikeTitle, refresh: () => setState(() {}));
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  } else {
+                    return const CircularProgressIndicator();
                   }
+                }
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               const Text(
                 "User's ratings",
                 style: TextStyle(
@@ -114,7 +110,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              _entities.length == 0 ? const Text('no rating yet!') : Expanded(
+              _entities.isEmpty ? const Text('no rating yet!') : Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
                   itemCount: _entities.length + (_hasMore ? 1 : 0),

@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hikeappmobile/widget/sign_out.widget.dart';
 
 class AccountSuspendedScreen extends StatelessWidget{

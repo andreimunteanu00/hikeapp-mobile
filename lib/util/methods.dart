@@ -14,15 +14,14 @@ class Methods {
   static Future<String> giveUsernameFromToken() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String token = sharedPreferences.getString('token')!;
-    if (token == null) {
+    if (token.isEmpty) {
       return "";
     }
     final parts = token.split('.');
     final String encodedPayload = parts[1];
     final payloadData = utf8.fuse(base64).decode(base64.normalize(encodedPayload));
     Map<String, dynamic> payload = json.decode(payloadData);
-    String username = payload['sub'];
-    return username;
+    return payload['sub'];
   }
 
 }

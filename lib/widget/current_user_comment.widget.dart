@@ -35,12 +35,12 @@ class CurrentUserCommentWidgetState extends State<CurrentUserCommentWidget> {
   Widget build(BuildContext context) {
     return widget.rating.user == null ? ElevatedButton(
       onPressed: rate,style: ElevatedButton.styleFrom(
-      padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
     ),
-      child: Text(
+      child: const Text(
         'Rate Hike',
         style: TextStyle(
           color: Colors.white,

@@ -25,7 +25,7 @@ class _CommentModalState extends State<CommentModal> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Add a comment'),
+      title: const Text('Add a comment'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -37,8 +37,8 @@ class _CommentModalState extends State<CommentModal> {
               direction: Axis.horizontal,
               allowHalfRating: false,
               itemCount: 5,
-              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-              itemBuilder: (context, _) => Icon(
+              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => const Icon(
                 Icons.star,
                 color: Colors.amber,
               ),
@@ -48,9 +48,9 @@ class _CommentModalState extends State<CommentModal> {
                 });
               },
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Add a comment',
                 border: OutlineInputBorder(),
               ),
@@ -75,13 +75,11 @@ class _CommentModalState extends State<CommentModal> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('CANCEL'),
+          child: const Text('CANCEL'),
         ),
         ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              // Send comment and rating to the backend
-              // Here you can make your API call
               var rating = Rating();
               rating.comment = _comment;
               rating.rating = _rating;
@@ -104,7 +102,7 @@ class _CommentModalState extends State<CommentModal> {
               );
             }
           },
-          child: Text('SUBMIT'),
+          child: const Text('SUBMIT'),
         ),
       ],
     );

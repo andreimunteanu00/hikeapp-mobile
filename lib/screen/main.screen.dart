@@ -4,7 +4,7 @@ import 'package:hikeappmobile/screen/settings.screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import 'hike_list.screen.dart';
-import 'home_logged.screen.dart';
+import 'home.screen.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -23,7 +23,7 @@ class MainScreenState extends State<MainScreen> {
 
     List<Widget> buildScreens() {
       return [
-        const HomeLoggedScreen(),
+        const HomeScreen(),
         const HikeListScreen(),
         const SettingsScreen(),
       ];

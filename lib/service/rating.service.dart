@@ -8,7 +8,7 @@ class RatingService {
 
   static RatingService? _instance;
 
-  RatingService._(); // Private constructor
+  RatingService._();
 
   static RatingService get instance {
     _instance ??= RatingService._();
@@ -19,8 +19,7 @@ class RatingService {
     final response = await MyHttp.getClient().get(Uri.parse('${constants.localhost}/rating/byHikeTitle?hikeTitle=$hikeTitle&page=$page&size=$size'));
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
-      final entities = (jsonResponse['content'] as List).map((json) => Rating.fromJson(json)).toList();
-      return entities;
+      return (jsonResponse['content'] as List).map((json) => Rating.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load rating for current hike!');
     }
