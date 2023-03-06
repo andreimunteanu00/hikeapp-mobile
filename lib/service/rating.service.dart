@@ -36,4 +36,24 @@ class RatingService {
       throw Exception('Failed to load rating for current user!');
     }
   }
+
+  Future<void> rate(String hikeTitle, Rating rating) async {
+    final response = await MyHttp.getClient().post(
+        Uri.parse('${constants.localhost}/rating/rate/$hikeTitle'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(rating)
+    );
+    if (response.statusCode != 204) {
+      throw Exception("Failed to rate the hike!");
+    }
+  }
+
+  Future<void> unrate(String hikeTitle) async {
+    final response = await MyHttp.getClient().delete(Uri.parse('${constants.localhost}/rating/unrate/$hikeTitle'));
+    if (response.statusCode != 204) {
+      throw Exception("Failed to delete rating!");
+    }
+  }
 }

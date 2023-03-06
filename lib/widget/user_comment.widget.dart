@@ -10,8 +10,9 @@ class UserCommentWidget extends StatelessWidget {
   final Rating? rating;
   final bool? fromCurrentUser;
   final Function? rate;
+  final Function? unrate;
 
-  const UserCommentWidget({this.rating, this.fromCurrentUser = false, this.rate, super.key});
+  const UserCommentWidget({this.rating, this.fromCurrentUser = false, this.rate, super.key, this.unrate});
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +52,7 @@ class UserCommentWidget extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 5),
-                  Text(rating!.comment!),
+                  rating!.comment!.isNotEmpty ? Text(rating!.comment!) : const SizedBox.shrink(),
                   const SizedBox(height: 5),
                   fromCurrentUser == true ? Row(
                     children: [
@@ -75,6 +76,17 @@ class UserCommentWidget extends StatelessWidget {
                           color: Colors.grey,
                           size: 24.0,
                         )
+                      ),
+                      const SizedBox(width: 10,),
+                      InkWell(
+                          onTap: () {
+                            unrate!();
+                          },
+                          child: const Icon(
+                            Icons.delete,
+                            color: Colors.grey,
+                            size: 24.0,
+                          )
                       )
                     ],
                   ) :

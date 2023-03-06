@@ -1,23 +1,23 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:hikeappmobile/util/my_http.dart';
+import 'package:hikeappmobile/service/rating.service.dart';
 
-import '../model/rating.model.dart';
-import '../util/constants.dart' as constants;
+import '../../model/rating.model.dart';
 
 
-class CommentModal extends StatefulWidget {
+class RatingModal extends StatefulWidget {
   final String hikeTitle;
+  final String? comment;
+  final double? rating;
 
-  const CommentModal({Key? key, required this.hikeTitle}) : super(key: key);
+  const RatingModal({Key? key, required this.hikeTitle, required this.comment, required this.rating}) : super(key: key);
 
   @override
-  _CommentModalState createState() => _CommentModalState();
+  RatingModalState createState() => RatingModalState();
 }
 
-class _CommentModalState extends State<CommentModal> {
+class RatingModalState extends State<RatingModal> {
+  final RatingService ratingService = RatingService.instance;
   final _formKey = GlobalKey<FormState>();
   double _rating = 3;
   String _comment = '';
@@ -32,10 +32,10 @@ class _CommentModalState extends State<CommentModal> {
           mainAxisSize: MainAxisSize.min,
           children: [
             RatingBar.builder(
-              initialRating: _rating,
+              initialRating: widget.rating ?? 3,
               minRating: 1,
               direction: Axis.horizontal,
-              allowHalfRating: false,
+              allowHalfRating: true,
               itemCount: 5,
               itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
               itemBuilder: (context, _) => const Icon(
@@ -50,6 +50,7 @@ class _CommentModalState extends State<CommentModal> {
             ),
             const SizedBox(height: 10),
             TextFormField(
+              initialValue: widget.comment ?? '',
               decoration: const InputDecoration(
                 hintText: 'Add a comment',
                 border: OutlineInputBorder(),
@@ -59,12 +60,6 @@ class _CommentModalState extends State<CommentModal> {
                 setState(() {
                   _comment = value;
                 });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a comment';
-                }
-                return null;
               },
             ),
           ],
@@ -83,16 +78,7 @@ class _CommentModalState extends State<CommentModal> {
               var rating = Rating();
               rating.comment = _comment;
               rating.rating = _rating;
-              final response = await MyHttp.getClient().post(
-                  Uri.parse('${constants.localhost}/hike/rate/${widget.hikeTitle}'),
-                  headers: <String, String>{
-                    'Content-Type': 'application/json; charset=UTF-8',
-                  },
-                  body: jsonEncode(rating)
-              );
-              if (response.statusCode != 204) {
-                throw Exception("Failed to rate the hike!");
-              }
+              await ratingService.rate(widget.hikeTitle, rating);
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
