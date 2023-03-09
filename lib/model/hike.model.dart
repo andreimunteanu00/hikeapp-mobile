@@ -1,3 +1,4 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikeappmobile/model/picture.model.dart';
 
 class Hike {
@@ -8,6 +9,8 @@ class Hike {
   Picture? mainPicture;
   List<Picture?>? pictureList;
   String? difficulty;
+  LatLng? startPoint;
+  LatLng? endPoint;
 
   Hike({
     this.title,
@@ -16,7 +19,9 @@ class Hike {
     this.numberRatings,
     this.mainPicture,
     this.pictureList,
-    this.difficulty
+    this.difficulty,
+    this.startPoint,
+    this.endPoint
   });
 
   Map<String, dynamic> toJson() => {
@@ -26,7 +31,9 @@ class Hike {
     'numberRatings': numberRatings,
     'mainPicture': mainPicture,
     'pictureList': pictureList,
-    'difficulty': difficulty
+    'difficulty': difficulty,
+    'startPoint': startPoint,
+    'endPoint': endPoint
   };
 
   factory Hike.fromJson(Map<String, dynamic> json) {
@@ -40,7 +47,7 @@ class Hike {
     );
   }
 
-  factory Hike.fromJsonPictureList(Map<String, dynamic> json) {
+  factory Hike.fromJsonDetail(Map<String, dynamic> json) {
     return Hike(
         title: json['title'],
         description: json['description'],
@@ -49,7 +56,9 @@ class Hike {
         pictureList: (json['pictureList'] as List<dynamic>)
             .map((e) => e == null ? null : Picture.fromJson(e))
             .toList(),
-        difficulty: json['difficulty']
+        difficulty: json['difficulty'],
+        startPoint: LatLng(json['startPoint']['latitude'], json['startPoint']['longitude']),
+        endPoint: LatLng(json['endPoint']['latitude'], json['endPoint']['longitude']),
     );
   }
 }

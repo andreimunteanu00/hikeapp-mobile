@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hikeappmobile/screen/settings.screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import 'hike_list.screen.dart';
@@ -25,7 +24,7 @@ class MainScreenState extends State<MainScreen> {
       return [
         const HomeScreen(),
         const HikeListScreen(),
-        const SettingsScreen(),
+        const HomeScreen(),
       ];
     }
 

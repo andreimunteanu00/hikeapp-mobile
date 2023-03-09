@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hikeappmobile/screen/map_preview.widget.dart';
 
 import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:hikeappmobile/service/hike.service.dart';
@@ -31,6 +32,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
   bool _isLoading = false;
   bool _hasMore = true;
   int _page = 0;
+  late Hike hike;
 
   @override
   void initState() {
@@ -80,6 +82,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                 future: hikeService.getHikeByTitle(widget.hikeTitle),
                 builder: (_, snapshot) {
                   if (snapshot.hasData) {
+                    hike = snapshot.data!;
                     return HikeDetailWidget(hike: snapshot.data!);
                   } else if (snapshot.hasError) {
                     return Text('${snapshot.error}');
@@ -97,8 +100,26 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                     width: 125,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // Add code to handle the preview button press
-                        print('Preview button pressed');
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width - 32,
+                              child: AlertDialog(
+                                title: Text('Alert Dialog'),
+                                content: MapPreviewWidget(startPosition: hike.startPoint!, endPosition: hike.endPoint!),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
                       },
                       label: Text('Preview'),
                       icon: Icon(Icons.map),
@@ -111,7 +132,6 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                     child: ElevatedButton.icon(
                       onPressed: () {
                         // Add code to handle the share button press
-                        print('Share button pressed');
                       },
                       label: Text('Share'),
                       icon: Icon(Icons.share)
