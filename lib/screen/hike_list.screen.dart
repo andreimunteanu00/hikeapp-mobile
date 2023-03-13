@@ -129,7 +129,7 @@ class HikeListScreenState extends State<HikeListScreen> {
                       context,
                       screen: HikeDetailScreen(hikeTitle: entity.title!),
                       withNavBar: true,
-                      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                      pageTransitionAnimation: PageTransitionAnimation.fade,
                     );
                   },
                   child: HikeItemList(entity: entity, screenWidth: screenWidth)

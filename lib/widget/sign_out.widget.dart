@@ -34,7 +34,7 @@ class SignOutWidgetState extends State<SignOutWidget> {
               context,
               screen: const LogInScreen(),
               withNavBar: false, // OPTIONAL VALUE. True by default.
-              pageTransitionAnimation: PageTransitionAnimation.cupertino,
+              pageTransitionAnimation: PageTransitionAnimation.fade,
             );
           }
         )

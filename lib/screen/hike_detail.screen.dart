@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hikeappmobile/screen/map_preview.widget.dart';
+import 'package:hikeappmobile/screen/start_hike.screen.dart';
+import 'package:hikeappmobile/widget/map_preview.widget.dart';
 
 import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:hikeappmobile/service/hike.service.dart';
 import 'package:hikeappmobile/service/rating.service.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import '../util/methods.dart';
 import '../model/hike.model.dart';
 import '../model/rating.model.dart';
@@ -69,6 +71,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(title: const Text(constants.appTitle)),
@@ -97,38 +100,55 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                 children: <Widget>[
                   // Preview button
                   SizedBox(
-                    width: 125,
+                    width: 100,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return Container(
-                              width: MediaQuery.of(context).size.width - 32,
-                              child: AlertDialog(
-                                title: Text('Alert Dialog'),
-                                content: MapPreviewWidget(startPosition: hike.startPoint!, endPosition: hike.endPoint!),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text('OK'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                        PersistentNavBarNavigator.pushNewScreen(
+                          context,
+                          screen: StartHikeScreen(startPoint: hike.startPoint!, finalDestination: hike.endPoint!),
+                          withNavBar: true, // OPTIONAL VALUE. True by default.
+                          pageTransitionAnimation: PageTransitionAnimation.fade,
+
                         );
                       },
-                      label: Text('Preview'),
-                      icon: Icon(Icons.map),
+                      label: Text('Start'),
+                      icon: Icon(Icons.start),
                     ),
                   ),
                   const SizedBox(width: 16,),
                   // Share button
                   SizedBox(
                     width: 125,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              contentPadding: const EdgeInsets.all(0.0),
+                              insetPadding: EdgeInsets.symmetric(vertical: screenWidth / 4),
+                              title: Text('Preview'),
+                              content: MapPreviewWidget(startPosition: hike.startPoint!, endPosition: hike.endPoint!),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      label: Text('Preview'),
+                      icon: Icon(Icons.map)
+                    ),
+                  ),
+                  const SizedBox(width: 16,),
+                  SizedBox(
+                    width: 100,
                     child: ElevatedButton.icon(
                       onPressed: () {
                         // Add code to handle the share button press

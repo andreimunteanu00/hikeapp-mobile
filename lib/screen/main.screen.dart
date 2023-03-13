@@ -83,7 +83,7 @@ class MainScreenState extends State<MainScreen> {
         duration: Duration(milliseconds: 200),
       ),
       navBarStyle: NavBarStyle
-          .style1, // Choose the nav bar style with this property.
+          .style2, // Choose the nav bar style with this property.
     );
   }
 }

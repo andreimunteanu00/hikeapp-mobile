@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import '../util/constants.dart' as constants;
 
 class MapPreviewWidget extends StatefulWidget {
   final LatLng startPosition;
@@ -24,8 +24,7 @@ class MapPreviewWidgetState extends State<MapPreviewWidget> {
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
-  // TODO not ok
-  String googleAPiKey = "AIzaSyCLBLimbgcnj-1nHDWIInOnTlShWsZF-r4";
+  String googleAPiKey = constants.googleApiDirections;
 
   void onMapCreated(GoogleMapController controller) {
     mapController.complete(controller);
@@ -70,9 +69,7 @@ class MapPreviewWidgetState extends State<MapPreviewWidget> {
         patterns: const [PatternItem.dot]
     );
     polylines[id] = polyline;
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   getPolyline(LatLng start, LatLng end) async {
