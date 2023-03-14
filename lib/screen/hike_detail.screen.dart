@@ -105,14 +105,13 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                       onPressed: () {
                         PersistentNavBarNavigator.pushNewScreen(
                           context,
-                          screen: StartHikeScreen(startPoint: hike.startPoint!, finalDestination: hike.endPoint!),
+                          screen: StartHikeScreen(hikeTitle: hike.title!, startPoint: hike.startPoint!, endPoint: hike.endPoint!),
                           withNavBar: true, // OPTIONAL VALUE. True by default.
                           pageTransitionAnimation: PageTransitionAnimation.fade,
-
                         );
                       },
-                      label: Text('Start'),
-                      icon: Icon(Icons.start),
+                      label: const Text('Start'),
+                      icon: const Icon(Icons.start),
                     ),
                   ),
                   const SizedBox(width: 16,),
@@ -128,22 +127,22 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                               clipBehavior: Clip.antiAliasWithSaveLayer,
                               contentPadding: const EdgeInsets.all(0.0),
                               insetPadding: EdgeInsets.symmetric(vertical: screenWidth / 4),
-                              title: Text('Preview'),
+                              title: const Text('Preview'),
                               content: MapPreviewWidget(startPosition: hike.startPoint!, endPosition: hike.endPoint!),
                               actions: [
                                 TextButton(
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  child: Text('OK'),
+                                  child: const Text('OK'),
                                 ),
                               ],
                             );
                           },
                         );
                       },
-                      label: Text('Preview'),
-                      icon: Icon(Icons.map)
+                      label: const Text('Preview'),
+                      icon: const Icon(Icons.map)
                     ),
                   ),
                   const SizedBox(width: 16,),
@@ -153,8 +152,8 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                       onPressed: () {
                         // Add code to handle the share button press
                       },
-                      label: Text('Share'),
-                      icon: Icon(Icons.share)
+                      label: const Text('Share'),
+                      icon: const Icon(Icons.share)
                     ),
                   ),
                 ],

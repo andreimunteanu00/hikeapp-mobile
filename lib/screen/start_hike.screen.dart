@@ -5,13 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hikeappmobile/model/hike_summary.dart';
+import 'package:hikeappmobile/service/hike_history.service.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+
 import '../util/constants.dart' as constants;
 import '../widget/timer.widget.dart';
-class StartHikeScreen extends StatefulWidget {
-  final LatLng startPoint;
-  final LatLng finalDestination;
+import '../widget/weather.widget.dart';
+import 'finish_hike.screen.dart';
 
-  const StartHikeScreen({super.key, required this.finalDestination, required this.startPoint});
+
+class StartHikeScreen extends StatefulWidget {
+  final String hikeTitle;
+  final LatLng startPoint;
+  final LatLng endPoint;
+
+  const StartHikeScreen({super.key, required this.endPoint, required this.startPoint, required this.hikeTitle});
 
   @override
   StartHikeScreenState createState() => StartHikeScreenState();
@@ -23,17 +32,21 @@ class StartHikeScreenState extends State<StartHikeScreen> {
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
-  String googleAPiKey = constants.googleApiDirections;
+  String googleAPiKey = constants.googleApiDirectionsKey;
   LatLng userLocation = const LatLng(0, 0);
   late StreamSubscription<Position> positionStream;
   bool firstTime = true;
-  double distance = 0.0;
   bool isLoading = true;
   bool canStart = true;
+  double distance = 0.0;
   late Timer timer;
   int secondsElapsed = 0;
   int minutesElapsed = 0;
   int hoursElapsed = 0;
+  final Stopwatch stopwatch = Stopwatch();
+  double temperatureAverage = 0.0;
+  int temperatureAverageCount = 0;
+  HikeHistoryService hikeHistoryService = HikeHistoryService.instance;
 
   void onMapCreated(GoogleMapController controller) {
     mapController.complete(controller);
@@ -44,17 +57,21 @@ class StartHikeScreenState extends State<StartHikeScreen> {
       (Position position) {
         setState(() {
           userLocation = LatLng(position.latitude, position.longitude);
-          getPolyline(userLocation, widget.finalDestination);
-          isLoading = false;
-          if (firstTime) {
+          getPolyline(userLocation, widget.endPoint);
+        });
+        if (firstTime) {
+          setState(() {
             mapController.future.then((controller) => controller.animateCamera(CameraUpdate.newLatLng(userLocation)) as CameraPosition);
             firstTime = false;
             isLoading = false;
-          }
-        });
-    });
+          });
+        }
+        if (canStart) {
+          checkFinish(position);
+        }
+      }
+    );
   }
-
 
   addPolyLine() {
     PolylineId id = const PolylineId("poly");
@@ -83,7 +100,6 @@ class StartHikeScreenState extends State<StartHikeScreen> {
     }
     calculateDistance();
     addPolyLine();
-    setState(() {});
   }
 
   double coordinateDistance(lat1, lon1, lat2, lon2) {
@@ -92,7 +108,7 @@ class StartHikeScreenState extends State<StartHikeScreen> {
     var a = 0.5 -
         c((lat2 - lat1) * p) / 2 +
         c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
-    return 12742 * asin(sqrt(a));
+    return 12742 * 1000 * asin(sqrt(a));
   }
 
   void calculateDistance() {
@@ -110,25 +126,21 @@ class StartHikeScreenState extends State<StartHikeScreen> {
   void getTime() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        secondsElapsed++;
-        if (secondsElapsed >= 60) {
-          secondsElapsed = 0;
-          minutesElapsed++;
-        }
-        if (minutesElapsed >= 60) {
-          minutesElapsed = 0;
-          hoursElapsed++;
-        }
+        Duration elapsed = stopwatch.elapsed;
+        hoursElapsed = (elapsed.inHours % 24);
+        minutesElapsed = (elapsed.inMinutes % 60);
+        secondsElapsed = (elapsed.inSeconds % 60);
       });
     });
+    stopwatch.start();
   }
 
   void checkCanStart() async {
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
     final error = coordinateDistance(position.latitude, position.longitude,
         widget.startPoint.latitude, widget.startPoint.longitude);
-    print('sssss');
-    if (error * 1000 > 50) {
+    print(position.toJson());
+    if (error > 50) {
       setState(() {
         canStart = false;
       });
@@ -139,19 +151,63 @@ class StartHikeScreenState extends State<StartHikeScreen> {
     return (await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Are you sure you want to exit?'),
+        title: const Text('Are you sure you want to exit?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
+            child: const Text('No'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Yes'),
+            child: const Text('Yes'),
           ),
         ],
       ),
     )) ?? false;
+  }
+
+  void setMarkers() {
+    markers.add(
+        Marker(
+            markerId: const MarkerId('endPosition'),
+            infoWindow: const InfoWindow(title: 'End Position'),
+            position: widget.endPoint,
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueRose,
+            )
+        )
+    );
+  }
+
+  void checkFinish(Position position) async {
+    final distanceFromFinish = coordinateDistance(position.latitude, position.longitude,
+        widget.endPoint.latitude, widget.endPoint.longitude);
+    if (distanceFromFinish < 10) {
+      stopwatch.stop();
+      HikeSummary hikeSummary = HikeSummary(
+          hikeTitle: widget.hikeTitle,
+          elapsedTime: stopwatch.elapsed,
+          temperatureAverage: temperatureAverage
+      );
+      await hikeHistoryService.postHikeHistory(hikeSummary);
+      Navigator.pop(context);
+      PersistentNavBarNavigator.pushNewScreen(
+        context,
+        screen: FinishHikeScreen(),
+        withNavBar: true,
+        pageTransitionAnimation: PageTransitionAnimation.fade,
+      );
+    }
+  }
+
+  void handleTempChanged(double value) {
+    if (temperatureAverage == 0.0) {
+      temperatureAverage = value;
+      temperatureAverageCount++;
+    } else {
+      temperatureAverage += value;
+      temperatureAverageCount++;
+    }
   }
 
   @override
@@ -160,16 +216,7 @@ class StartHikeScreenState extends State<StartHikeScreen> {
     checkCanStart();
     getUserLocation();
     getTime();
-    markers.add(
-        Marker(
-            markerId: const MarkerId('endPosition'),
-            infoWindow: const InfoWindow(title: 'End Position'),
-            position: widget.finalDestination,
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueRose,
-            )
-        )
-    );
+    setMarkers();
   }
 
   @override
@@ -195,59 +242,32 @@ class StartHikeScreenState extends State<StartHikeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TimerWidget(secondsElapsed: secondsElapsed, minutesElapsed: minutesElapsed, hoursElapsed: hoursElapsed),
-            const SizedBox(height: 8.0),
-            Center(
-              child: Text(
-                'Distance: ${distance.toStringAsFixed(2)} meters',
-                style: const TextStyle(
-                  fontSize: 18.0,
-                ),
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.wb_sunny,
-                  size: 24.0,
-                ),
-                SizedBox(width: 8.0),
-                Text(
-                  'zxczx',
-                  style: TextStyle(
-                    fontSize: 18.0,
+                TimerWidget(secondsElapsed: secondsElapsed, minutesElapsed: minutesElapsed, hoursElapsed: hoursElapsed),
+                const SizedBox(height: 8.0),
+                Center(
+                  child: Text(
+                    'Distance: ${distance.toStringAsFixed(0)} meters',
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                    ),
                   ),
                 ),
-                SizedBox(width: 16.0),
-                Icon(
-                  Icons.thermostat,
-                  size: 24.0,
-                ),
-                SizedBox(width: 8.0),
-                Text(
-                  'zxc °C',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                  ),
-                ),
+                const SizedBox(height: 8.0),
+                WeatherWidget(position: userLocation, handleValueChanged: handleTempChanged)
               ],
             ),
-          ],
-        ),
             Expanded(
               child: GoogleMap(
                 onMapCreated: onMapCreated,
                 markers: markers,
                 initialCameraPosition: CameraPosition(
                     target: LatLng(
-                        (userLocation.latitude + widget.finalDestination.latitude) / 2,
-                        (userLocation.longitude + widget.finalDestination.longitude) / 2
+                        (userLocation.latitude + widget.endPoint.latitude) / 2,
+                        (userLocation.longitude + widget.endPoint.longitude) / 2
                     ),
                     zoom: 11
                 ),

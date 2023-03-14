@@ -24,7 +24,7 @@ class MapPreviewWidgetState extends State<MapPreviewWidget> {
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
-  String googleAPiKey = constants.googleApiDirections;
+  String googleAPiKey = constants.googleApiDirectionsKey;
 
   void onMapCreated(GoogleMapController controller) {
     mapController.complete(controller);
@@ -73,8 +73,6 @@ class MapPreviewWidgetState extends State<MapPreviewWidget> {
   }
 
   getPolyline(LatLng start, LatLng end) async {
-    print(start);
-    print(end);
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleAPiKey,
         PointLatLng(start.latitude, start.longitude),
