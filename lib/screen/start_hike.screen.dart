@@ -7,7 +7,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikeappmobile/model/hike_summary.dart';
 import 'package:hikeappmobile/service/hike_history.service.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import '../util/constants.dart' as constants;
 import '../widget/timer.widget.dart';
@@ -19,8 +18,10 @@ class StartHikeScreen extends StatefulWidget {
   final String hikeTitle;
   final LatLng startPoint;
   final LatLng endPoint;
+  final Function(Widget) handleOnGoingHike;
+  final Function(bool) handleStartNewHike;
 
-  const StartHikeScreen({super.key, required this.endPoint, required this.startPoint, required this.hikeTitle});
+  const StartHikeScreen({super.key, required this.endPoint, required this.startPoint, required this.hikeTitle, required this.handleOnGoingHike, required this.handleStartNewHike});
 
   @override
   StartHikeScreenState createState() => StartHikeScreenState();
@@ -183,6 +184,7 @@ class StartHikeScreenState extends State<StartHikeScreen> {
     final distanceFromFinish = coordinateDistance(position.latitude, position.longitude,
         widget.endPoint.latitude, widget.endPoint.longitude);
     if (distanceFromFinish < 10) {
+      widget.handleStartNewHike(true);
       stopwatch.stop();
       HikeSummary hikeSummary = HikeSummary(
           hikeTitle: widget.hikeTitle,
@@ -190,13 +192,7 @@ class StartHikeScreenState extends State<StartHikeScreen> {
           temperatureAverage: temperatureAverage
       );
       await hikeHistoryService.postHikeHistory(hikeSummary);
-      Navigator.pop(context);
-      PersistentNavBarNavigator.pushNewScreen(
-        context,
-        screen: FinishHikeScreen(),
-        withNavBar: true,
-        pageTransitionAnimation: PageTransitionAnimation.fade,
-      );
+      widget.handleOnGoingHike(FinishHikeScreen(hikeTitle: hikeSummary.hikeTitle, temperatureAverage: temperatureAverage, handleOnGoingHike: widget.handleOnGoingHike));
     }
   }
 

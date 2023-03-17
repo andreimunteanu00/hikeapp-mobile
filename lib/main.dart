@@ -45,6 +45,7 @@ class MainState extends State<Main> {
   final AuthService authService = AuthService.instance;
   late bool isLogged = true;
   late bool afterFirstLogIn = false;
+  bool isLoading = true;
 
   _toggleIsLogged(val) {
     setState(() {
@@ -66,6 +67,9 @@ class MainState extends State<Main> {
         });
       }
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -78,6 +82,6 @@ class MainState extends State<Main> {
 
   @override
   Widget build(BuildContext context) {
-    return !isLogged ? const LogInScreen() : (afterFirstLogIn ? const MainScreen() : FirstLoginScreen());
+    return isLoading ? const Scaffold(body: CircularProgressIndicator()) : !isLogged ? const LogInScreen() : (afterFirstLogIn ? const MainScreen() : FirstLoginScreen());
   }
 }

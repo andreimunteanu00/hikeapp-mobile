@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hikeappmobile/screen/no_hike_ongoing.screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import 'hike_list.screen.dart';
@@ -14,47 +15,55 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> {
+  PersistentTabController controller = PersistentTabController(initialIndex: 0);
+
+  void handleOnGoingHike(Widget screen) {
+    setState(() {
+      buildScreens[2] = screen;
+    });
+  }
+
+  List<Widget> buildScreens = [];
+  List<PersistentBottomNavBarItem> navBarsItems() {
+    return [
+      PersistentBottomNavBarItem(
+        icon: const Icon(CupertinoIcons.home),
+        title: ("Home"),
+        activeColorPrimary: CupertinoColors.activeGreen,
+        inactiveColorPrimary: CupertinoColors.systemGrey,
+      ),
+      PersistentBottomNavBarItem(
+        icon: const Icon(CupertinoIcons.settings),
+        title: ("Discover"),
+        activeColorPrimary: CupertinoColors.activeGreen,
+        inactiveColorPrimary: CupertinoColors.systemGrey,
+      ),
+      PersistentBottomNavBarItem(
+        icon: const Icon(CupertinoIcons.arrow_up),
+        title: ("Ongoing Hike"),
+        activeColorPrimary: CupertinoColors.activeGreen,
+        inactiveColorPrimary: CupertinoColors.systemGrey,
+      ),
+    ];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    buildScreens = [
+      const HomeScreen(),
+      HikeListScreen(controller: controller, handleOnGoingHike: handleOnGoingHike),
+      const NoHikeOngoingScreen(),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
-    PersistentTabController controller;
-    controller = PersistentTabController(initialIndex: 0);
-
-
-    List<Widget> buildScreens() {
-      return [
-        const HomeScreen(),
-        const HikeListScreen(),
-        const HomeScreen(),
-      ];
-    }
-
-    List<PersistentBottomNavBarItem> navBarsItems() {
-      return [
-        PersistentBottomNavBarItem(
-          icon: const Icon(CupertinoIcons.home),
-          title: ("Home"),
-          activeColorPrimary: CupertinoColors.activeGreen,
-          inactiveColorPrimary: CupertinoColors.systemGrey,
-        ),
-        PersistentBottomNavBarItem(
-          icon: const Icon(CupertinoIcons.settings),
-          title: ("Settings"),
-          activeColorPrimary: CupertinoColors.activeGreen,
-          inactiveColorPrimary: CupertinoColors.systemGrey,
-        ),
-        PersistentBottomNavBarItem(
-          icon: const Icon(CupertinoIcons.add),
-          title: ("Settings"),
-          activeColorPrimary: CupertinoColors.activeGreen,
-          inactiveColorPrimary: CupertinoColors.systemGrey,
-        ),
-      ];
-    }
 
     return PersistentTabView(
       context,
       controller: controller,
-      screens: buildScreens(),
+      screens: buildScreens,
       items: navBarsItems(),
       confineInSafeArea: true,
       backgroundColor: Colors.white,

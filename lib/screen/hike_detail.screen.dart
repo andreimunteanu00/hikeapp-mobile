@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/screen/start_hike.screen.dart';
-import 'package:hikeappmobile/widget/map_preview.widget.dart';
-
 import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:hikeappmobile/service/hike.service.dart';
 import 'package:hikeappmobile/service/rating.service.dart';
+import 'package:hikeappmobile/widget/map_preview.widget.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import '../util/methods.dart';
+
 import '../model/hike.model.dart';
 import '../model/rating.model.dart';
-import '../widget/hike_detail.widget.dart';
-import '../widget/user_comment.widget.dart';
-import '../widget/current_user_comment.widget.dart';
 import '../util/constants.dart' as constants;
+import '../util/methods.dart';
+import '../widget/current_user_comment.widget.dart';
+import '../widget/hike_detail.widget.dart';
+import '../widget/modal/ongoing_hike.modal.dart';
+import '../widget/user_comment.widget.dart';
 
 
 class HikeDetailScreen extends StatefulWidget {
+  final Function(Widget) handleOnGoingHike;
+  final PersistentTabController controller;
   final String hikeTitle;
 
-  const HikeDetailScreen({super.key, required this.hikeTitle});
+  const HikeDetailScreen({super.key, required this.hikeTitle, required this.controller, required this.handleOnGoingHike});
 
   @override
   State createState() => HikeDetailScrenState();
@@ -35,6 +38,13 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
   bool _hasMore = true;
   int _page = 0;
   late Hike hike;
+  bool startNewHike = true;
+
+  handleStartNewHike(bool value) {
+    setState(() {
+      startNewHike = value;
+    });
+  }
 
   @override
   void initState() {
@@ -103,12 +113,25 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                     width: 100,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        PersistentNavBarNavigator.pushNewScreen(
-                          context,
-                          screen: StartHikeScreen(hikeTitle: hike.title!, startPoint: hike.startPoint!, endPoint: hike.endPoint!),
-                          withNavBar: true, // OPTIONAL VALUE. True by default.
-                          pageTransitionAnimation: PageTransitionAnimation.fade,
-                        );
+                        if (startNewHike) {
+                          handleStartNewHike(false);
+                          widget.handleOnGoingHike(
+                            StartHikeScreen(
+                                hikeTitle: hike.title!,
+                                startPoint: hike.startPoint!,
+                                endPoint: hike.endPoint!,
+                                handleOnGoingHike: widget.handleOnGoingHike,
+                                handleStartNewHike: handleStartNewHike
+                            )
+                          );
+                          widget.controller.jumpToTab(2);
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                               return const OngoingHikeModal();
+                          });
+                        }
                       },
                       label: const Text('Start'),
                       icon: const Icon(Icons.start),

@@ -9,7 +9,10 @@ import '../widget/hike_item_list.widget.dart';
 
 
 class HikeListScreen extends StatefulWidget {
-  const HikeListScreen({Key? key}) : super(key: key);
+  final PersistentTabController controller;
+  final Function(Widget) handleOnGoingHike;
+
+  const HikeListScreen({Key? key, required this.controller, required this.handleOnGoingHike}) : super(key: key);
 
   @override
   HikeListScreenState createState() => HikeListScreenState();
@@ -127,7 +130,7 @@ class HikeListScreenState extends State<HikeListScreen> {
                   onTap: () {
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
-                      screen: HikeDetailScreen(hikeTitle: entity.title!),
+                      screen: HikeDetailScreen(hikeTitle: entity.title!, controller: widget.controller, handleOnGoingHike: widget.handleOnGoingHike),
                       withNavBar: true,
                       pageTransitionAnimation: PageTransitionAnimation.fade,
                     );
