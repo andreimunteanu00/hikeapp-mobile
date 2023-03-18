@@ -38,7 +38,6 @@ class HikeHistoryService {
       if (response.body.isEmpty) {
         return HikeHistory();
       }
-      print(response.body);
       return HikeHistory.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load hike history for current user!');

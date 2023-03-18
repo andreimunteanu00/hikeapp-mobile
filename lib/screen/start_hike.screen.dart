@@ -146,7 +146,6 @@ class StartHikeScreenState extends State<StartHikeScreen> {
         desiredAccuracy: LocationAccuracy.best);
     final error = coordinateDistance(position.latitude, position.longitude,
         widget.startPoint.latitude, widget.startPoint.longitude);
-    print(position.toJson());
     if (error > 50) {
       setState(() {
         canStart = false;

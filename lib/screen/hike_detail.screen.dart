@@ -116,7 +116,9 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                           child: ElevatedButton.icon(
                             onPressed: () {
                               if (widget.startNewHike) {
-                                widget.handleStartNewHike(false);
+                                setState(() {
+                                  widget.handleStartNewHike(false);
+                                });
                                 widget.handleOnGoingHike(StartHikeScreen(
                                     hikeTitle: hike.title!,
                                     startPoint: hike.startPoint!,
@@ -124,6 +126,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                                     handleOnGoingHike: widget.handleOnGoingHike,
                                     handleStartNewHike:
                                         widget.handleStartNewHike));
+                                Navigator.of(context).pop();
                                 widget.controller.jumpToTab(2);
                               } else {
                                 showDialog(
