@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:hikeappmobile/model/picture.model.dart';
 
 class CarouselSliderHike extends StatefulWidget {
-
   final List<Picture?>? pictureList;
 
   const CarouselSliderHike({super.key, required this.pictureList});
@@ -22,10 +21,9 @@ class CarouselSliderHikeState extends State<CarouselSliderHike> {
 
     return CarouselSlider(
       options: CarouselOptions(
-        height: screenHeight / 4,
-        enlargeCenterPage: true,
-        enableInfiniteScroll: false
-      ),
+          height: screenHeight / 4,
+          enlargeCenterPage: true,
+          enableInfiniteScroll: false),
       items: widget.pictureList!.map((picture) {
         Uint8List imageBytes = base64Decode((picture!.base64!));
         return Builder(
@@ -45,5 +43,4 @@ class CarouselSliderHikeState extends State<CarouselSliderHike> {
       }).toList(),
     );
   }
-
 }

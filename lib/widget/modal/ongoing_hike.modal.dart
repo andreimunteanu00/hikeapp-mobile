@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class OngoingHikeModal extends StatelessWidget {
   const OngoingHikeModal({super.key});
 

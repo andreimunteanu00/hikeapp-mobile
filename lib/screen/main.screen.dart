@@ -6,7 +6,6 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'hike_list.screen.dart';
 import 'home.screen.dart';
 
-
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -19,11 +18,12 @@ class MainScreenState extends State<MainScreen> {
 
   void handleOnGoingHike(Widget screen) {
     setState(() {
-      buildScreens[2] = screen;
+      buildScreens[buildScreens.length - 1] = screen;
     });
   }
 
   List<Widget> buildScreens = [];
+
   List<PersistentBottomNavBarItem> navBarsItems() {
     return [
       PersistentBottomNavBarItem(
@@ -59,7 +59,6 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return PersistentTabView(
       context,
       controller: controller,
@@ -67,32 +66,26 @@ class MainScreenState extends State<MainScreen> {
       items: navBarsItems(),
       confineInSafeArea: true,
       backgroundColor: Colors.white,
-      // Default is Colors.white.
       handleAndroidBackButtonPress: true,
-      // Default is true.
       resizeToAvoidBottomInset: true,
-      // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
       stateManagement: true,
-      // Default is true.
       hideNavigationBarWhenKeyboardShows: true,
-      // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
       decoration: NavBarDecoration(
         borderRadius: BorderRadius.circular(10.0),
         colorBehindNavBar: Colors.white,
       ),
       popAllScreensOnTapOfSelectedTab: true,
       popActionScreens: PopActionScreensType.all,
-      itemAnimationProperties: const ItemAnimationProperties( // Navigation Bar's items animation properties.
+      itemAnimationProperties: const ItemAnimationProperties(
         duration: Duration(milliseconds: 200),
         curve: Curves.ease,
       ),
-      screenTransitionAnimation: const ScreenTransitionAnimation( // Screen transition animation on change of selected tab.
+      screenTransitionAnimation: const ScreenTransitionAnimation(
         animateTabTransition: true,
         curve: Curves.ease,
         duration: Duration(milliseconds: 200),
       ),
-      navBarStyle: NavBarStyle
-          .style2, // Choose the nav bar style with this property.
+      navBarStyle: NavBarStyle.style2,
     );
   }
 }

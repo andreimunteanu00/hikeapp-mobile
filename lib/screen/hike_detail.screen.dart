@@ -15,13 +15,21 @@ import '../widget/hike_detail.widget.dart';
 import '../widget/modal/ongoing_hike.modal.dart';
 import '../widget/user_comment.widget.dart';
 
-
 class HikeDetailScreen extends StatefulWidget {
   final Function(Widget) handleOnGoingHike;
+  final Function(bool) handleStartNewHike;
+  final bool startNewHike;
   final PersistentTabController controller;
   final String hikeTitle;
 
-  const HikeDetailScreen({super.key, required this.hikeTitle, required this.controller, required this.handleOnGoingHike});
+  const HikeDetailScreen({
+    super.key,
+    required this.hikeTitle,
+    required this.controller,
+    required this.handleOnGoingHike,
+    required this.handleStartNewHike,
+    required this.startNewHike
+  });
 
   @override
   State createState() => HikeDetailScrenState();
@@ -38,13 +46,6 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
   bool _hasMore = true;
   int _page = 0;
   late Hike hike;
-  bool startNewHike = true;
-
-  handleStartNewHike(bool value) {
-    setState(() {
-      startNewHike = value;
-    });
-  }
 
   @override
   void initState() {
@@ -62,7 +63,8 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
     if (!_isLoading && _hasMore) {
       setState(() => _isLoading = true);
       try {
-        final entities = await ratingService.getRatingForHikeTitle(hikeTitle: widget.hikeTitle, page: _page, size: _pageSize);
+        final entities = await ratingService.getRatingForHikeTitle(
+            hikeTitle: widget.hikeTitle, page: _page, size: _pageSize);
         final googleId = await Methods.giveUsernameFromToken();
         entities.removeWhere((entity) => entity.user!.googleId! == googleId);
         setState(() {
@@ -73,7 +75,8 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
         });
       } catch (e) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(constants.failedToLoadData)));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(constants.failedToLoadData)));
       }
     }
   }
@@ -84,146 +87,149 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: const Text(constants.appTitle)),
-      body: SingleChildScrollView(
-        child: SizedBox(
-          height: screenHeight + screenHeight / 2,
-          child: Column(
-            children: [
-              SizedBox(height: screenHeight / 60),
-              FutureBuilder<Hike>(
-                future: hikeService.getHikeByTitle(widget.hikeTitle),
-                builder: (_, snapshot) {
-                  if (snapshot.hasData) {
-                    hike = snapshot.data!;
-                    return HikeDetailWidget(hike: snapshot.data!);
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                }
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  // Preview button
-                  SizedBox(
-                    width: 100,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        if (startNewHike) {
-                          handleStartNewHike(false);
-                          widget.handleOnGoingHike(
-                            StartHikeScreen(
-                                hikeTitle: hike.title!,
-                                startPoint: hike.startPoint!,
-                                endPoint: hike.endPoint!,
-                                handleOnGoingHike: widget.handleOnGoingHike,
-                                handleStartNewHike: handleStartNewHike
-                            )
-                          );
-                          widget.controller.jumpToTab(2);
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                               return const OngoingHikeModal();
-                          });
-                        }
-                      },
-                      label: const Text('Start'),
-                      icon: const Icon(Icons.start),
-                    ),
-                  ),
-                  const SizedBox(width: 16,),
-                  // Share button
-                  SizedBox(
-                    width: 125,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              contentPadding: const EdgeInsets.all(0.0),
-                              insetPadding: EdgeInsets.symmetric(vertical: screenWidth / 4),
-                              title: const Text('Preview'),
-                              content: MapPreviewWidget(startPosition: hike.startPoint!, endPosition: hike.endPoint!),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
+        appBar: AppBar(title: const Text(constants.appTitle)),
+        body: SingleChildScrollView(
+            child: SizedBox(
+                height: screenHeight + screenHeight / 2,
+                child: Column(
+                  children: [
+                    SizedBox(height: screenHeight / 60),
+                    FutureBuilder<Hike>(
+                        future: hikeService.getHikeByTitle(widget.hikeTitle),
+                        builder: (_, snapshot) {
+                          if (snapshot.hasData) {
+                            hike = snapshot.data!;
+                            return HikeDetailWidget(hike: snapshot.data!);
+                          } else if (snapshot.hasError) {
+                            return Text('${snapshot.error}');
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        }),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        // Preview button
+                        SizedBox(
+                          width: 100,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              if (widget.startNewHike) {
+                                widget.handleStartNewHike(false);
+                                widget.handleOnGoingHike(StartHikeScreen(
+                                    hikeTitle: hike.title!,
+                                    startPoint: hike.startPoint!,
+                                    endPoint: hike.endPoint!,
+                                    handleOnGoingHike: widget.handleOnGoingHike,
+                                    handleStartNewHike:
+                                        widget.handleStartNewHike));
+                                widget.controller.jumpToTab(2);
+                              } else {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return const OngoingHikeModal();
+                                    });
+                              }
+                            },
+                            label: const Text('Start'),
+                            icon: const Icon(Icons.start),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        // Share button
+                        SizedBox(
+                          width: 125,
+                          child: ElevatedButton.icon(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                                      contentPadding: const EdgeInsets.all(0.0),
+                                      insetPadding: EdgeInsets.symmetric(
+                                          vertical: screenWidth / 4),
+                                      title: const Text('Preview'),
+                                      content: MapPreviewWidget(
+                                          startPosition: hike.startPoint!,
+                                          endPosition: hike.endPoint!),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    );
                                   },
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      label: const Text('Preview'),
-                      icon: const Icon(Icons.map)
+                                );
+                              },
+                              label: const Text('Preview'),
+                              icon: const Icon(Icons.map)),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        SizedBox(
+                          width: 100,
+                          child: ElevatedButton.icon(
+                              onPressed: () {
+                                // Add code to handle the share button press
+                              },
+                              label: const Text('Share'),
+                              icon: const Icon(Icons.share)),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(width: 16,),
-                  SizedBox(
-                    width: 100,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        // Add code to handle the share button press
-                      },
-                      label: const Text('Share'),
-                      icon: const Icon(Icons.share)
+                    const SizedBox(height: 16),
+                    FutureBuilder<Rating>(
+                        future: ratingService
+                            .getRatingForCurrentUser(widget.hikeTitle),
+                        builder: (_, snapshot) {
+                          if (snapshot.hasData) {
+                            return CurrentUserCommentWidget(
+                                rating: snapshot.data!,
+                                hikeTitle: widget.hikeTitle,
+                                refresh: () => setState(() {}));
+                          } else if (snapshot.hasError) {
+                            return Text('${snapshot.error}');
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        }),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "User's ratings",
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              FutureBuilder<Rating>(
-                future: ratingService.getRatingForCurrentUser(widget.hikeTitle),
-                builder: (_, snapshot) {
-                  if (snapshot.hasData) {
-                    return CurrentUserCommentWidget(rating: snapshot.data!, hikeTitle: widget.hikeTitle, refresh: () => setState(() {}));
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                }
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                "User's ratings",
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              _entities.isEmpty ? const Text('no rating yet!') : Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: _entities.length + (_hasMore ? 1 : 0),
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == _entities.length) {
-                      return _isLoading
-                          ? const Center(
-                          child: CircularProgressIndicator())
-                          : const SizedBox();
-                    }
-                    final entity = _entities[index];
-                    return UserCommentWidget(rating: entity);
-                  }
-                )
-              ),
-              SizedBox(height: screenHeight / 60),
-            ],
-          )
-        )
-      )
-    );
+                    const SizedBox(height: 10),
+                    _entities.isEmpty
+                        ? const Text('no rating yet!')
+                        : Expanded(
+                            child: ListView.builder(
+                                controller: _scrollController,
+                                itemCount:
+                                    _entities.length + (_hasMore ? 1 : 0),
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index == _entities.length) {
+                                    return _isLoading
+                                        ? const Center(
+                                            child: CircularProgressIndicator())
+                                        : const SizedBox();
+                                  }
+                                  final entity = _entities[index];
+                                  return UserCommentWidget(rating: entity);
+                                })),
+                    SizedBox(height: screenHeight / 60),
+                  ],
+                ))));
   }
 }

@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Methods {
-
   static String fileToBase64(File file) {
     List<int> fileBytes = file.readAsBytesSync();
     String base64String = base64Encode(fileBytes);
@@ -19,9 +18,9 @@ class Methods {
     }
     final parts = token.split('.');
     final String encodedPayload = parts[1];
-    final payloadData = utf8.fuse(base64).decode(base64.normalize(encodedPayload));
+    final payloadData =
+        utf8.fuse(base64).decode(base64.normalize(encodedPayload));
     Map<String, dynamic> payload = json.decode(payloadData);
     return payload['sub'];
   }
-
 }

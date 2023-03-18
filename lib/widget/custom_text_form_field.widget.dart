@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class CustomTextFormField extends StatelessWidget {
-
   final double? labelWidth;
   final String? initialValue;
   final String? labelText;
@@ -10,7 +9,8 @@ class CustomTextFormField extends StatelessWidget {
   final bool? readOnly;
   final String? Function(String?)? validator;
 
-  const CustomTextFormField({super.key,
+  const CustomTextFormField({
+    super.key,
     this.labelWidth,
     this.initialValue,
     this.labelText,
@@ -25,45 +25,44 @@ class CustomTextFormField extends StatelessWidget {
     return SizedBox(
       width: labelWidth,
       child: TextFormField(
-        readOnly: readOnly!,
-        key: key,
-        enabled: true,
-        initialValue: initialValue,
-        decoration: InputDecoration(
-          filled: readOnly,
-          fillColor: Colors.grey.shade200,
-          labelText: labelText,
-          labelStyle: TextStyle(
-            color: Colors.green.shade500,
+          readOnly: readOnly!,
+          key: key,
+          enabled: true,
+          initialValue: initialValue,
+          decoration: InputDecoration(
+            filled: readOnly,
+            fillColor: Colors.grey.shade200,
+            labelText: labelText,
+            labelStyle: TextStyle(
+              color: Colors.green.shade500,
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: Colors.green.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: Colors.green.shade500),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: Colors.red.shade300),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: Colors.red.shade300),
+            ),
+          ),
+          style: const TextStyle(
             fontSize: 16.0,
+            color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(color: Colors.green.shade300),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(color: Colors.green.shade500),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(color: Colors.red.shade300),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(color: Colors.red.shade300),
-          ),
-        ),
-        style: const TextStyle(
-          fontSize: 16.0,
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-        ),
-        keyboardType: keyboardType,
-        validator: validator,
-        onChanged: (value) => onChange!(value)
-      ),
+          keyboardType: keyboardType,
+          validator: validator,
+          onChanged: (value) => onChange!(value)),
     );
   }
 }

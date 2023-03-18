@@ -12,100 +12,109 @@ class UserCommentWidget extends StatelessWidget {
   final Function? rate;
   final Function? unrate;
 
-  const UserCommentWidget({this.rating, this.fromCurrentUser = false, this.rate, super.key, this.unrate});
+  const UserCommentWidget({
+    this.rating,
+    this.fromCurrentUser = false,
+    this.rate,
+    super.key,
+    this.unrate
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              backgroundImage: MemoryImage(base64.decode(rating!.user!.profilePicture!.base64!)),
-              radius: 20,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  backgroundImage: MemoryImage(
+                      base64.decode(rating!.user!.profilePicture!.base64!)),
+                  radius: 20,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        rating!.user!.username!,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            rating!.user!.username!,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            DateFormat('dd/MM/yyyy HH:mm')
+                                .format(rating!.dateTimeRate!),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        DateFormat('dd/MM/yyyy HH:mm').format(rating!.dateTimeRate!),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
+                      const SizedBox(height: 5),
+                      rating!.comment!.isNotEmpty
+                          ? Text(rating!.comment!)
+                          : const SizedBox.shrink(),
+                      const SizedBox(height: 5),
+                      fromCurrentUser == true
+                          ? Row(
+                              children: [
+                                RatingBarIndicator(
+                                  rating: rating!.rating!,
+                                  itemBuilder: (context, index) => const Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                  ),
+                                  itemCount: 5,
+                                  itemSize: 20,
+                                  direction: Axis.horizontal,
+                                ),
+                                const Spacer(),
+                                InkWell(
+                                    onTap: () {
+                                      rate!();
+                                    },
+                                    child: const Icon(
+                                      Icons.edit,
+                                      color: Colors.grey,
+                                      size: 24.0,
+                                    )),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                InkWell(
+                                    onTap: () {
+                                      unrate!();
+                                    },
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.grey,
+                                      size: 24.0,
+                                    ))
+                              ],
+                            )
+                          : RatingBarIndicator(
+                              rating: rating!.rating!,
+                              itemBuilder: (context, index) => const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                              ),
+                              itemCount: 5,
+                              itemSize: 20,
+                              direction: Axis.horizontal,
+                            ),
                     ],
                   ),
-                  const SizedBox(height: 5),
-                  rating!.comment!.isNotEmpty ? Text(rating!.comment!) : const SizedBox.shrink(),
-                  const SizedBox(height: 5),
-                  fromCurrentUser == true ? Row(
-                    children: [
-                      RatingBarIndicator(
-                        rating: rating!.rating!,
-                        itemBuilder: (context, index) => const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        itemCount: 5,
-                        itemSize: 20,
-                        direction: Axis.horizontal,
-                      ),
-                      const Spacer(),
-                      InkWell(
-                        onTap: () {
-                          rate!();
-                        },
-                        child: const Icon(
-                          Icons.edit,
-                          color: Colors.grey,
-                          size: 24.0,
-                        )
-                      ),
-                      const SizedBox(width: 10,),
-                      InkWell(
-                          onTap: () {
-                            unrate!();
-                          },
-                          child: const Icon(
-                            Icons.delete,
-                            color: Colors.grey,
-                            size: 24.0,
-                          )
-                      )
-                    ],
-                  ) :
-                  RatingBarIndicator(
-                    rating: rating!.rating!,
-                    itemBuilder: (context, index) => const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                    ),
-                    itemCount: 5,
-                    itemSize: 20,
-                    direction: Axis.horizontal,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        )
-      )
-    );
+                ),
+              ],
+            )));
   }
 }

@@ -5,7 +5,6 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import '../service/auth.service.dart';
 
 class SignOutWidget extends StatefulWidget {
-
   final AuthService authService = AuthService.instance;
 
   SignOutWidget({super.key});
@@ -15,7 +14,6 @@ class SignOutWidget extends StatefulWidget {
 }
 
 class SignOutWidgetState extends State<SignOutWidget> {
-
   @override
   void initState() {
     super.initState();
@@ -27,17 +25,16 @@ class SignOutWidgetState extends State<SignOutWidget> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         TextButton(
-          child: const Text('Sign Out'),
-          onPressed: () async {
-            await widget.authService.signOut();
-            PersistentNavBarNavigator.pushNewScreen(
-              context,
-              screen: const LogInScreen(),
-              withNavBar: false, // OPTIONAL VALUE. True by default.
-              pageTransitionAnimation: PageTransitionAnimation.fade,
-            );
-          }
-        )
+            child: const Text('Sign Out'),
+            onPressed: () async {
+              await widget.authService.signOut();
+              PersistentNavBarNavigator.pushNewScreen(
+                context,
+                screen: const LogInScreen(),
+                withNavBar: false, // OPTIONAL VALUE. True by default.
+                pageTransitionAnimation: PageTransitionAnimation.fade,
+              );
+            })
       ],
     );
   }

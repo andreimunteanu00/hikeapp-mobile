@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/widget/sign_out.widget.dart';
 
-class AccountSuspendedScreen extends StatelessWidget{
-
+class AccountSuspendedScreen extends StatelessWidget {
   const AccountSuspendedScreen({super.key});
 
   @override

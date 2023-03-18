@@ -7,7 +7,6 @@ import 'package:hikeappmobile/util/my_http.dart';
 import '../util/constants.dart' as constants;
 
 class HikeHistoryService {
-
   static HikeHistoryService? _instance;
 
   HikeHistoryService._();
@@ -18,13 +17,12 @@ class HikeHistoryService {
   }
 
   Future<void> postHikeHistory(HikeSummary hikeSummary) async {
-    final response = await MyHttp.getClient().post(
-      Uri.parse('${constants.localhost}/hike-history'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(hikeSummary)
-    );
+    final response = await MyHttp.getClient()
+        .post(Uri.parse('${constants.localhost}/hike-history'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(hikeSummary));
     if (response.statusCode != 204) {
       throw Exception("Failed to post history for hike!");
     }
@@ -32,11 +30,10 @@ class HikeHistoryService {
 
   Future<HikeHistory> getLastHikeHistory(String hikeTitle) async {
     final response = await MyHttp.getClient().get(
-      Uri.parse('${constants.localhost}/hike-history/finish-hike/$hikeTitle'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      }
-    );
+        Uri.parse('${constants.localhost}/hike-history/finish-hike/$hikeTitle'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        });
     if (response.statusCode == 200) {
       if (response.body.isEmpty) {
         return HikeHistory();

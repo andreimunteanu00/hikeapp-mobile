@@ -5,7 +5,6 @@ import '../service/auth.service.dart';
 import '../util/singe_page_route.dart';
 
 class LogInWidget extends StatelessWidget {
-
   final AuthService authService = AuthService.instance;
 
   LogInWidget({super.key});
@@ -13,17 +12,15 @@ class LogInWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      child: const Text('Log In'),
-      onPressed: () async {
-        await authService.signIn();
-        Navigator.pushReplacement(
-          context,
-          SlidePageRoute(
-            widget: const Main(),
-          ),
-        );
-      }
-    );
+        child: const Text('Log In'),
+        onPressed: () async {
+          await authService.signIn();
+          Navigator.pushReplacement(
+            context,
+            SlidePageRoute(
+              widget: const Main(),
+            ),
+          );
+        });
   }
-
 }

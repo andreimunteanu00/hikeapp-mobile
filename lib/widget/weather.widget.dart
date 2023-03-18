@@ -9,7 +9,8 @@ class WeatherWidget extends StatefulWidget {
   final LatLng position;
   final Function(double) handleValueChanged;
 
-  const WeatherWidget({super.key, required this.position, required this.handleValueChanged});
+  const WeatherWidget(
+      {super.key, required this.position, required this.handleValueChanged});
 
   @override
   WeatherWidgetState createState() => WeatherWidgetState();
@@ -22,7 +23,8 @@ class WeatherWidgetState extends State<WeatherWidget> {
   Future<Map<String, dynamic>> getCurrentWeather() async {
     double latitude = widget.position.latitude;
     double longitude = widget.position.longitude;
-    String apiUrl = 'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=${constants.weatherApiKey}';
+    String apiUrl =
+        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=${constants.weatherApiKey}';
     http.Response response = await http.get(Uri.parse(apiUrl));
     if (response.statusCode == 200) {
       Map<String, dynamic> data = jsonDecode(response.body);
@@ -85,10 +87,12 @@ class WeatherWidgetState extends State<WeatherWidget> {
     return Center(
       child: FutureBuilder(
         future: future,
-        builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+        builder: (BuildContext context,
+            AsyncSnapshot<Map<String, dynamic>> snapshot) {
           if (snapshot.hasData) {
             Map<String, dynamic> data = snapshot.data!;
-            double temperature = data['main']['temp'] - 273.15; // convert to Celsius
+            double temperature =
+                data['main']['temp'] - 273.15; // convert to Celsius
             int humidity = data['main']['humidity'];
             double windSpeed = data['wind']['speed'];
             String weatherType = data['weather'][0]['description'];

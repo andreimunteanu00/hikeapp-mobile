@@ -1,14 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/screen/first_login.screen.dart';
 import 'package:hikeappmobile/screen/log_in_screen.dart';
 import 'package:hikeappmobile/service/auth.service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import './util/constants.dart' as constants;
 import './util/routes.dart';
 import 'model/user.model.dart';
 import 'screen/main.screen.dart';
-import './util/constants.dart' as constants;
 
 void main() {
   runApp(
@@ -41,7 +40,6 @@ class Main extends StatefulWidget {
 }
 
 class MainState extends State<Main> {
-
   final AuthService authService = AuthService.instance;
   late bool isLogged = true;
   late bool afterFirstLogIn = false;
@@ -56,7 +54,8 @@ class MainState extends State<Main> {
   _asyncMethod() async {
     authService.checkSignIn().then((value) => _toggleIsLogged(value));
     if (isLogged) {
-      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
       String? token = sharedPreferences.getString("token");
       if (token == null || token.isEmpty) {
         _toggleIsLogged(await authService.signOut());
@@ -73,15 +72,19 @@ class MainState extends State<Main> {
   }
 
   @override
-  void initState() { super.initState();
+  void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _asyncMethod();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return isLoading ? const Scaffold(body: CircularProgressIndicator()) : !isLogged ? const LogInScreen() : (afterFirstLogIn ? const MainScreen() : FirstLoginScreen());
+    return isLoading
+        ? const Scaffold(body: CircularProgressIndicator())
+        : !isLogged
+            ? const LogInScreen()
+            : (afterFirstLogIn ? const MainScreen() : FirstLoginScreen());
   }
 }

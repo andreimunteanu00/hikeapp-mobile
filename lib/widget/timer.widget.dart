@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
 class TimerWidget extends StatelessWidget {
-  final int secondsElapsed;
-  final int minutesElapsed;
-  final int hoursElapsed;
+  final int? secondsElapsed;
+  final int? minutesElapsed;
+  final int? hoursElapsed;
 
-  const TimerWidget({super.key, required this.secondsElapsed, required this.minutesElapsed, required this.hoursElapsed});
+  const TimerWidget({
+    super.key,
+    this.secondsElapsed,
+    this.minutesElapsed,
+    this.hoursElapsed
+  });
 
   @override
   Widget build(BuildContext context) {

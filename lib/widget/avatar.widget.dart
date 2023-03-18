@@ -7,10 +7,10 @@ import '../model/user.model.dart';
 import '../util/methods.dart';
 
 class AvatarWidget extends StatefulWidget {
-
   final User? user;
 
   const AvatarWidget(this.user, {super.key});
+
   @override
   AvatarWidgetState createState() => AvatarWidgetState();
 }
@@ -30,7 +30,9 @@ class AvatarWidgetState extends State<AvatarWidget> {
   }
 
   giveBackgroundImage() {
-    return widget.user!.profilePicture == null ? FileImage(_image) : MemoryImage(base64Decode(widget.user!.profilePicture!.base64!));
+    return widget.user!.profilePicture == null
+        ? FileImage(_image)
+        : MemoryImage(base64Decode(widget.user!.profilePicture!.base64!));
   }
 
   @override

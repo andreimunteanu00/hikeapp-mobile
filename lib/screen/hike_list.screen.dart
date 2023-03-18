@@ -7,12 +7,15 @@ import '../service/hike.service.dart';
 import '../util/constants.dart' as constants;
 import '../widget/hike_item_list.widget.dart';
 
-
 class HikeListScreen extends StatefulWidget {
   final PersistentTabController controller;
   final Function(Widget) handleOnGoingHike;
 
-  const HikeListScreen({Key? key, required this.controller, required this.handleOnGoingHike}) : super(key: key);
+  const HikeListScreen({
+    Key? key,
+    required this.controller,
+    required this.handleOnGoingHike
+  }) : super(key: key);
 
   @override
   HikeListScreenState createState() => HikeListScreenState();
@@ -29,13 +32,21 @@ class HikeListScreenState extends State<HikeListScreen> {
   bool _isLoading = false;
   bool _hasMore = true;
   int _page = 0;
+  bool startNewHike = true;
+
+  handleStartNewHike(bool value) {
+    setState(() {
+      startNewHike = value;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     _loadEntities();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
         _loadEntities();
       }
     });
@@ -45,7 +56,11 @@ class HikeListScreenState extends State<HikeListScreen> {
     if (!_isLoading && _hasMore) {
       setState(() => _isLoading = true);
       try {
-        final entities = await _entityService.getAllEntities(title: _searchTerm, sortField: _sortBy, page: _page, size: _pageSize);
+        final entities = await _entityService.getAllEntities(
+            title: _searchTerm,
+            sortField: _sortBy,
+            page: _page,
+            size: _pageSize);
         setState(() {
           _entities.addAll(entities);
           _page++;
@@ -54,7 +69,8 @@ class HikeListScreenState extends State<HikeListScreen> {
         });
       } catch (e) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(constants.failedToLoadData)));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(constants.failedToLoadData)));
       }
     }
   }
@@ -74,9 +90,8 @@ class HikeListScreenState extends State<HikeListScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: const Text(constants.appTitle)),
-      body: Column(
-        children: [
+        appBar: AppBar(title: const Text(constants.appTitle)),
+        body: Column(children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -84,7 +99,8 @@ class HikeListScreenState extends State<HikeListScreen> {
                 Expanded(
                   child: TextField(
                     controller: _searchController,
-                    decoration: const InputDecoration(hintText: 'Search by name'),
+                    decoration:
+                        const InputDecoration(hintText: 'Search by name'),
                     onChanged: (value) {
                       _searchTerm = value;
                       if (_searchTerm.isEmpty) {
@@ -97,15 +113,18 @@ class HikeListScreenState extends State<HikeListScreen> {
                     onPressed: () {
                       _resetEntities();
                     },
-                    child: const Icon(Icons.search)
-                ),
+                    child: const Icon(Icons.search)),
                 // TODO make a dropdown with icons
                 DropdownButton<String>(
                   value: _sortBy,
                   items: const [
-                    DropdownMenuItem(value: 'title', child: Text('Sort by title')),
-                    DropdownMenuItem(value: 'allRatings', child: Text('Sort by rating')),
-                    DropdownMenuItem(value: 'numberRatings', child: Text('Sort by popularity')),
+                    DropdownMenuItem(
+                        value: 'title', child: Text('Sort by title')),
+                    DropdownMenuItem(
+                        value: 'allRatings', child: Text('Sort by rating')),
+                    DropdownMenuItem(
+                        value: 'numberRatings',
+                        child: Text('Sort by popularity')),
                   ],
                   onChanged: (String? value) {
                     if (value != null) {
@@ -118,31 +137,35 @@ class HikeListScreenState extends State<HikeListScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: _entities.length + (_hasMore ? 1 : 0),
-              itemBuilder: (BuildContext context, int index) {
-                if (index == _entities.length) {
-                  return _isLoading ? const Center(child: CircularProgressIndicator()) : const SizedBox();
-                }
-                final Hike entity = _entities[index];
-                return GestureDetector(
-                  onTap: () {
-                    PersistentNavBarNavigator.pushNewScreen(
-                      context,
-                      screen: HikeDetailScreen(hikeTitle: entity.title!, controller: widget.controller, handleOnGoingHike: widget.handleOnGoingHike),
-                      withNavBar: true,
-                      pageTransitionAnimation: PageTransitionAnimation.fade,
-                    );
-                  },
-                  child: HikeItemList(entity: entity, screenWidth: screenWidth)
-                );
-              }
-            )
-          ),
+              child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: _entities.length + (_hasMore ? 1 : 0),
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == _entities.length) {
+                      return _isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : const SizedBox();
+                    }
+                    final Hike entity = _entities[index];
+                    return GestureDetector(
+                        onTap: () {
+                          PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: HikeDetailScreen(
+                                hikeTitle: entity.title!,
+                                controller: widget.controller,
+                                handleOnGoingHike: widget.handleOnGoingHike,
+                                handleStartNewHike: handleStartNewHike,
+                                startNewHike: startNewHike),
+                            withNavBar: true,
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.fade,
+                          );
+                        },
+                        child: HikeItemList(
+                            entity: entity, screenWidth: screenWidth));
+                  })),
           SizedBox(height: screenHeight / 100),
-        ]
-      )
-    );
+        ]));
   }
 }

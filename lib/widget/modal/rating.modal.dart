@@ -4,13 +4,17 @@ import 'package:hikeappmobile/service/rating.service.dart';
 
 import '../../model/rating.model.dart';
 
-
 class RatingModal extends StatefulWidget {
   final String hikeTitle;
   final String? comment;
   final double? rating;
 
-  const RatingModal({Key? key, required this.hikeTitle, required this.comment, required this.rating}) : super(key: key);
+  const RatingModal(
+      {Key? key,
+      required this.hikeTitle,
+      required this.comment,
+      required this.rating})
+      : super(key: key);
 
   @override
   RatingModalState createState() => RatingModalState();
@@ -78,7 +82,8 @@ class RatingModalState extends State<RatingModal> {
               var rating = Rating();
               rating.comment = _comment;
               rating.rating = _rating;
-              if (!(_rating == widget.rating && (_comment == '' || _comment == widget.comment))) {
+              if (!(_rating == widget.rating &&
+                  (_comment == '' || _comment == widget.comment))) {
                 await ratingService.rate(widget.hikeTitle, rating);
                 Navigator.of(context).pop(true);
               } else {

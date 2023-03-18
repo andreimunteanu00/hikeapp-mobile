@@ -6,7 +6,6 @@ import '../model/hike.model.dart';
 import 'carousel_slider_hike.widget.dart';
 
 class HikeDetailWidget extends StatefulWidget {
-
   final Hike hike;
 
   const HikeDetailWidget({super.key, required this.hike});
@@ -22,28 +21,26 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CarouselSliderHike(pictureList: widget.hike.pictureList!),
-        Card(child: Column(children: [Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            widget.hike.title!,
-            style: const TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-          const SizedBox(height: 8.0),
+        Card(
+            child: Column(children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child:
-            ExpandableText(
-              widget.hike.description!,
-              maxLines: 5,
-              expandText: 'Read more',
-              collapseText: 'Read less',
-              linkColor: Colors.green
-            )
+            child: Text(
+              widget.hike.title!,
+              style: const TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
+          const SizedBox(height: 8.0),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ExpandableText(widget.hike.description!,
+                  maxLines: 5,
+                  expandText: 'Read more',
+                  collapseText: 'Read less',
+                  linkColor: Colors.green)),
           const SizedBox(height: 16.0),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -85,9 +82,9 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
               ],
             ),
           ),
-          const SizedBox(height: 16.0),]))
+          const SizedBox(height: 16.0),
+        ]))
       ],
     );
   }
-
 }

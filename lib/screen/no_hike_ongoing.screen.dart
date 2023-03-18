@@ -10,10 +10,7 @@ class NoHikeOngoingScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Hike'),
       ),
-      body: const Center(
-        child: Text('no hike ongoing!')
-      ),
+      body: const Center(child: Text('no hike ongoing!')),
     );
   }
-
 }

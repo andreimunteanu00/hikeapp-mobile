@@ -13,7 +13,6 @@ import '../widget/timer.widget.dart';
 import '../widget/weather.widget.dart';
 import 'finish_hike.screen.dart';
 
-
 class StartHikeScreen extends StatefulWidget {
   final String hikeTitle;
   final LatLng startPoint;
@@ -21,7 +20,14 @@ class StartHikeScreen extends StatefulWidget {
   final Function(Widget) handleOnGoingHike;
   final Function(bool) handleStartNewHike;
 
-  const StartHikeScreen({super.key, required this.endPoint, required this.startPoint, required this.hikeTitle, required this.handleOnGoingHike, required this.handleStartNewHike});
+  const StartHikeScreen({
+    super.key,
+    required this.endPoint,
+    required this.startPoint,
+    required this.hikeTitle,
+    required this.handleOnGoingHike,
+    required this.handleStartNewHike
+  });
 
   @override
   StartHikeScreenState createState() => StartHikeScreenState();
@@ -54,24 +60,24 @@ class StartHikeScreenState extends State<StartHikeScreen> {
   }
 
   void getUserLocation() async {
-    positionStream = Geolocator.getPositionStream().listen(
-      (Position position) {
+    positionStream = Geolocator.getPositionStream().listen((Position position) {
+      setState(() {
+        userLocation = LatLng(position.latitude, position.longitude);
+        getPolyline(userLocation, widget.endPoint);
+      });
+      if (firstTime) {
         setState(() {
-          userLocation = LatLng(position.latitude, position.longitude);
-          getPolyline(userLocation, widget.endPoint);
+          mapController.future.then((controller) =>
+              controller.animateCamera(CameraUpdate.newLatLng(userLocation))
+                  as CameraPosition);
+          firstTime = false;
+          isLoading = false;
         });
-        if (firstTime) {
-          setState(() {
-            mapController.future.then((controller) => controller.animateCamera(CameraUpdate.newLatLng(userLocation)) as CameraPosition);
-            firstTime = false;
-            isLoading = false;
-          });
-        }
-        if (canStart) {
-          checkFinish(position);
-        }
       }
-    );
+      if (canStart) {
+        checkFinish(position);
+      }
+    });
   }
 
   addPolyLine() {
@@ -82,8 +88,7 @@ class StartHikeScreenState extends State<StartHikeScreen> {
         color: Colors.blueAccent,
         width: 5,
         jointType: JointType.mitered,
-        patterns: const [PatternItem.dot]
-    );
+        patterns: const [PatternItem.dot]);
     polylineCoordinates = [];
     polylines[id] = polyline;
   }
@@ -137,7 +142,8 @@ class StartHikeScreenState extends State<StartHikeScreen> {
   }
 
   void checkCanStart() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
     final error = coordinateDistance(position.latitude, position.longitude,
         widget.startPoint.latitude, widget.startPoint.longitude);
     print(position.toJson());
@@ -150,49 +156,52 @@ class StartHikeScreenState extends State<StartHikeScreen> {
 
   Future<bool> onBackPressed() async {
     return (await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Are you sure you want to exit?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('No'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Are you sure you want to exit?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Yes'),
-          ),
-        ],
-      ),
-    )) ?? false;
+        )) ??
+        false;
   }
 
   void setMarkers() {
-    markers.add(
-        Marker(
-            markerId: const MarkerId('endPosition'),
-            infoWindow: const InfoWindow(title: 'End Position'),
-            position: widget.endPoint,
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueRose,
-            )
-        )
-    );
+    markers.add(Marker(
+        markerId: const MarkerId('endPosition'),
+        infoWindow: const InfoWindow(title: 'End Position'),
+        position: widget.endPoint,
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueRose,
+        )));
   }
 
   void checkFinish(Position position) async {
-    final distanceFromFinish = coordinateDistance(position.latitude, position.longitude,
-        widget.endPoint.latitude, widget.endPoint.longitude);
+    final distanceFromFinish = coordinateDistance(
+        position.latitude,
+        position.longitude,
+        widget.endPoint.latitude,
+        widget.endPoint.longitude);
     if (distanceFromFinish < 10) {
       widget.handleStartNewHike(true);
       stopwatch.stop();
       HikeSummary hikeSummary = HikeSummary(
           hikeTitle: widget.hikeTitle,
           elapsedTime: stopwatch.elapsed,
-          temperatureAverage: temperatureAverage
-      );
+          temperatureAverage: temperatureAverage);
       await hikeHistoryService.postHikeHistory(hikeSummary);
-      widget.handleOnGoingHike(FinishHikeScreen(hikeTitle: hikeSummary.hikeTitle, temperatureAverage: temperatureAverage, handleOnGoingHike: widget.handleOnGoingHike));
+      widget.handleOnGoingHike(FinishHikeScreen(
+          hikeTitle: hikeSummary.hikeTitle,
+          temperatureAverage: temperatureAverage,
+          handleOnGoingHike: widget.handleOnGoingHike));
     }
   }
 
@@ -226,59 +235,72 @@ class StartHikeScreenState extends State<StartHikeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text(constants.appTitle)),
-      body: isLoading ? const Center(child: CircularProgressIndicator()) :
-      !canStart ? Center(child: Column(children: [
-        const Text('Can\'t start'),
-        ElevatedButton(
-          child: const Text('Retry'),
-          onPressed: () => checkCanStart(),
-        ),
-      ],)) : WillPopScope(
-        onWillPop: onBackPressed,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TimerWidget(secondsElapsed: secondsElapsed, minutesElapsed: minutesElapsed, hoursElapsed: hoursElapsed),
-                const SizedBox(height: 8.0),
-                Center(
-                  child: Text(
-                    'Distance: ${distance.toStringAsFixed(0)} meters',
-                    style: const TextStyle(
-                      fontSize: 18.0,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : !canStart
+              ? Center(
+                  child: Column(
+                  children: [
+                    const Text('Can\'t start'),
+                    ElevatedButton(
+                      child: const Text('Retry'),
+                      onPressed: () => checkCanStart(),
                     ),
+                  ],
+                ))
+              : WillPopScope(
+                  onWillPop: onBackPressed,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TimerWidget(
+                              secondsElapsed: secondsElapsed,
+                              minutesElapsed: minutesElapsed,
+                              hoursElapsed: hoursElapsed),
+                          const SizedBox(height: 8.0),
+                          Center(
+                            child: Text(
+                              'Distance: ${distance.toStringAsFixed(0)} meters',
+                              style: const TextStyle(
+                                fontSize: 18.0,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8.0),
+                          WeatherWidget(
+                              position: userLocation,
+                              handleValueChanged: handleTempChanged)
+                        ],
+                      ),
+                      Expanded(
+                        child: GoogleMap(
+                          onMapCreated: onMapCreated,
+                          markers: markers,
+                          initialCameraPosition: CameraPosition(
+                              target: LatLng(
+                                  (userLocation.latitude +
+                                          widget.endPoint.latitude) /
+                                      2,
+                                  (userLocation.longitude +
+                                          widget.endPoint.longitude) /
+                                      2),
+                              zoom: 11),
+                          polylines: Set<Polyline>.of(polylines.values),
+                          myLocationEnabled: true,
+                          mapToolbarEnabled: true,
+                          buildingsEnabled: false,
+                          myLocationButtonEnabled: true,
+                          mapType: MapType.normal,
+                          zoomControlsEnabled: true,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8.0),
-                WeatherWidget(position: userLocation, handleValueChanged: handleTempChanged)
-              ],
-            ),
-            Expanded(
-              child: GoogleMap(
-                onMapCreated: onMapCreated,
-                markers: markers,
-                initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                        (userLocation.latitude + widget.endPoint.latitude) / 2,
-                        (userLocation.longitude + widget.endPoint.longitude) / 2
-                    ),
-                    zoom: 11
-                ),
-                polylines: Set<Polyline>.of(polylines.values),
-                myLocationEnabled: true,
-                mapToolbarEnabled: true,
-                buildingsEnabled: false,
-                myLocationButtonEnabled: true,
-                mapType: MapType.normal,
-                zoomControlsEnabled: true,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

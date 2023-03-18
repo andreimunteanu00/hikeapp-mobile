@@ -25,16 +25,16 @@ class Hike {
   });
 
   Map<String, dynamic> toJson() => {
-    'title': title,
-    'description': description,
-    'allRatings': allRatings,
-    'numberRatings': numberRatings,
-    'mainPicture': mainPicture,
-    'pictureList': pictureList,
-    'difficulty': difficulty,
-    'startPoint': startPoint,
-    'endPoint': endPoint
-  };
+        'title': title,
+        'description': description,
+        'allRatings': allRatings,
+        'numberRatings': numberRatings,
+        'mainPicture': mainPicture,
+        'pictureList': pictureList,
+        'difficulty': difficulty,
+        'startPoint': startPoint,
+        'endPoint': endPoint
+      };
 
   factory Hike.fromJson(Map<String, dynamic> json) {
     return Hike(
@@ -43,22 +43,23 @@ class Hike {
         allRatings: json['allRatings'],
         numberRatings: json['numberRatings'],
         mainPicture: Picture.fromJson(json['mainPicture']),
-        difficulty: json['difficulty']
-    );
+        difficulty: json['difficulty']);
   }
 
   factory Hike.fromJsonDetail(Map<String, dynamic> json) {
     return Hike(
-        title: json['title'],
-        description: json['description'],
-        allRatings: json['allRatings'],
-        numberRatings: json['numberRatings'],
-        pictureList: (json['pictureList'] as List<dynamic>)
-            .map((e) => e == null ? null : Picture.fromJson(e))
-            .toList(),
-        difficulty: json['difficulty'],
-        startPoint: LatLng(json['startPoint']['latitude'], json['startPoint']['longitude']),
-        endPoint: LatLng(json['endPoint']['latitude'], json['endPoint']['longitude']),
+      title: json['title'],
+      description: json['description'],
+      allRatings: json['allRatings'],
+      numberRatings: json['numberRatings'],
+      pictureList: (json['pictureList'] as List<dynamic>)
+          .map((e) => e == null ? null : Picture.fromJson(e))
+          .toList(),
+      difficulty: json['difficulty'],
+      startPoint: LatLng(
+          json['startPoint']['latitude'], json['startPoint']['longitude']),
+      endPoint:
+          LatLng(json['endPoint']['latitude'], json['endPoint']['longitude']),
     );
   }
 }

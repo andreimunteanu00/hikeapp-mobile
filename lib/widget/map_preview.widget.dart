@@ -10,14 +10,14 @@ class MapPreviewWidget extends StatefulWidget {
   final LatLng startPosition;
   final LatLng endPosition;
 
-  const MapPreviewWidget({super.key, required this.startPosition, required this.endPosition});
+  const MapPreviewWidget(
+      {super.key, required this.startPosition, required this.endPosition});
 
   @override
   MapPreviewWidgetState createState() => MapPreviewWidgetState();
 }
 
 class MapPreviewWidgetState extends State<MapPreviewWidget> {
-
   late Completer<GoogleMapController> mapController = Completer();
   final Set<Marker> markers = {};
   late Position currentPosition;
@@ -33,28 +33,25 @@ class MapPreviewWidgetState extends State<MapPreviewWidget> {
   @override
   void initState() {
     super.initState();
-    markers.add(
-        Marker(
-          markerId: MarkerId('startPosition'),
-          infoWindow: const InfoWindow(title: 'Start Position'),
-          position: widget.startPosition,
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueGreen,
-          ),
-        )
-    );
-    markers.add(
-        Marker(
-            markerId: MarkerId('endPosition'),
-            infoWindow: const InfoWindow(title: 'End Position'),
-            position: widget.endPosition,
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueRose,
-            )
-        )
-    );
+    markers.add(Marker(
+      markerId: MarkerId('startPosition'),
+      infoWindow: const InfoWindow(title: 'Start Position'),
+      position: widget.startPosition,
+      icon: BitmapDescriptor.defaultMarkerWithHue(
+        BitmapDescriptor.hueGreen,
+      ),
+    ));
+    markers.add(Marker(
+        markerId: MarkerId('endPosition'),
+        infoWindow: const InfoWindow(title: 'End Position'),
+        position: widget.endPosition,
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueRose,
+        )));
     getPolyline(widget.startPosition, widget.endPosition);
-    mapController.future.then((controller) => controller.animateCamera(CameraUpdate.newLatLng(widget.startPosition)) as CameraPosition);
+    mapController.future.then((controller) =>
+        controller.animateCamera(CameraUpdate.newLatLng(widget.startPosition))
+            as CameraPosition);
     setState(() {});
   }
 
@@ -66,8 +63,7 @@ class MapPreviewWidgetState extends State<MapPreviewWidget> {
         color: Colors.blueAccent,
         width: 5,
         jointType: JointType.mitered,
-        patterns: const [PatternItem.dot]
-    );
+        patterns: const [PatternItem.dot]);
     polylines[id] = polyline;
     setState(() {});
   }
@@ -94,11 +90,12 @@ class MapPreviewWidgetState extends State<MapPreviewWidget> {
         markers: markers,
         initialCameraPosition: CameraPosition(
             target: LatLng(
-                (widget.startPosition.latitude + widget.endPosition.latitude) / 2,
-                (widget.startPosition.longitude + widget.endPosition.longitude) / 2
-            ),
-            zoom: 11
-        ),
+                (widget.startPosition.latitude + widget.endPosition.latitude) /
+                    2,
+                (widget.startPosition.longitude +
+                        widget.endPosition.longitude) /
+                    2),
+            zoom: 11),
         polylines: Set<Polyline>.of(polylines.values),
         myLocationEnabled: false,
         mapToolbarEnabled: true,
