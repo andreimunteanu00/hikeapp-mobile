@@ -1,5 +1,5 @@
 // TODO modify with env variable
-const localhost = 'http://192.168.100.79:8080/api';
+const localhost = 'http://192.168.100.94:8080/api';
 const failedToLoadData = 'Failed to load data';
 const appTitle = 'HikeApp';
 const googleApiDirectionsKey = 'AIzaSyCLBLimbgcnj-1nHDWIInOnTlShWsZF-r4';
