@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/screen/no_hike_ongoing.screen.dart';
+import 'package:hikeappmobile/screen/chat_room_list.screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import 'hike_list.screen.dart';
@@ -39,6 +40,12 @@ class MainScreenState extends State<MainScreen> {
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
+        icon: const Icon(CupertinoIcons.chat_bubble),
+        title: ("Chat"),
+        activeColorPrimary: CupertinoColors.activeGreen,
+        inactiveColorPrimary: CupertinoColors.systemGrey,
+      ),
+      PersistentBottomNavBarItem(
         icon: const Icon(CupertinoIcons.arrow_up),
         title: ("Ongoing Hike"),
         activeColorPrimary: CupertinoColors.activeGreen,
@@ -53,6 +60,7 @@ class MainScreenState extends State<MainScreen> {
     buildScreens = [
       const HomeScreen(),
       HikeListScreen(controller: controller, handleOnGoingHike: handleOnGoingHike),
+      ChatRoomListScreen(),
       const NoHikeOngoingScreen(),
     ];
   }

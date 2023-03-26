@@ -65,7 +65,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
       try {
         final entities = await ratingService.getRatingForHikeTitle(
             hikeTitle: widget.hikeTitle, page: _page, size: _pageSize);
-        final googleId = await Methods.giveUsernameFromToken();
+        final googleId = await Methods.giveGoogleIdFromToken();
         entities.removeWhere((entity) => entity.user!.googleId! == googleId);
         setState(() {
           _entities.addAll(entities);

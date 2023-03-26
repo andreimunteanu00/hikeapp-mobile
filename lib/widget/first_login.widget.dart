@@ -52,7 +52,7 @@ class FirstLoginState extends State<FirstLoginWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AvatarWidget(widget.user),
+              AvatarWidget(widget.user.profilePicture),
               SizedBox(height: screenWidth / 20),
               Focus(
                 child: Form(

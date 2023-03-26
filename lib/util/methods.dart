@@ -10,7 +10,7 @@ class Methods {
     return base64String;
   }
 
-  static Future<String> giveUsernameFromToken() async {
+  static Future<String> giveGoogleIdFromToken() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String token = sharedPreferences.getString('token')!;
     if (token.isEmpty) {
@@ -22,5 +22,10 @@ class Methods {
         utf8.fuse(base64).decode(base64.normalize(encodedPayload));
     Map<String, dynamic> payload = json.decode(payloadData);
     return payload['sub'];
+  }
+
+  static Future<String> getToken() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    return sharedPreferences.getString('token')!;
   }
 }

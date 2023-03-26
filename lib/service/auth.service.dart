@@ -26,7 +26,7 @@ class AuthService {
 
   Future<User> getCurrentUser() async {
     final response = await MyHttp.getClient()
-        .get(Uri.parse('${constants.localhost}/auth/currentUser'));
+        .get(Uri.parse('${constants.localhost}/auth/current-user-after-first-login'));
     if (response.statusCode == 200) {
       return User.fromJson(json.decode(response.body));
     } else {

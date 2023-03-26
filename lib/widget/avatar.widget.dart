@@ -1,45 +1,46 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../model/user.model.dart';
+import '../model/picture.model.dart';
 import '../util/methods.dart';
 
 class AvatarWidget extends StatefulWidget {
-  final User? user;
+  final Picture? picture;
 
-  const AvatarWidget(this.user, {super.key});
+  const AvatarWidget(this.picture, {super.key});
 
   @override
   AvatarWidgetState createState() => AvatarWidgetState();
 }
 
 class AvatarWidgetState extends State<AvatarWidget> {
-  File _image = File('images/default_avatar.png');
+  File _image = File('/images/default_avatar.png');
   final picker = ImagePicker();
 
-  Future getImage(User user) async {
+  Future getImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-        widget.user?.profilePicture!.base64 = Methods.fileToBase64(_image);
+        widget.picture!.base64 = Methods.fileToBase64(_image);
       }
     });
   }
 
   giveBackgroundImage() {
-    return widget.user!.profilePicture == null
+    return widget.picture!.base64 == null
         ? FileImage(_image)
-        : MemoryImage(base64Decode(widget.user!.profilePicture!.base64!));
+        : MemoryImage(base64Decode(widget.picture!.base64!));
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        getImage(widget.user!);
+        getImage();
       },
       child: Container(
         width: 100.0,

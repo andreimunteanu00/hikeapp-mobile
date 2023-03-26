@@ -45,20 +45,20 @@ class MainState extends State<Main> {
   late bool afterFirstLogIn = false;
   bool isLoading = true;
 
-  _toggleIsLogged(val) {
+  void toggleIsLogged(val) {
     setState(() {
       isLogged = val;
     });
   }
 
   _asyncMethod() async {
-    authService.checkSignIn().then((value) => _toggleIsLogged(value));
+    authService.checkSignIn().then((value) => toggleIsLogged(value));
     if (isLogged) {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       String? token = sharedPreferences.getString("token");
       if (token == null || token.isEmpty) {
-        _toggleIsLogged(await authService.signOut());
+        toggleIsLogged(await authService.signOut());
       } else {
         User user = await authService.getCurrentUser();
         setState(() {
@@ -82,7 +82,7 @@ class MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     return isLoading
-        ? const Scaffold(body: CircularProgressIndicator())
+        ? const Scaffold(body: Center(child: CircularProgressIndicator()))
         : !isLogged
             ? const LogInScreen()
             : (afterFirstLogIn ? const MainScreen() : FirstLoginScreen());

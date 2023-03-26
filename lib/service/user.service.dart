@@ -37,4 +37,20 @@ class UserService {
         });
     return response.body == 'true' ? true : false;
   }
+
+  Future<List<User>> getAllEntities({
+    String username = '',
+    int page = 0,
+    int size = 10}) async {
+      final response = await MyHttp.getClient().get(Uri.parse(
+          '${constants.localhost}/user/all?username=$username&page=$page&size=$size'));
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        return (jsonResponse['content'] as List)
+            .map((json) => User.fromJson(json))
+            .toList();
+      } else {
+        throw Exception('Failed to load users');
+      }
+  }
 }
