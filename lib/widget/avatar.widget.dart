@@ -9,8 +9,9 @@ import '../util/methods.dart';
 
 class AvatarWidget extends StatefulWidget {
   final Picture? picture;
+  final bool readOnly;
 
-  const AvatarWidget(this.picture, {super.key});
+  const AvatarWidget(this.picture, {super.key, this.readOnly = false});
 
   @override
   AvatarWidgetState createState() => AvatarWidgetState();
@@ -40,7 +41,7 @@ class AvatarWidgetState extends State<AvatarWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        getImage();
+        if(!widget.readOnly) getImage();
       },
       child: Container(
         width: 100.0,

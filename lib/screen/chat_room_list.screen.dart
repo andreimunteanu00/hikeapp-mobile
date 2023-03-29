@@ -157,7 +157,9 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SizedBox(width: 75, height: 75, child: AvatarWidget(chatRooms[index].receiver!.profilePicture!)),
+                                SizedBox(width: 75, height: 75, child: CircleAvatar(
+                                    backgroundImage: MemoryImage(base64Decode(chatRooms[index].receiver!.profilePicture!.base64!))
+                                )),
                                 SizedBox(width: 12.0),
                                 Expanded(
                                   child: Column(
@@ -208,7 +210,9 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SizedBox(width: 50, height: 50, child: AvatarWidget(chatRooms[index].publicChatPhoto!)),
+                                SizedBox(width: 75, height: 75, child: CircleAvatar(
+                                    backgroundImage: MemoryImage(base64Decode(chatRooms[index].publicChatPhoto!.base64!))
+                                )),
                                 SizedBox(width: 12.0),
                                 Expanded(
                                   child: Column(
