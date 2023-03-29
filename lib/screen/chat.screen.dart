@@ -22,7 +22,6 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> _messages = [];
   final _messageController = TextEditingController();
-  final _scrollController = ScrollController();
   final AuthService authService = AuthService.instance;
   final ChatMessageService chatMessageService = ChatMessageService.instance;
   late final WebSocketService _webSocketService;
@@ -43,26 +42,11 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _scrollListener() {
-    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
-        !_scrollController.position.outOfRange) {
-      getMessages();
-      setState(() {
-        _isScrolling = _scrollController.position.userScrollDirection != ScrollDirection.idle;
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     _webSocketService = WebSocketService(token: widget.token, toggleMessages: toggleMessages, chatRoomId: widget.chatRoom.id!);
-    _webSocketService.connect(widget.token, (List<ChatMessage> messages) {
-      setState(() {
-        _messages.addAll(messages);
-      });
-    });
-    _scrollController.addListener(_scrollListener);
+    _webSocketService.connect(widget.token);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_isLoading) {
         setState(() {
@@ -94,7 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: <Widget>[
           Expanded(
             child: ListView.builder(
-              controller: _scrollController,
+              controller: null,
               reverse: true,
               itemCount: _messages.length + 1,
               itemBuilder: (BuildContext context, int index) {
@@ -158,17 +142,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _sendMessage(String content) {
     if (content.isNotEmpty) {
-      final message = ChatMessage(sender: currentUser.username, content: content, chatRoomId: widget.chatRoom.id);
+      final message = ChatMessage(sender: currentUser.username, content: content, chatRoomId: widget.chatRoom.id, timestamp: DateTime.now());
       _webSocketService.sendMessage(message);
       _messageController.clear();
-      if (!_isScrolling) { // add this line
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent); // add this line
-      }
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
     }
   }
 }

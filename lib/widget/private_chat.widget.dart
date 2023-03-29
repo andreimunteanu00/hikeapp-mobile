@@ -126,15 +126,9 @@ class PrivateChatWidgetState extends State<PrivateChatWidget> {
                       List<String> googleIds = [];
                       googleIds.add(await Methods.giveGoogleIdFromToken());
                       googleIds.add(entity.googleId!);
-                      ChatRoom chatRoom = await chatRoomService.createOrGetChatRoom(googleIds, null, null, ChatType.private);
+                      await chatRoomService.createOrGetChatRoom(googleIds, null, null, ChatType.private);
                       Navigator.pop(context);
                       setState(() {});
-                      PersistentNavBarNavigator.pushNewScreen(
-                        context,
-                        screen: ChatScreen(token: await Methods.getToken(), chatRoom: chatRoom),
-                        withNavBar: true, // OPTIONAL VALUE. True by default.
-                        pageTransitionAnimation: PageTransitionAnimation.fade,
-                      );
                     },
                     child: Card(
                       elevation: 4,

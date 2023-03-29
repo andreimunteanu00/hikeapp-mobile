@@ -170,15 +170,9 @@ class PublicChatWidgetState extends State<PublicChatWidget> {
               googleIds.add(_entities[index].googleId!);
             }
           });
-          ChatRoom chatRoom = await chatRoomService.createOrGetChatRoom(googleIds, name, publicChatPhoto, ChatType.public);
+          await chatRoomService.createOrGetChatRoom(googleIds, name, publicChatPhoto, ChatType.public);
           Navigator.pop(context);
           setState(() {});
-          PersistentNavBarNavigator.pushNewScreen(
-            context,
-            screen: ChatScreen(token: await Methods.getToken(), chatRoom: chatRoom),
-            withNavBar: true, // OPTIONAL VALUE. True by default.
-            pageTransitionAnimation: PageTransitionAnimation.fade,
-          );
         }, child: const Text('next'))
       ]),
     );

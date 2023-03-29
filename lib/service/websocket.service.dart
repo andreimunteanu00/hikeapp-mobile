@@ -27,7 +27,7 @@ class WebSocketService {
     );
   }
 
-  void connect(String username, Function(List<ChatMessage>) onConnected) async {
+  void connect(String username) async {
     stompClient = StompClient(
       config: StompConfig.SockJS(
         url: '${constants.webSocketUrl}/chat',

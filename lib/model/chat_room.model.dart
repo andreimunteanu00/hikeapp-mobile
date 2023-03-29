@@ -8,6 +8,7 @@ class ChatRoom {
   final int? id;
   final String? name;
   final Picture? publicChatPhoto;
+  final ChatMessage? lastMessage;
   final List<ChatMessage>? chatMessages;
   final User? receiver;
   final List<User?>? userList;
@@ -17,6 +18,7 @@ class ChatRoom {
     this.id,
     this.name,
     this.publicChatPhoto,
+    this.lastMessage,
     this.chatMessages,
     this.receiver,
     this.userList,
@@ -27,6 +29,7 @@ class ChatRoom {
     'id': id,
     'name': name,
     'publicChatPhoto': publicChatPhoto,
+    'lastMessage': lastMessage,
     'chatMessages': chatMessages,
     'userList': userList,
     'chatType': chatType
@@ -58,7 +61,8 @@ class ChatRoom {
         userList: json['userList'] == null ? null : (json['userList'] as List<dynamic>)
             .map((e) => e == null ? null : User.fromJson(e))
             .toList(),
-        receiver: json['receiver'] == null ? null : User.fromJson(json['receiver'])
+        receiver: json['receiver'] == null ? null : User.fromJson(json['receiver']),
+        lastMessage: json['lastMessage'] == null ? null : ChatMessage.fromJson(json['lastMessage'])
     );
   }
 

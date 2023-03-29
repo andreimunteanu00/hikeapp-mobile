@@ -24,7 +24,7 @@ class ChatMessage {
     return ChatMessage(
       sender: json['sender'],
       content: json['content'],
-      chatRoomId: json['chatRoom'],
+      chatRoomId: json['chatRoomId'],
       timestamp: DateTime.parse(json['timestamp'])
     );
   }
@@ -33,6 +33,6 @@ class ChatMessage {
     'sender': sender,
     'content': content,
     'chatRoomId': chatRoomId,
-    'timeStamp': timestamp
+    'timeStamp': timestamp?.toIso8601String()
   };
 }
