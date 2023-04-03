@@ -15,9 +15,9 @@ class ChatMessageService {
     return _instance!;
   }
 
-  Future<List<ChatMessage>> getCurrentUserChatRooms(int roomId, int page) async {
+  Future<List<ChatMessage>> getCurrentUserMessageForCurrentRoom(int roomId, int page) async {
     final response = await MyHttp.getClient()
-        .get(Uri.parse('${constants.localhost}/chat-message/private/$roomId?page=$page'),
+        .get(Uri.parse('${constants.localhost}/chat-message/all/$roomId?page=$page'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         });

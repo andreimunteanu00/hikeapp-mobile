@@ -75,7 +75,6 @@ class MainScreenState extends State<MainScreen> {
       confineInSafeArea: true,
       backgroundColor: Colors.white,
       handleAndroidBackButtonPress: true,
-      resizeToAvoidBottomInset: true,
       stateManagement: true,
       hideNavigationBarWhenKeyboardShows: true,
       decoration: NavBarDecoration(

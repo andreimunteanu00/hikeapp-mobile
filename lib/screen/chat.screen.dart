@@ -27,19 +27,29 @@ class _ChatScreenState extends State<ChatScreen> {
   final ChatRoomService chatRoomService = ChatRoomService.instance;
   late final WebSocketService _webSocketService;
   late final User currentUser;
-  bool _isLoading = false;
+  bool _isLoading = true;
   int _pageNumber = 0;
+  final _scrollController = ScrollController();
+  bool _isScrolledToTop = false;
 
   getUser() async {
     currentUser = await authService.getCurrentUser();
   }
 
   Future<void> getMessages() async {
-    _messages.addAll(await chatMessageService.getCurrentUserChatRooms(widget.chatRoom.id!, _pageNumber));
-    _pageNumber++;
+    List<ChatMessage> newMessages = await chatMessageService.getCurrentUserMessageForCurrentRoom(widget.chatRoom.id!, _pageNumber);
+    print(newMessages.length);
+    if (newMessages.length > 0) {
+      _messages.insertAll(0, newMessages);
+      _pageNumber++;
+    }
     setState(() {
-
+      _isScrolledToTop = false;
     });
+    if (_pageNumber - 1 == 0) {
+      _isLoading = false;
+    }
+    print(_isLoading);
   }
 
   @override
@@ -47,16 +57,17 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _webSocketService = WebSocketService(token: widget.token, toggleMessages: toggleMessages, chatRoomId: widget.chatRoom.id!);
     _webSocketService.connect(widget.token);
+    print(_isLoading);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_isLoading) {
-        setState(() {
-          _isLoading = true;
-        });
-        getUser();
+      getUser();
+      getMessages();
+    });
+    _scrollController.addListener(() {
+      setState(() {
+        _isScrolledToTop = _scrollController.position.pixels == _scrollController.position.maxScrollExtent;
+      });
+      if (_isScrolledToTop) {
         getMessages();
-        setState(() {
-          _isLoading = false;
-        });
       }
     });
   }
@@ -129,11 +140,15 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ] : null,
       ),
-      body: Column(
+      body: !_isLoading ? Column(
         children: <Widget>[
+          _isScrolledToTop ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircularProgressIndicator(),
+          ) : SizedBox.shrink(),
           Expanded(
             child: ListView.builder(
-              controller: null,
+              controller: _scrollController,
               reverse: true,
               itemCount: _messages.length + 1,
               itemBuilder: (BuildContext context, int index) {
@@ -156,7 +171,6 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
-          Divider(height: 1.0),
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
@@ -185,7 +199,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ],
-      ),
+      ) : Center(child: CircularProgressIndicator()),
     );
   }
 
