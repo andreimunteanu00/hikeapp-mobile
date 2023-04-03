@@ -6,15 +6,14 @@ import 'package:hikeappmobile/model/chat_room.model.dart';
 import 'package:hikeappmobile/screen/chat.screen.dart';
 import 'package:hikeappmobile/service/chat_room.service.dart';
 import 'package:hikeappmobile/service/websocket.service.dart';
-import 'package:hikeappmobile/widget/avatar.widget.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:timeago/timeago.dart' as timeAgo;
 
 import '../model/chat_message.model.dart';
+import '../util/constants.dart' as constants;
 import '../util/methods.dart';
 import '../widget/private_chat.widget.dart';
 import '../widget/public_chat.widget.dart';
-import '../util/constants.dart' as constants;
-import 'package:timeago/timeago.dart' as timeAgo;
 
 class ChatRoomListScreen extends StatefulWidget {
 
@@ -69,7 +68,7 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                             );
                           }).then((value) {
                         setState(() {});
-                      });;
+                      });
                     }
                 ),
               ],
@@ -120,10 +119,6 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
             icon: const Icon(Icons.search),
             onPressed: () {},
           ),
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {},
-          ),
         ],
       ),
       body: FutureBuilder<List<ChatRoom>>(
@@ -131,6 +126,17 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             chatRooms = snapshot.data!;
+            chatRooms.sort((a, b) {
+              // Check if either ChatRoom has a null lastMessage
+              if (a.lastMessage == null) {
+                return 1; // Move a to the end of the list
+              } else if (b.lastMessage == null) {
+                return -1; // Move b to the end of the list
+              } else {
+                // Compare the timestamp fields of the lastMessage objects
+                return -(a.lastMessage!.timestamp ?? DateTime(0)).compareTo(b.lastMessage!.timestamp ?? DateTime(0));
+              }
+            });
             return Column(
               children: [
                 Expanded(
@@ -204,7 +210,11 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                                 withNavBar: true,
                                 pageTransitionAnimation:
                                 PageTransitionAnimation.fade,
-                              );
+                              ).then((value) {
+                                setState(() {
+
+                                });
+                              });
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,

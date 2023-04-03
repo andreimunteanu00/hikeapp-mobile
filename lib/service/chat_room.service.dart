@@ -58,4 +58,29 @@ class ChatRoomService {
         .map((json) => ChatRoom.fromJson(json))
         .toList();
   }
+
+  void leaveChat(ChatRoom chatRoom) async {
+    var body = jsonEncode(chatRoom);
+    print(body);
+    final response = await MyHttp.getClient()
+        .delete(Uri.parse('${constants.localhost}/chat-room/leave/current-user/${chatRoom.id}'));
+    print(response);
+  }
+
+  void editGroup(int groupId, String name, Picture groupPhoto) async {
+    var body = jsonEncode({
+      'id': groupId,
+      'name': name,
+      'publicChatPhoto': groupPhoto
+    });
+    final response = await MyHttp.getClient()
+        .put(Uri.parse('${constants.localhost}/chat-room/edit'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
+    if (response.statusCode != 200) {
+      throw new Exception('Failed to edit chat room!');
+    }
+  }
 }
