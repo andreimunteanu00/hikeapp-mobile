@@ -59,7 +59,7 @@ class ChatRoomService {
         .toList();
   }
 
-  void leaveChat(ChatRoom chatRoom) async {
+  Future<void> leaveChat(ChatRoom chatRoom) async {
     var body = jsonEncode(chatRoom);
     print(body);
     final response = await MyHttp.getClient()
@@ -67,7 +67,7 @@ class ChatRoomService {
     print(response);
   }
 
-  void editGroup(int groupId, String name, Picture groupPhoto) async {
+  Future<void> editGroup(int groupId, String name, Picture groupPhoto) async {
     var body = jsonEncode({
       'id': groupId,
       'name': name,
@@ -81,6 +81,44 @@ class ChatRoomService {
         body: body);
     if (response.statusCode != 200) {
       throw new Exception('Failed to edit chat room!');
+    }
+  }
+
+  Future<void> removeMember(String googleId, int groupId) async {
+    final response = await MyHttp.getClient()
+        .delete(Uri.parse('${constants.localhost}/chat-room/remove-member/$googleId/$groupId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        });
+    if (response.statusCode != 204) {
+      throw new Exception('Failed to remove member from chat room!');
+    }
+  }
+
+  Future<void> addMembers(List<String> googleIds, int groupId) async {
+    var body = jsonEncode({
+      'id': groupId,
+      'googleIds': googleIds,
+    });
+    final response = await MyHttp.getClient()
+        .put(Uri.parse('${constants.localhost}/chat-room/add-members'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
+    if (response.statusCode != 204) {
+      throw new Exception('Failed to add new memebers to chat room!');
+    }
+  }
+
+  Future<void> giveAdmin(String googleId, int groupId) async {
+    final response = await MyHttp.getClient()
+        .put(Uri.parse('${constants.localhost}/chat-room/give-admin/$googleId/$groupId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        });
+    if (response.statusCode != 204) {
+      throw new Exception('Failed to give admin to member from chat room!');
     }
   }
 }

@@ -127,7 +127,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                                     handleStartNewHike:
                                         widget.handleStartNewHike));
                                 Navigator.of(context).pop();
-                                widget.controller.jumpToTab(2);
+                                widget.controller.jumpToTab(3);
                               } else {
                                 showDialog(
                                     context: context,

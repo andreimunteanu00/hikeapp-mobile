@@ -12,6 +12,7 @@ class ChatRoom {
   final List<ChatMessage>? chatMessages;
   final User? receiver;
   final List<User?>? userList;
+  final List<User?>? adminList;
   final ChatType? chatType;
 
   ChatRoom({
@@ -22,6 +23,7 @@ class ChatRoom {
     this.chatMessages,
     this.receiver,
     this.userList,
+    this.adminList,
     this.chatType
   });
 
@@ -32,6 +34,7 @@ class ChatRoom {
     'lastMessage': lastMessage,
     'chatMessages': chatMessages,
     'userList': userList,
+    'adminList': adminList,
     'chatType': chatType
   };
 
@@ -49,6 +52,9 @@ class ChatRoom {
       publicChatPhoto: Picture.fromJson(json['publicChatPhoto']),
       userList: (json['userList'] as List<dynamic>)
           .map((e) => e == null ? null : User.fromJson(e))
+          .toList(),
+      adminList: (json['adminList'] as List<dynamic>)
+          .map((e) => e == null ? null : User.fromJson(e))
           .toList()
     );
   }
@@ -59,6 +65,9 @@ class ChatRoom {
         name: json['name'],
         publicChatPhoto: json['publicChatPhoto'] == null ? null : Picture.fromJson(json['publicChatPhoto']),
         userList: json['userList'] == null ? null : (json['userList'] as List<dynamic>)
+            .map((e) => e == null ? null : User.fromJson(e))
+            .toList(),
+        adminList: (json['adminList'] as List<dynamic>)
             .map((e) => e == null ? null : User.fromJson(e))
             .toList(),
         receiver: json['receiver'] == null ? null : User.fromJson(json['receiver']),

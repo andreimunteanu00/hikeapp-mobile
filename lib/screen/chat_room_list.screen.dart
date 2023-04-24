@@ -12,8 +12,8 @@ import 'package:timeago/timeago.dart' as timeAgo;
 import '../model/chat_message.model.dart';
 import '../util/constants.dart' as constants;
 import '../util/methods.dart';
-import '../widget/private_chat.widget.dart';
-import '../widget/public_chat.widget.dart';
+import '../widget/modal/private_chat.modal.dart';
+import '../widget/modal/public_chat.modal.dart';
 
 class ChatRoomListScreen extends StatefulWidget {
 
@@ -47,7 +47,7 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                       builder: (BuildContext context) {
                         return AlertDialog(
                             title: Text('Select Chat Type'),
-                            content: PrivateChatWidget()
+                            content: PrivateChatModal()
                         );
                       }).then((value) {
                       setState(() {});
@@ -64,7 +64,7 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                           builder: (BuildContext context) {
                             return AlertDialog(
                                 title: Text('Select Chat Type'),
-                                content: PublicChatWidget()
+                                content: PublicChatModal()
                             );
                           }).then((value) {
                         setState(() {});
@@ -147,19 +147,19 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                       WebSocketService wbs = WebSocketService(token: widget.token, toggleMessages: toggleMessages, chatRoomId: chatRooms[index].id!);
                       wbs.connect(widget.token);
                       if (chatRooms[index].name == null) {
-                        return Card(
+                        return GestureDetector(
+                          onTap: () {
+                            PersistentNavBarNavigator.pushNewScreen(
+                              context,
+                              screen: ChatScreen(token: widget.token, chatRoom: chatRooms[index]),
+                              withNavBar: true,
+                              pageTransitionAnimation:
+                              PageTransitionAnimation.fade,
+                            );
+                          },
+                          child: Card(
                           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          child: GestureDetector(
-                            onTap: () {
-                              PersistentNavBarNavigator.pushNewScreen(
-                                context,
-                                screen: ChatScreen(token: widget.token, chatRoom: chatRooms[index]),
-                                withNavBar: true,
-                                pageTransitionAnimation:
-                                PageTransitionAnimation.fade,
-                              );
-                            },
-                            child: Row(
+                          child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
@@ -200,23 +200,23 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                           ),
                         );
                       } else {
-                        return Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: GestureDetector(
-                            onTap: () {
-                              PersistentNavBarNavigator.pushNewScreen(
-                                context,
-                                screen: ChatScreen(token: widget.token, chatRoom: chatRooms[index]),
-                                withNavBar: true,
-                                pageTransitionAnimation:
-                                PageTransitionAnimation.fade,
-                              ).then((value) {
-                                setState(() {
+                        return GestureDetector(
+                          onTap: () {
+                            PersistentNavBarNavigator.pushNewScreen(
+                              context,
+                              screen: ChatScreen(token: widget.token, chatRoom: chatRooms[index]),
+                              withNavBar: true,
+                              pageTransitionAnimation:
+                              PageTransitionAnimation.fade,
+                            ).then((value) {
+                              setState(() {
 
-                                });
                               });
-                            },
-                            child: Row(
+                            });
+                          },
+                          child: Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [

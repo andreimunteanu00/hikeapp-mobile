@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/service/chat_message.service.dart';
 import 'package:hikeappmobile/widget/modal/group_edit.modal.dart';
+import 'package:hikeappmobile/widget/modal/member.modal.dart';
 
 import '../model/chat_message.model.dart';
 import '../model/chat_room.model.dart';
@@ -31,17 +32,27 @@ class _ChatScreenState extends State<ChatScreen> {
   int _pageNumber = 0;
   final _scrollController = ScrollController();
   bool _isScrolledToTop = false;
+  bool isUserAdmin = false;
 
   getUser() async {
     currentUser = await authService.getCurrentUser();
+    widget.chatRoom.adminList?.forEach((admin) {
+      if (admin?.googleId == currentUser.googleId) {
+        isUserAdmin = true;
+      }
+    });
   }
 
   Future<void> getMessages() async {
     List<ChatMessage> newMessages = await chatMessageService.getCurrentUserMessageForCurrentRoom(widget.chatRoom.id!, _pageNumber);
     print(newMessages.length);
-    if (newMessages.length > 0) {
+    if (newMessages.isNotEmpty) {
+      if (_messages.isNotEmpty) {
+        _pageNumber++;
+      } else {
+        _isLoading = false;
+      }
       _messages.insertAll(0, newMessages);
-      _pageNumber++;
     }
     setState(() {
       _isScrolledToTop = false;
@@ -49,7 +60,9 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_pageNumber - 1 == 0) {
       _isLoading = false;
     }
-    print(_isLoading);
+    if (_messages.isEmpty) {
+      _isLoading = false;
+    }
   }
 
   @override
@@ -57,7 +70,6 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _webSocketService = WebSocketService(token: widget.token, toggleMessages: toggleMessages, chatRoomId: widget.chatRoom.id!);
     _webSocketService.connect(widget.token);
-    print(_isLoading);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getUser();
       getMessages();
@@ -103,8 +115,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                         TextButton(
                           child: Text("Leave"),
-                          onPressed: () {
-                            chatRoomService.leaveChat(widget.chatRoom);
+                          onPressed: () async {
+                            await chatRoomService.leaveChat(widget.chatRoom);
                             Navigator.of(context).pop(true);
                           },
                         ),
@@ -125,6 +137,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     groupPhoto: widget.chatRoom.publicChatPhoto,
                   ),
                 );
+              } else if (value == 'members') {
+                showDialog(
+                    context: context,
+                    builder: (context) => MemberModal(
+                      groupId: widget.chatRoom.id!,
+                      members: widget.chatRoom.userList!,
+                  )
+                ).then((value) => setState(() {}));
               }
             },
             itemBuilder: (BuildContext context) => [
@@ -135,6 +155,11 @@ class _ChatScreenState extends State<ChatScreen> {
               const PopupMenuItem(
                 value: 'edit',
                 child: Text('Edit chat'),
+              ),
+              if (isUserAdmin)
+                const PopupMenuItem(
+                value: 'members',
+                child: Text('Add member'),
               ),
             ],
           ),

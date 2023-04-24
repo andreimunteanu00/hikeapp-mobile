@@ -50,8 +50,8 @@ class GroupEditModalState extends State<GroupEditModal> {
           child: Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () {
-            chatRoomService.editGroup(widget.groupId!, nameController.text, newPhoto);
+          onPressed: () async {
+            await chatRoomService.editGroup(widget.groupId!, nameController.text, newPhoto);
             Navigator.of(context).pop();
           },
           child: Text('Save'),
