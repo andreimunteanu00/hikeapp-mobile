@@ -34,7 +34,7 @@ class MapPreviewWidgetState extends State<MapPreviewWidget> {
   void initState() {
     super.initState();
     markers.add(Marker(
-      markerId: MarkerId('startPosition'),
+      markerId: const MarkerId('startPosition'),
       infoWindow: const InfoWindow(title: 'Start Position'),
       position: widget.startPosition,
       icon: BitmapDescriptor.defaultMarkerWithHue(
@@ -42,7 +42,7 @@ class MapPreviewWidgetState extends State<MapPreviewWidget> {
       ),
     ));
     markers.add(Marker(
-        markerId: MarkerId('endPosition'),
+        markerId: const MarkerId('endPosition'),
         infoWindow: const InfoWindow(title: 'End Position'),
         position: widget.endPosition,
         icon: BitmapDescriptor.defaultMarkerWithHue(
@@ -56,7 +56,7 @@ class MapPreviewWidgetState extends State<MapPreviewWidget> {
   }
 
   addPolyLine() {
-    PolylineId id = PolylineId("poly");
+    PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
         polylineId: id,
         points: polylineCoordinates,

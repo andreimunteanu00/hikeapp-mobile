@@ -1,12 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:hikeappmobile/service/hike_history.service.dart';
 import 'package:hikeappmobile/model/hike_history.dart';
+import 'package:hikeappmobile/service/hike_history.service.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+
 import '../util/constants.dart' as constants;
-import '../widget/hike_item_list.widget.dart';
-import 'hike_detail.screen.dart';
 
 class HikeHistoryScreen extends StatefulWidget {
   final PersistentTabController controller;
@@ -15,19 +14,19 @@ class HikeHistoryScreen extends StatefulWidget {
   const HikeHistoryScreen({super.key, required this.controller, required this.handleOnGoingHike});
 
   @override
-  _HikeHistoryScreenState createState() => _HikeHistoryScreenState();
+  HikeHistoryScreenState createState() => HikeHistoryScreenState();
 }
 
-class _HikeHistoryScreenState extends State<HikeHistoryScreen> {
-  final HikeHistoryService _entityService = HikeHistoryService.instance;
-  final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  final List<HikeHistory> _entities = [];
-  final int _pageSize = 10;
-  String _searchTerm = '';
-  bool _isLoading = false;
-  bool _hasMore = true;
-  int _page = 0;
+class HikeHistoryScreenState extends State<HikeHistoryScreen> {
+  final HikeHistoryService hikeHistoryService = HikeHistoryService.instance;
+  final TextEditingController searchController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  final List<HikeHistory> hikeHistoryList = [];
+  final int pageSize = 10;
+  String searchTerm = '';
+  bool isLoading = false;
+  bool hasMore = true;
+  int page = 0;
   bool startNewHike = true;
 
   handleStartNewHike(bool value) {
@@ -39,45 +38,44 @@ class _HikeHistoryScreenState extends State<HikeHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    _loadEntities();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _loadEntities();
+    fetchData();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        fetchData();
       }
     });
   }
 
-  Future<void> _loadEntities() async {
-    if (!_isLoading && _hasMore) {
-      setState(() => _isLoading = true);
+  Future<void> fetchData() async {
+    if (!isLoading && hasMore) {
+      setState(() => isLoading = true);
       try {
-        final entities = await _entityService.getAllEntities(
-            title: _searchTerm,
-            page: _page,
-            size: _pageSize);
+        final entities = await hikeHistoryService.getAllEntities(
+            title: searchTerm,
+            page: page,
+            size: pageSize);
         setState(() {
-          _entities.addAll(entities);
-          _page++;
-          _isLoading = false;
-          _hasMore = entities.length == _pageSize;
+          hikeHistoryList.addAll(entities);
+          page++;
+          isLoading = false;
+          hasMore = entities.length == pageSize;
         });
       } catch (e) {
-        print(e);
-        setState(() => _isLoading = false);
+        setState(() => isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text(constants.failedToLoadData)));
       }
     }
   }
 
-  void _resetEntities() {
+  void resetEntities() {
     setState(() {
-      _entities.clear();
-      _page = 0;
-      _hasMore = true;
+      hikeHistoryList.clear();
+      page = 0;
+      hasMore = true;
     });
-    _loadEntities();
+    fetchData();
   }
 
   String formatDuration(Duration duration) {
@@ -91,7 +89,6 @@ class _HikeHistoryScreenState extends State<HikeHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
         appBar: AppBar(title: const Text(constants.appTitle)),
@@ -102,20 +99,20 @@ class _HikeHistoryScreenState extends State<HikeHistoryScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _searchController,
+                    controller: searchController,
                     decoration:
                     const InputDecoration(hintText: 'Search by name'),
                     onChanged: (value) {
-                      _searchTerm = value;
-                      if (_searchTerm.isEmpty) {
-                        _resetEntities();
+                      searchTerm = value;
+                      if (searchTerm.isEmpty) {
+                        resetEntities();
                       }
                     },
                   ),
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      _resetEntities();
+                      resetEntities();
                     },
                     child: const Icon(Icons.search)),
               ],
@@ -123,15 +120,15 @@ class _HikeHistoryScreenState extends State<HikeHistoryScreen> {
           ),
           Expanded(
               child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: _entities.length + (_hasMore ? 1 : 0),
+                  controller: scrollController,
+                  itemCount: hikeHistoryList.length + (hasMore ? 1 : 0),
                   itemBuilder: (BuildContext context, int index) {
-                    if (index == _entities.length) {
-                      return _isLoading
+                    if (index == hikeHistoryList.length) {
+                      return isLoading
                           ? const Center(child: CircularProgressIndicator())
                           : const SizedBox();
                     }
-                    final HikeHistory entity = _entities[index];
+                    final HikeHistory entity = hikeHistoryList[index];
                     return Card(
                         child: Row(
                           children: [

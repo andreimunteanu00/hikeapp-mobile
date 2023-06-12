@@ -22,16 +22,16 @@ class HikeListScreen extends StatefulWidget {
 }
 
 class HikeListScreenState extends State<HikeListScreen> {
-  final HikeService _entityService = HikeService.instance;
-  final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  final List<Hike> _entities = [];
-  final int _pageSize = 10;
-  String _sortBy = 'title';
-  String _searchTerm = '';
-  bool _isLoading = false;
-  bool _hasMore = true;
-  int _page = 0;
+  final HikeService hikeService = HikeService.instance;
+  final TextEditingController searchController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  final List<Hike> hikeList = [];
+  final int pageSize = 10;
+  String sortBy = 'title';
+  String searchTerm = '';
+  bool isLoading = false;
+  bool hasMore = true;
+  int page = 0;
   bool startNewHike = true;
 
   handleStartNewHike(bool value) {
@@ -43,45 +43,45 @@ class HikeListScreenState extends State<HikeListScreen> {
   @override
   void initState() {
     super.initState();
-    _loadEntities();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _loadEntities();
+    fetchData();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        fetchData();
       }
     });
   }
 
-  Future<void> _loadEntities() async {
-    if (!_isLoading && _hasMore) {
-      setState(() => _isLoading = true);
+  Future<void> fetchData() async {
+    if (!isLoading && hasMore) {
+      setState(() => isLoading = true);
       try {
-        final entities = await _entityService.getAllEntities(
-            title: _searchTerm,
-            sortField: _sortBy,
-            page: _page,
-            size: _pageSize);
+        final entities = await hikeService.getAllEntities(
+            title: searchTerm,
+            sortField: sortBy,
+            page: page,
+            size: pageSize);
         setState(() {
-          _entities.addAll(entities);
-          _page++;
-          _isLoading = false;
-          _hasMore = entities.length == _pageSize;
+          hikeList.addAll(entities);
+          page++;
+          isLoading = false;
+          hasMore = entities.length == pageSize;
         });
       } catch (e) {
-        setState(() => _isLoading = false);
+        setState(() => isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text(constants.failedToLoadData)));
       }
     }
   }
 
-  void _resetEntities() {
+  void resetEntities() {
     setState(() {
-      _entities.clear();
-      _page = 0;
-      _hasMore = true;
+      hikeList.clear();
+      page = 0;
+      hasMore = true;
     });
-    _loadEntities();
+    fetchData();
   }
 
   @override
@@ -98,38 +98,37 @@ class HikeListScreenState extends State<HikeListScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _searchController,
+                    controller: searchController,
                     decoration:
                         const InputDecoration(hintText: 'Search by name'),
                     onChanged: (value) {
-                      _searchTerm = value;
-                      if (_searchTerm.isEmpty) {
-                        _resetEntities();
+                      searchTerm = value;
+                      if (searchTerm.isEmpty) {
+                        resetEntities();
                       }
                     },
                   ),
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      _resetEntities();
+                      resetEntities();
                     },
                     child: const Icon(Icons.search)),
                 // TODO make a dropdown with icons
                 DropdownButton<String>(
-                  value: _sortBy,
+                  value: sortBy,
                   items: const [
                     DropdownMenuItem(
-                        value: 'title', child: Text('Sort by title')),
+                        value: 'title', child: Icon(Icons.abc_rounded)),
                     DropdownMenuItem(
-                        value: 'allRatings', child: Text('Sort by rating')),
+                        value: 'allRatings', child: Icon(Icons.star_rate)),
                     DropdownMenuItem(
-                        value: 'numberRatings',
-                        child: Text('Sort by popularity')),
+                        value: 'numberRatings', child: Icon(Icons.numbers_rounded)),
                   ],
                   onChanged: (String? value) {
                     if (value != null) {
-                      _sortBy = value;
-                      _resetEntities();
+                      sortBy = value;
+                      resetEntities();
                     }
                   },
                 ),
@@ -138,15 +137,15 @@ class HikeListScreenState extends State<HikeListScreen> {
           ),
           Expanded(
               child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: _entities.length + (_hasMore ? 1 : 0),
+                  controller: scrollController,
+                  itemCount: hikeList.length + (hasMore ? 1 : 0),
                   itemBuilder: (BuildContext context, int index) {
-                    if (index == _entities.length) {
-                      return _isLoading
+                    if (index == hikeList.length) {
+                      return isLoading
                           ? const Center(child: CircularProgressIndicator())
                           : const SizedBox();
                     }
-                    final Hike entity = _entities[index];
+                    final Hike entity = hikeList[index];
                     return GestureDetector(
                         onTap: () {
                           PersistentNavBarNavigator.pushNewScreen(

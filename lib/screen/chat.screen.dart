@@ -21,17 +21,17 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final List<ChatMessage> _messages = [];
-  final _messageController = TextEditingController();
+  final List<ChatMessage> messages = [];
+  final messageController = TextEditingController();
   final AuthService authService = AuthService.instance;
   final ChatMessageService chatMessageService = ChatMessageService.instance;
   final ChatRoomService chatRoomService = ChatRoomService.instance;
-  late final WebSocketService _webSocketService;
+  late final WebSocketService webSocketService;
   late final User currentUser;
-  bool _isLoading = true;
-  int _pageNumber = 0;
-  final _scrollController = ScrollController();
-  bool _isScrolledToTop = false;
+  bool isLoading = true;
+  int pageNumber = 0;
+  final scrollController = ScrollController();
+  bool isScrolledToTop = false;
   bool isUserAdmin = false;
 
   getUser() async {
@@ -44,41 +44,41 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> getMessages() async {
-    List<ChatMessage> newMessages = await chatMessageService.getCurrentUserMessageForCurrentRoom(widget.chatRoom.id!, _pageNumber);
+    List<ChatMessage> newMessages = await chatMessageService.getCurrentUserMessageForCurrentRoom(widget.chatRoom.id!, pageNumber);
     print(newMessages.length);
     if (newMessages.isNotEmpty) {
-      if (_messages.isNotEmpty) {
-        _pageNumber++;
+      if (messages.isNotEmpty) {
+        pageNumber++;
       } else {
-        _isLoading = false;
+        isLoading = false;
       }
-      _messages.insertAll(0, newMessages);
+      messages.insertAll(0, newMessages);
     }
     setState(() {
-      _isScrolledToTop = false;
+      isScrolledToTop = false;
     });
-    if (_pageNumber - 1 == 0) {
-      _isLoading = false;
+    if (pageNumber - 1 == 0) {
+      isLoading = false;
     }
-    if (_messages.isEmpty) {
-      _isLoading = false;
+    if (messages.isEmpty) {
+      isLoading = false;
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _webSocketService = WebSocketService(token: widget.token, toggleMessages: toggleMessages, chatRoomId: widget.chatRoom.id!);
-    _webSocketService.connect(widget.token);
+    webSocketService = WebSocketService(token: widget.token, toggleMessages: toggleMessages, chatRoomId: widget.chatRoom.id!);
+    webSocketService.connect(widget.token);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getUser();
       getMessages();
     });
-    _scrollController.addListener(() {
+    scrollController.addListener(() {
       setState(() {
-        _isScrolledToTop = _scrollController.position.pixels == _scrollController.position.maxScrollExtent;
+        isScrolledToTop = scrollController.position.pixels == scrollController.position.maxScrollExtent;
       });
-      if (_isScrolledToTop) {
+      if (isScrolledToTop) {
         getMessages();
       }
     });
@@ -86,7 +86,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    _webSocketService.disconnect();
+    webSocketService.disconnect();
     super.dispose();
   }
 
@@ -165,25 +165,25 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ] : null,
       ),
-      body: !_isLoading ? Column(
+      body: !isLoading ? Column(
         children: <Widget>[
-          _isScrolledToTop ? Padding(
-            padding: const EdgeInsets.all(8.0),
+          isScrolledToTop ? const Padding(
+            padding: EdgeInsets.all(8.0),
             child: CircularProgressIndicator(),
-          ) : SizedBox.shrink(),
+          ) : const SizedBox.shrink(),
           Expanded(
             child: ListView.builder(
-              controller: _scrollController,
+              controller: scrollController,
               reverse: true,
-              itemCount: _messages.length + 1,
+              itemCount: messages.length + 1,
               itemBuilder: (BuildContext context, int index) {
                 if (index == 0) {
                   return Center(
-                    child: _isLoading ? CircularProgressIndicator() : Container(),
+                    child: isLoading ? const CircularProgressIndicator() : Container(),
                   );
                 } else {
-                  final messageIndex = _messages.length - index;
-                  final message = _messages[messageIndex];
+                  final messageIndex = messages.length - index;
+                  final message = messages[messageIndex];
                   return ListTile(
                     title: Text(message.sender!),
                     subtitle: Text(message.content!),
@@ -206,8 +206,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 16.0),
                     child: TextField(
-                      controller: _messageController,
-                      decoration: InputDecoration.collapsed(hintText: 'Send a message'),
+                      controller: messageController,
+                      decoration: const InputDecoration.collapsed(hintText: 'Send a message'),
                       onSubmitted: (value) {
                         _sendMessage(value);
                       },
@@ -215,30 +215,30 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send),
+                  icon: const Icon(Icons.send),
                   onPressed: () {
-                    _sendMessage(_messageController.text);
+                    _sendMessage(messageController.text);
                   },
                 )
               ],
             ),
           ),
         ],
-      ) : Center(child: CircularProgressIndicator()),
+      ) : const Center(child: CircularProgressIndicator()),
     );
   }
 
   void toggleMessages(ChatMessage message) {
     setState(() {
-      _messages.add(message);
+      messages.add(message);
     });
   }
 
   void _sendMessage(String content) {
     if (content.isNotEmpty) {
       final message = ChatMessage(sender: currentUser.username, content: content, chatRoomId: widget.chatRoom.id, timestamp: DateTime.now());
-      _webSocketService.sendMessage(message);
-      _messageController.clear();
+      webSocketService.sendMessage(message);
+      messageController.clear();
     }
   }
 }

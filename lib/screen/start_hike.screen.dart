@@ -36,7 +36,7 @@ class StartHikeScreen extends StatefulWidget {
 class StartHikeScreenState extends State<StartHikeScreen> {
   late Completer<GoogleMapController> mapController = Completer();
   final Set<Marker> markers = {};
-  Map<PolylineId, Polyline> polylines = {};
+  Map<PolylineId, Polyline> polylineMap = {};
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   String googleAPiKey = constants.googleApiDirectionsKey;
@@ -90,7 +90,7 @@ class StartHikeScreenState extends State<StartHikeScreen> {
         jointType: JointType.mitered,
         patterns: const [PatternItem.dot]);
     polylineCoordinates = [];
-    polylines[id] = polyline;
+    polylineMap[id] = polyline;
   }
 
   getPolyline(LatLng start, LatLng end) async {
@@ -189,7 +189,6 @@ class StartHikeScreenState extends State<StartHikeScreen> {
         position.longitude,
         widget.endPoint.latitude,
         widget.endPoint.longitude);
-    print(distanceFromFinish);
     if (distanceFromFinish < 50) {
       widget.handleStartNewHike(true);
       stopwatch.stop();
@@ -289,7 +288,7 @@ class StartHikeScreenState extends State<StartHikeScreen> {
                                           widget.endPoint.longitude) /
                                       2),
                               zoom: 11),
-                          polylines: Set<Polyline>.of(polylines.values),
+                          polylines: Set<Polyline>.of(polylineMap.values),
                           myLocationEnabled: true,
                           mapToolbarEnabled: true,
                           buildingsEnabled: false,

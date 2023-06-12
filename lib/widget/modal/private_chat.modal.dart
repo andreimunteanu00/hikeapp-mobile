@@ -18,56 +18,56 @@ class PrivateChatModal extends StatefulWidget {
 class PrivateChatModalState extends State<PrivateChatModal> {
   final UserService userService = UserService.instance;
   final ChatRoomService chatRoomService = ChatRoomService.instance;
-  final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  final List<User> _entities = [];
-  final int _pageSize = 10;
-  String _searchTerm = '';
-  bool _isLoading = false;
-  bool _hasMore = true;
-  int _page = 0;
+  final TextEditingController searchController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  final List<User> userList = [];
+  final int pageSize = 10;
+  String searchTerm = '';
+  bool isLoading = false;
+  bool hasMore = true;
+  int page = 0;
 
-  Future<void> _loadEntities() async {
-    if (!_isLoading && _hasMore) {
-      setState(() => _isLoading = true);
+  Future<void> fetchData() async {
+    if (!isLoading && hasMore) {
+      setState(() => isLoading = true);
       try {
         final entities = await userService.getAllEntities(
-            username: _searchTerm,
-            page: _page,
-            size: _pageSize);
+            username: searchTerm,
+            page: page,
+            size: pageSize);
         final googleId = await Methods.giveGoogleIdFromToken();
         entities.removeWhere((entity) => entity.googleId! == googleId);
         setState(() {
-          _entities.addAll(entities);
-          _page++;
-          _isLoading = false;
-          _hasMore = entities.length == _pageSize;
+          userList.addAll(entities);
+          page++;
+          isLoading = false;
+          hasMore = entities.length == pageSize;
         });
       } catch (e) {
-        setState(() => _isLoading = false);
+        setState(() => isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text(constants.failedToLoadData)));
       }
     }
   }
 
-  void _resetEntities() {
+  void resetEntities() {
     setState(() {
-      _entities.clear();
-      _page = 0;
-      _hasMore = true;
+      userList.clear();
+      page = 0;
+      hasMore = true;
     });
-    _loadEntities();
+    fetchData();
   }
 
   @override
   void initState() {
     super.initState();
-    _loadEntities();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _loadEntities();
+    fetchData();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        fetchData();
       }
     });
   }
@@ -87,20 +87,20 @@ class PrivateChatModalState extends State<PrivateChatModal> {
             children: [
               Expanded(
                 child: TextField(
-                  controller: _searchController,
+                  controller: searchController,
                   decoration:
                   const InputDecoration(hintText: 'Search by username'),
                   onChanged: (value) {
-                    _searchTerm = value;
-                    if (_searchTerm.isEmpty) {
-                      _resetEntities();
+                    searchTerm = value;
+                    if (searchTerm.isEmpty) {
+                      resetEntities();
                     }
                   },
                 ),
               ),
               ElevatedButton(
                 onPressed: () {
-                  _resetEntities();
+                  resetEntities();
                 },
                 child: const Icon(Icons.search)
               )
@@ -109,15 +109,15 @@ class PrivateChatModalState extends State<PrivateChatModal> {
         ),
         Expanded(
             child: ListView.builder(
-                controller: _scrollController,
-                itemCount: _entities.length + (_hasMore ? 1 : 0),
+                controller: scrollController,
+                itemCount: userList.length + (hasMore ? 1 : 0),
                 itemBuilder: (BuildContext context, int index) {
-                  if (index == _entities.length) {
-                    return _isLoading
+                  if (index == userList.length) {
+                    return isLoading
                         ? const Center(child: CircularProgressIndicator())
                         : const SizedBox();
                   }
-                  final User entity = _entities[index];
+                  final User entity = userList[index];
                   return GestureDetector(
                     onTap: () async {
                       List<String> googleIds = [];
@@ -129,7 +129,7 @@ class PrivateChatModalState extends State<PrivateChatModal> {
                     },
                     child: Card(
                       elevation: 4,
-                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
                       child: ListTile(
                         leading: CircleAvatar(
                           radius: 24,
@@ -137,7 +137,7 @@ class PrivateChatModalState extends State<PrivateChatModal> {
                         ),
                         title: Text(
                           entity.username!,
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),

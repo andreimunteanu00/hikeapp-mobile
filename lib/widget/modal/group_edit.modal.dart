@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/model/picture.model.dart';
 import 'package:hikeappmobile/service/chat_room.service.dart';
@@ -30,13 +29,13 @@ class GroupEditModalState extends State<GroupEditModal> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Edit group info'),
+      title: const Text('Edit group info'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextFormField(
             controller: nameController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Group Name',
             ),
           ),
@@ -47,14 +46,14 @@ class GroupEditModalState extends State<GroupEditModal> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: () async {
             await chatRoomService.editGroup(widget.groupId!, nameController.text, newPhoto);
             Navigator.of(context).pop();
           },
-          child: Text('Save'),
+          child: const Text('Save'),
         ),
       ],
     );

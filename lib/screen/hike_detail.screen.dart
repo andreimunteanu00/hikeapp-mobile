@@ -39,42 +39,42 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
   final HikeService hikeService = HikeService.instance;
   final AuthService authService = AuthService.instance;
   final RatingService ratingService = RatingService.instance;
-  final ScrollController _scrollController = ScrollController();
-  final List<Rating> _entities = [];
-  final int _pageSize = 10;
-  bool _isLoading = false;
-  bool _hasMore = true;
-  int _page = 0;
+  final ScrollController scrollController = ScrollController();
+  final List<Rating> ratingList = [];
+  final int pageSize = 10;
+  bool isLoading = false;
+  bool hasMore = true;
+  int page = 0;
   late Hike hike;
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _fetchData();
+    fetchData();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        fetchData();
       }
     });
   }
 
-  Future<void> _fetchData() async {
-    if (!_isLoading && _hasMore) {
-      setState(() => _isLoading = true);
+  Future<void> fetchData() async {
+    if (!isLoading && hasMore) {
+      setState(() => isLoading = true);
       try {
         final entities = await ratingService.getRatingForHikeTitle(
-            hikeTitle: widget.hikeTitle, page: _page, size: _pageSize);
+            hikeTitle: widget.hikeTitle, page: page, size: pageSize);
         final googleId = await Methods.giveGoogleIdFromToken();
         entities.removeWhere((entity) => entity.user!.googleId! == googleId);
         setState(() {
-          _entities.addAll(entities);
-          _page++;
-          _isLoading = false;
-          _hasMore = entities.length == _pageSize;
+          ratingList.addAll(entities);
+          page++;
+          isLoading = false;
+          hasMore = entities.length == pageSize;
         });
       } catch (e) {
-        setState(() => _isLoading = false);
+        setState(() => isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text(constants.failedToLoadData)));
       }
@@ -214,21 +214,21 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    _entities.isEmpty
-                        ? const Text('no rating yet!')
+                    ratingList.isEmpty
+                        ? const Text('No rating yet!')
                         : Expanded(
                             child: ListView.builder(
-                                controller: _scrollController,
+                                controller: scrollController,
                                 itemCount:
-                                    _entities.length + (_hasMore ? 1 : 0),
+                                    ratingList.length + (hasMore ? 1 : 0),
                                 itemBuilder: (BuildContext context, int index) {
-                                  if (index == _entities.length) {
-                                    return _isLoading
+                                  if (index == ratingList.length) {
+                                    return isLoading
                                         ? const Center(
                                             child: CircularProgressIndicator())
                                         : const SizedBox();
                                   }
-                                  final entity = _entities[index];
+                                  final entity = ratingList[index];
                                   return UserCommentWidget(rating: entity);
                                 })),
                     SizedBox(height: screenHeight / 60),

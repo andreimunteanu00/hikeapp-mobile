@@ -19,7 +19,7 @@ class ChatRoomService {
 
 
   Future<ChatRoom> createOrGetChatRoom(List<String> googleIds, String? name, Picture? groupPhoto, ChatType chatType) async {
-    var body;
+    String body;
     if (name != null) {
       body = jsonEncode({
         'name': name,
@@ -36,7 +36,7 @@ class ChatRoomService {
       },
       body: body);
     if (response.statusCode != 200) {
-      throw new Exception('Failed to load chat room!');
+      throw Exception('Failed to load chat room!');
     }
     if (chatType == ChatType.private) {
       return ChatRoom.fromJsonPrivate(json.decode(response.body));
@@ -52,7 +52,7 @@ class ChatRoomService {
           'Content-Type': 'application/json; charset=UTF-8',
         });
     if (response.statusCode != 200) {
-      throw new Exception('Failed to load chat room!');
+      throw Exception('Failed to load chat room!');
     }
     return (jsonDecode(response.body) as List)
         .map((json) => ChatRoom.fromJson(json))
@@ -60,11 +60,7 @@ class ChatRoomService {
   }
 
   Future<void> leaveChat(ChatRoom chatRoom) async {
-    var body = jsonEncode(chatRoom);
-    print(body);
-    final response = await MyHttp.getClient()
-        .delete(Uri.parse('${constants.localhost}/chat-room/leave/current-user/${chatRoom.id}'));
-    print(response);
+    await MyHttp.getClient().delete(Uri.parse('${constants.localhost}/chat-room/leave/current-user/${chatRoom.id}'));
   }
 
   Future<void> editGroup(int groupId, String name, Picture groupPhoto) async {
@@ -80,7 +76,7 @@ class ChatRoomService {
         },
         body: body);
     if (response.statusCode != 200) {
-      throw new Exception('Failed to edit chat room!');
+      throw Exception('Failed to edit chat room!');
     }
   }
 
@@ -91,7 +87,7 @@ class ChatRoomService {
           'Content-Type': 'application/json; charset=UTF-8',
         });
     if (response.statusCode != 204) {
-      throw new Exception('Failed to remove member from chat room!');
+      throw Exception('Failed to remove member from chat room!');
     }
   }
 
@@ -107,7 +103,7 @@ class ChatRoomService {
         },
         body: body);
     if (response.statusCode != 204) {
-      throw new Exception('Failed to add new memebers to chat room!');
+      throw Exception('Failed to add new memebers to chat room!');
     }
   }
 
@@ -118,7 +114,7 @@ class ChatRoomService {
           'Content-Type': 'application/json; charset=UTF-8',
         });
     if (response.statusCode != 204) {
-      throw new Exception('Failed to give admin to member from chat room!');
+      throw Exception('Failed to give admin to member from chat room!');
     }
   }
 }

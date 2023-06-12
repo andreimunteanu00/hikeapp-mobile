@@ -22,16 +22,16 @@ class RatingModal extends StatefulWidget {
 
 class RatingModalState extends State<RatingModal> {
   final RatingService ratingService = RatingService.instance;
-  final _formKey = GlobalKey<FormState>();
-  double _rating = 3;
-  String _comment = '';
+  final formKey = GlobalKey<FormState>();
+  double defaultRating = 3;
+  String defaultComment = '';
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Add a comment'),
       content: Form(
-        key: _formKey,
+        key: formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -48,7 +48,7 @@ class RatingModalState extends State<RatingModal> {
               ),
               onRatingUpdate: (rating) {
                 setState(() {
-                  _rating = rating;
+                  defaultRating = rating;
                 });
               },
             ),
@@ -62,7 +62,7 @@ class RatingModalState extends State<RatingModal> {
               maxLines: null,
               onChanged: (value) {
                 setState(() {
-                  _comment = value;
+                  defaultComment = value;
                 });
               },
             ),
@@ -78,12 +78,12 @@ class RatingModalState extends State<RatingModal> {
         ),
         ElevatedButton(
           onPressed: () async {
-            if (_formKey.currentState!.validate()) {
+            if (formKey.currentState!.validate()) {
               var rating = Rating();
-              rating.comment = _comment;
-              rating.rating = _rating;
-              if (!(_rating == widget.rating &&
-                  (_comment == '' || _comment == widget.comment))) {
+              rating.comment = defaultComment;
+              rating.rating = defaultRating;
+              if (!(defaultRating == widget.rating &&
+                  (defaultComment == '' || defaultComment == widget.comment))) {
                 await ratingService.rate(widget.hikeTitle, rating);
                 Navigator.of(context).pop(true);
               } else {

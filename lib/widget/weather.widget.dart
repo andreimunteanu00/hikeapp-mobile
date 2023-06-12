@@ -91,8 +91,7 @@ class WeatherWidgetState extends State<WeatherWidget> {
             AsyncSnapshot<Map<String, dynamic>> snapshot) {
           if (snapshot.hasData) {
             Map<String, dynamic> data = snapshot.data!;
-            double temperature =
-                data['main']['temp'] - 273.15; // convert to Celsius
+            double temperature = data['main']['temp'] - 273.15; // convert to Celsius
             int humidity = data['main']['humidity'];
             double windSpeed = data['wind']['speed'];
             String weatherType = data['weather'][0]['description'];

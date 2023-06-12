@@ -1,13 +1,12 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/model/chat_room.model.dart';
 import 'package:hikeappmobile/screen/chat.screen.dart';
 import 'package:hikeappmobile/service/chat_room.service.dart';
 import 'package:hikeappmobile/service/websocket.service.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import 'package:timeago/timeago.dart' as timeAgo;
+import 'package:timeago/timeago.dart' as time_ago;
 
 import '../model/chat_message.model.dart';
 import '../util/constants.dart' as constants;
@@ -28,25 +27,26 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
   List<ChatRoom> chatRooms = [];
   final ChatRoomService chatRoomService = ChatRoomService.instance;
   Map<int, ChatMessage?> lastMessages = {};
+  List<WebSocketService> wbsList = [];
 
   void _showChatTypeDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Select Chat Type'),
+          title: const Text('Select Chat Type'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 GestureDetector(
-                  child: Text('Private Chat'),
+                  child: const Text('Private Chat'),
                   onTap: () {
                     Navigator.pop(context);
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                            title: Text('Select Chat Type'),
+                            title: const Text('Select Chat Type'),
                             content: PrivateChatModal()
                         );
                       }).then((value) {
@@ -54,16 +54,16 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                     });
                   }
                 ),
-                Padding(padding: EdgeInsets.all(8.0)),
+                const Padding(padding: EdgeInsets.all(8.0)),
                 GestureDetector(
-                    child: Text('Public Chat'),
+                    child: const Text('Public Chat'),
                     onTap: () {
                       Navigator.pop(context);
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                                title: Text('Select Chat Type'),
+                                title: const Text('Select Chat Type'),
                                 content: PublicChatModal()
                             );
                           }).then((value) {
@@ -79,7 +79,7 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
     );
   }
 
-  _asyncMethod() async {
+  getTokenMethod() async {
     String aux1 = await Methods.getToken();
     setState(() {
       widget.token = aux1;
@@ -104,8 +104,16 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _asyncMethod();
+      getTokenMethod();
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    for (var wbs in wbsList) {
+      wbs.disconnect();
+    }
   }
 
   @override
@@ -127,13 +135,11 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
           if (snapshot.hasData) {
             chatRooms = snapshot.data!;
             chatRooms.sort((a, b) {
-              // Check if either ChatRoom has a null lastMessage
               if (a.lastMessage == null) {
-                return 1; // Move a to the end of the list
+                return 1;
               } else if (b.lastMessage == null) {
-                return -1; // Move b to the end of the list
+                return -1;
               } else {
-                // Compare the timestamp fields of the lastMessage objects
                 return -(a.lastMessage!.timestamp ?? DateTime(0)).compareTo(b.lastMessage!.timestamp ?? DateTime(0));
               }
             });
@@ -146,6 +152,7 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                       lastMessages[chatRooms[index].id!] = chatRooms[index].lastMessage != null ? chatRooms[index].lastMessage! : null;
                       WebSocketService wbs = WebSocketService(token: widget.token, toggleMessages: toggleMessages, chatRoomId: chatRooms[index].id!);
                       wbs.connect(widget.token);
+                      wbsList.add(wbs);
                       if (chatRooms[index].name == null) {
                         return GestureDetector(
                           onTap: () {
@@ -153,8 +160,7 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                               context,
                               screen: ChatScreen(token: widget.token, chatRoom: chatRooms[index]),
                               withNavBar: true,
-                              pageTransitionAnimation:
-                              PageTransitionAnimation.fade,
+                              pageTransitionAnimation: PageTransitionAnimation.fade,
                             );
                           },
                           child: Card(
@@ -166,7 +172,7 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                                 SizedBox(width: 75, height: 75, child: CircleAvatar(
                                     backgroundImage: MemoryImage(base64Decode(chatRooms[index].receiver!.profilePicture!.base64!))
                                 )),
-                                SizedBox(width: 12.0),
+                                const SizedBox(width: 12.0),
                                 Expanded(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -174,26 +180,26 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                                     children: [
                                       Text(
                                         chatRooms[index].receiver!.username!,
-                                        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                                        style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                                       ),
-                                      SizedBox(height: 4.0),
+                                      const SizedBox(height: 4.0),
                                       Text(
                                         lastMessages[wbs.chatRoomId] != null
-                                            ? '${compressMessage(lastMessages[wbs.chatRoomId]!.content!)}'
+                                            ? compressMessage(lastMessages[wbs.chatRoomId]!.content!)
                                             : 'Not yet',
-                                        style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                                        style: const TextStyle(fontSize: 14.0, color: Colors.grey),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
                                       ),
                                     ],
                                   ),
                                 ),
-                                SizedBox(width: 12.0),
+                                const SizedBox(width: 12.0),
                                 Text(
                                   lastMessages[wbs.chatRoomId] != null
-                                      ? timeAgo.format(lastMessages[wbs.chatRoomId]!.timestamp!)
+                                      ? time_ago.format(lastMessages[wbs.chatRoomId]!.timestamp!)
                                       : '',
-                                  style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                                  style: const TextStyle(fontSize: 14.0, color: Colors.grey),
                                 ),
                               ],
                             ),
@@ -223,7 +229,7 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                                 SizedBox(width: 75, height: 75, child: CircleAvatar(
                                     backgroundImage: MemoryImage(base64Decode(chatRooms[index].publicChatPhoto!.base64!))
                                 )),
-                                SizedBox(width: 12.0),
+                                const SizedBox(width: 12.0),
                                 Expanded(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -231,26 +237,26 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
                                     children: [
                                       Text(
                                         chatRooms[index].name!,
-                                        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                                        style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                                       ),
-                                      SizedBox(height: 4.0),
+                                      const SizedBox(height: 4.0),
                                       Text(
                                         lastMessages[wbs.chatRoomId] != null
                                             ? '${lastMessages[wbs.chatRoomId]!.sender!}: ${compressMessage(lastMessages[wbs.chatRoomId]!.content!)}'
                                             : 'Not yet',
-                                        style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                                        style: const TextStyle(fontSize: 14.0, color: Colors.grey),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
                                       ),
                                     ],
                                   ),
                                 ),
-                                SizedBox(width: 12.0),
+                                const SizedBox(width: 12.0),
                                 Text(
                                   lastMessages[wbs.chatRoomId] != null
-                                      ? timeAgo.format(lastMessages[wbs.chatRoomId]!.timestamp!)
+                                      ? time_ago.format(lastMessages[wbs.chatRoomId]!.timestamp!)
                                       : '',
-                                  style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                                  style: const TextStyle(fontSize: 14.0, color: Colors.grey),
                                 ),
                               ],
                             ),
@@ -265,12 +271,12 @@ class ChatRoomListScreenState extends State<ChatRoomListScreen> {
           } else if (snapshot.hasError) {
             return Text('${snapshot.error}');
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.chat),
+        child: const Icon(Icons.chat),
         onPressed: () {
           _showChatTypeDialog();
         },

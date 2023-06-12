@@ -3,10 +3,10 @@ import 'package:hikeappmobile/screen/history_screen.dart';
 import 'package:hikeappmobile/widget/avatar.widget.dart';
 import 'package:hikeappmobile/widget/sign_out.widget.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+
 import '../model/user.model.dart';
 import '../service/auth.service.dart';
 import '../util/constants.dart' as constants;
-import 'account_suspended.screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final PersistentTabController controller;
@@ -103,7 +103,7 @@ class HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          Text("Hike points: ${snapshot.data!.hike_points}")
+                          Text("Hike points: ${snapshot.data!.hikePoints}")
                         ],
                   ));
                 } else if (snapshot.hasError) {

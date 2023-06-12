@@ -18,22 +18,22 @@ class AvatarWidget extends StatefulWidget {
 }
 
 class AvatarWidgetState extends State<AvatarWidget> {
-  File _image = File('/images/default_avatar.png');
+  File image = File('/images/default_avatar.png');
   final picker = ImagePicker();
 
   Future getImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
-        _image = File(pickedFile.path);
-        widget.picture!.base64 = Methods.fileToBase64(_image);
+        image = File(pickedFile.path);
+        widget.picture!.base64 = Methods.fileToBase64(image);
       }
     });
   }
 
   giveBackgroundImage() {
     return widget.picture!.base64 == null
-        ? FileImage(_image)
+        ? FileImage(image)
         : MemoryImage(base64Decode(widget.picture!.base64!));
   }
 

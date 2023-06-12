@@ -33,26 +33,28 @@ class HikeItemList extends StatelessWidget {
               title: Center(child: Text(entity.title!)),
               subtitle: Center(
                   child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  Text('Difficulty: ${entity.difficulty?.toLowerCase()}'),
-                  Row(children: [
-                    const Text('Rating: '),
-                    RatingBarIndicator(
-                      rating: entity.allRatings!,
-                      itemBuilder: (context, index) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      ),
-                      itemCount: 5,
-                      itemSize: 20,
-                      direction: Axis.horizontal,
-                    )
-                  ]),
-                  Text('No ratings: ${entity.numberRatings}')
-                ],
-              ))),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      Text('Difficulty: ${entity.difficulty?.toLowerCase()}'),
+                      Row(children: [
+                        const Text('Rating: '),
+                        RatingBarIndicator(
+                          rating: entity.allRatings!,
+                          itemBuilder: (context, index) => const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          itemCount: 5,
+                          itemSize: 20,
+                          direction: Axis.horizontal,
+                        )
+                      ]),
+                      Text('No ratings: ${entity.numberRatings}')
+                    ],
+                  )
+              )
+          ),
         )
       ],
     ));

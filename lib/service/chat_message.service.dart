@@ -22,7 +22,7 @@ class ChatMessageService {
           'Content-Type': 'application/json; charset=UTF-8',
         });
     if (response.statusCode != 200) {
-      throw new Exception('Failed to load chat messages!');
+      throw Exception('Failed to load chat messages!');
     }
     var jsonResponse = jsonDecode(response.body);
     return (jsonResponse['content'] as List)
