@@ -48,7 +48,7 @@ class FinishHikeScreenState extends State<FinishHikeScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        hikeHistory.hikeTitle!,
+                        hikeHistory.hike!.title!,
                         style: const TextStyle(
                           fontSize: 24.0,
                           fontWeight: FontWeight.bold,

@@ -58,7 +58,7 @@ class MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     buildScreens = [
-      const HomeScreen(),
+      HomeScreen(controller: controller, handleOnGoingHike: handleOnGoingHike),
       HikeListScreen(controller: controller, handleOnGoingHike: handleOnGoingHike),
       ChatRoomListScreen(),
       const NoHikeOngoingScreen(),

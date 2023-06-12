@@ -1,31 +1,35 @@
+import 'hike.model.dart';
+
 class HikeHistory {
   DateTime? createdDateTime;
   Duration? elapsedTime;
-  String? hikeTitle;
   double? hikePoints;
+  Hike? hike;
 
   HikeHistory({
     this.createdDateTime,
     this.elapsedTime,
-    this.hikeTitle,
     this.hikePoints,
+    this.hike,
   });
 
   Map<String, dynamic> toJson() => {
         'createdDateTime': createdDateTime,
         'elapsedTime': elapsedTime?.inSeconds,
-        'hikeTitle': hikeTitle,
         'hikePoints': hikePoints,
+        'hike': hike,
       };
 
   factory HikeHistory.fromJson(Map<String, dynamic> json) {
     return HikeHistory(
       createdDateTime: DateTime.parse(json['createdDateTime']),
-      hikeTitle: json['hikeTitle'],
       elapsedTime: Duration(
-          seconds: int.parse(json['elapsedTime']
-              .substring(2, json['elapsedTime'].length - 1))),
+        hours: int.parse(RegExp(r'(\d+)H').firstMatch(json['elapsedTime'])?.group(1) ?? '0'),
+        minutes: int.parse(RegExp(r'(\d+)M').firstMatch(json['elapsedTime'])?.group(1) ?? '0'),
+        seconds: int.parse(RegExp(r'(\d+)S').firstMatch(json['elapsedTime'])?.group(1) ?? '0'),
+      ),
       hikePoints: json['hikePoints'],
+      hike: Hike.fromJsonHikeHistory(json['hike'])
     );
   }
 }

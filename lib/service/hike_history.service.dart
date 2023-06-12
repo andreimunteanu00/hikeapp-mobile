@@ -43,4 +43,20 @@ class HikeHistoryService {
       throw Exception('Failed to load hike history for current user!');
     }
   }
+
+  getAllEntities(
+      {String title = '',
+        int page = 0,
+        int size = 10}) async {
+    final response = await MyHttp.getClient().get(Uri.parse(
+        '${constants.localhost}/hike-history?title=$title&page=$page&size=$size'));
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      return (jsonResponse['content'] as List)
+          .map((json) => HikeHistory.fromJson(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load hike histories');
+    }
+  }
 }

@@ -189,7 +189,8 @@ class StartHikeScreenState extends State<StartHikeScreen> {
         position.longitude,
         widget.endPoint.latitude,
         widget.endPoint.longitude);
-    if (distanceFromFinish < 10) {
+    print(distanceFromFinish);
+    if (distanceFromFinish < 50) {
       widget.handleStartNewHike(true);
       stopwatch.stop();
       HikeSummary hikeSummary = HikeSummary(

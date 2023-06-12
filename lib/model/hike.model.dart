@@ -36,6 +36,15 @@ class Hike {
         'endPoint': endPoint
       };
 
+  factory Hike.fromJsonHikeHistory(Map<String, dynamic> json) {
+    return Hike(
+        title: json['title'],
+        allRatings: json['allRatings'],
+        numberRatings: json['numberRatings'],
+        mainPicture: Picture.fromJson(json['mainPicture']),
+        difficulty: json['difficulty']);
+  }
+
   factory Hike.fromJson(Map<String, dynamic> json) {
     return Hike(
         title: json['title'],

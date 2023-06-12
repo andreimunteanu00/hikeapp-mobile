@@ -1,6 +1,6 @@
 // TODO modify with env variable
-const localhost = 'http://192.168.100.94:8080/api';
-const webSocketUrl = 'http://192.168.100.94:8080';
+const localhost = 'http://crismunt.go.ro:8008/api';
+const webSocketUrl = 'http://crismunt.go.ro:8008';
 const failedToLoadData = 'Failed to load data';
 const appTitle = 'HikeApp';
 const googleApiDirectionsKey = 'AIzaSyCLBLimbgcnj-1nHDWIInOnTlShWsZF-r4';
