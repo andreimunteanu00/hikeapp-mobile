@@ -22,6 +22,7 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
       children: [
         CarouselSliderHike(pictureList: widget.hike.pictureList!),
         Card(
+          color: const Color.fromRGBO(96, 137, 110, 0.5),
             child: Column(children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -40,7 +41,8 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
                       maxLines: 5,
                       expandText: 'Read more',
                       collapseText: 'Read less',
-                      linkColor: Colors.green)),
+                      style: const TextStyle(color: Colors.white),
+                      linkColor: Colors.white30)),
               const SizedBox(height: 16.0),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -48,9 +50,9 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
                   children: [
                     Text(
                       'Difficulty: ${widget.hike.difficulty!.toLowerCase()}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16.0,
-                        color: Colors.grey[600],
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -74,9 +76,9 @@ class HikeDetailWidgetState extends State<HikeDetailWidget> {
                     const SizedBox(width: 8.0),
                     Text(
                       '(${widget.hike.numberRatings})',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16.0,
-                        color: Colors.grey[600],
+                        color: Colors.white,
                       ),
                     ),
                   ],

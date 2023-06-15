@@ -23,6 +23,7 @@ class UserCommentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: const Color.fromRGBO(96, 137, 110, 0.5),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
@@ -47,13 +48,14 @@ class UserCommentWidget extends StatelessWidget {
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
+                              color: Colors.white
                             ),
                           ),
                           Text(
                             DateFormat('dd/MM/yyyy HH:mm')
                                 .format(rating!.dateTimeRate!),
                             style: const TextStyle(
-                              color: Colors.grey,
+                              color: Colors.white,
                               fontSize: 12,
                             ),
                           ),
@@ -61,7 +63,7 @@ class UserCommentWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       rating!.comment!.isNotEmpty
-                          ? Text(rating!.comment!)
+                          ? Text(rating!.comment!, style: const TextStyle(color: Colors.white))
                           : const SizedBox.shrink(),
                       const SizedBox(height: 5),
                       fromCurrentUser == true
@@ -84,7 +86,7 @@ class UserCommentWidget extends StatelessWidget {
                                     },
                                     child: const Icon(
                                       Icons.edit,
-                                      color: Colors.grey,
+                                      color: Colors.white,
                                       size: 24.0,
                                     )),
                                 const SizedBox(
@@ -96,7 +98,7 @@ class UserCommentWidget extends StatelessWidget {
                                     },
                                     child: const Icon(
                                       Icons.delete,
-                                      color: Colors.grey,
+                                      color: Colors.white,
                                       size: 24.0,
                                     ))
                               ],

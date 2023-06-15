@@ -11,6 +11,17 @@ class LogInScreen extends StatefulWidget {
 class LogInScreenState extends State<LogInScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: LogInWidget()));
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/background_image.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Scaffold(
+        body: Center(child: LogInWidget()),
+      ),
+    );
+
   }
 }

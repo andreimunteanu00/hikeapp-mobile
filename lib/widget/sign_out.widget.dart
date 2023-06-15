@@ -21,21 +21,17 @@ class SignOutWidgetState extends State<SignOutWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        TextButton(
-            child: const Text('Sign Out'),
-            onPressed: () async {
-              await widget.authService.signOut();
-              PersistentNavBarNavigator.pushNewScreen(
-                context,
-                screen: const LogInScreen(),
-                withNavBar: false, // OPTIONAL VALUE. True by default.
-                pageTransitionAnimation: PageTransitionAnimation.fade,
-              );
-            })
-      ],
+    return IconButton(
+      icon: const Icon(Icons.exit_to_app_rounded),
+      onPressed: () async {
+        await widget.authService.signOut();
+        PersistentNavBarNavigator.pushNewScreen(
+          context,
+          screen: const LogInScreen(),
+          withNavBar: false,
+          pageTransitionAnimation: PageTransitionAnimation.fade,
+        );
+      },
     );
   }
 }

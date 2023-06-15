@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/widget/first_login.widget.dart';
 
@@ -18,25 +20,40 @@ class FirstLoginScreenState extends State<FirstLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-            child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        FutureBuilder<User>(
-            future: widget.authService.getCurrentUser(),
-            builder: (_, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data?.active == false) {
-                  return const AccountSuspendedScreen();
-                } else {
-                  return FirstLoginWidget(snapshot.data!);
-                }
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-              return const CircularProgressIndicator();
-            }),
-      ],
-    )));
+        body: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background_image.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FutureBuilder<User>(
+                    future: widget.authService.getCurrentUser(),
+                    builder: (_, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data?.active == false) {
+                          return const AccountSuspendedScreen();
+                        } else {
+                          return FirstLoginWidget(snapshot.data!);
+                        }
+                      } else if (snapshot.hasError) {
+                        return Text('${snapshot.error}');
+                      }
+                      return const CircularProgressIndicator();
+                    }),
+              ],
+    )),
+            )
+          ],
+        ));
   }
 }

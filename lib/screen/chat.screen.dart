@@ -1,7 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/service/chat_message.service.dart';
 import 'package:hikeappmobile/widget/modal/group_edit.modal.dart';
 import 'package:hikeappmobile/widget/modal/member.modal.dart';
+import 'package:intl/intl.dart';
 
 import '../model/chat_message.model.dart';
 import '../model/chat_room.model.dart';
@@ -33,6 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final scrollController = ScrollController();
   bool isScrolledToTop = false;
   bool isUserAdmin = false;
+  bool showedToday = false;
 
   getUser() async {
     currentUser = await authService.getCurrentUser();
@@ -65,13 +69,30 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  String _formatDate(DateTime dateTime) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = DateTime(now.year, now.month, now.day - 1);
+
+    print(showedToday);
+    if (dateTime.isAfter(today) && !showedToday) {
+      showedToday = true;
+      return 'Today';
+    } else if (dateTime.isAfter(yesterday)) {
+      return 'Yesterday';
+    } else {
+      return DateFormat('MMM dd, yyyy').format(dateTime);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    showedToday = false;
     webSocketService = WebSocketService(token: widget.token, toggleMessages: toggleMessages, chatRoomId: widget.chatRoom.id!);
     webSocketService.connect(widget.token);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getUser();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await getUser();
       getMessages();
     });
     scrollController.addListener(() {
@@ -165,66 +186,130 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ] : null,
       ),
-      body: !isLoading ? Column(
-        children: <Widget>[
-          isScrolledToTop ? const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: CircularProgressIndicator(),
-          ) : const SizedBox.shrink(),
-          Expanded(
-            child: ListView.builder(
-              controller: scrollController,
-              reverse: true,
-              itemCount: messages.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == 0) {
-                  return Center(
-                    child: isLoading ? const CircularProgressIndicator() : Container(),
-                  );
-                } else {
-                  final messageIndex = messages.length - index;
-                  final message = messages[messageIndex];
-                  return ListTile(
-                    title: Text(message.sender!),
-                    subtitle: Text(message.content!),
-                    trailing: Text(
-                      message.timestamp!.toIso8601String(),
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  );
-                }
-              },
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background_image.jpg'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-            ),
-            child: Row(
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: !isLoading ? Column(
               children: <Widget>[
+                isScrolledToTop ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(),
+                ) : const SizedBox.shrink(),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: TextField(
-                      controller: messageController,
-                      decoration: const InputDecoration.collapsed(hintText: 'Send a message'),
-                      onSubmitted: (value) {
-                        _sendMessage(value);
-                      },
-                    ),
+                  child: ListView.builder(
+                    controller: scrollController,
+                    reverse: true,
+                    itemCount: messages.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == 0) {
+                        return Center(
+                          child: isLoading ? const CircularProgressIndicator() : Container(),
+                        );
+                      } else {
+                        final messageIndex = messages.length - index;
+                        final message = messages[messageIndex];
+                        final isCurrentUserMessage = message.sender == currentUser.username;
+                        final now = DateTime.now();
+                        final bool showDate = messageIndex < messages.length - 1 &&
+                            (message.timestamp!.day != messages[messageIndex + 1].timestamp!.day ||
+                                message.timestamp!.month != messages[messageIndex + 1].timestamp!.month ||
+                                message.timestamp!.year != messages[messageIndex + 1].timestamp!.year);
+                        final bool isToday = message.timestamp!.day == now.day &&
+                            message.timestamp!.month == now.month &&
+                            message.timestamp!.year == now.year;
+                        return Column(
+                          children: [
+                            if (showDate || (isToday && !showedToday)) ...[
+                              const SizedBox(height: 8.0),
+                              Text(
+                                _formatDate(message.timestamp!),
+                                style: const TextStyle(fontSize: 14, color: Colors.white),
+                              ),
+                            ],
+                            Row(
+                              mainAxisAlignment: isCurrentUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    color: isCurrentUserMessage ? const Color.fromRGBO(96, 137, 110, 0.65)
+                                        : const Color.fromRGBO(43, 57, 67, 0.65),
+                                  ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  margin: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      message.sender != currentUser.username ? Text(
+                                        message.sender!,
+                                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                                      ) : const SizedBox.shrink(),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        message.content!,
+                                        style: const TextStyle(fontSize: 16, color: Colors.white),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        DateFormat('jm').format(message.timestamp!),
+                                        style: const TextStyle(fontSize: 12, color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+                    },
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: () {
-                    _sendMessage(messageController.text);
-                  },
-                )
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.transparent,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: TextField(
+                            controller: messageController,
+                            decoration: const InputDecoration.collapsed(
+                              hintText: 'Send message',
+                              hintStyle: TextStyle(color: Colors.white), // Set the hint text color
+                            ),
+                            style: const TextStyle(color: Colors.white), // Set the input text color
+                            onSubmitted: (value) {
+                              _sendMessage(value);
+                            },
+                          )
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.send, color: Colors.white), // Set the icon color to white
+                        onPressed: () {
+                          _sendMessage(messageController.text);
+                        },
+                      )
+                    ],
+                  ),
+                ),
               ],
-            ),
-          ),
-        ],
-      ) : const Center(child: CircularProgressIndicator()),
+            ) : const Center(child: CircularProgressIndicator()),
+          )
+        ]
+      )
     );
   }
 

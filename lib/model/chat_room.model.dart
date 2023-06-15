@@ -62,12 +62,12 @@ class ChatRoom {
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
     return ChatRoom(
         id: json['id'],
-        name: json['name'],
+        name: json['name'] == null ? null : json['name'],
         publicChatPhoto: json['publicChatPhoto'] == null ? null : Picture.fromJson(json['publicChatPhoto']),
         userList: json['userList'] == null ? null : (json['userList'] as List<dynamic>)
             .map((e) => e == null ? null : User.fromJson(e))
             .toList(),
-        adminList: (json['adminList'] as List<dynamic>)
+        adminList: json['adminList'] == null ? null : (json['adminList'] as List<dynamic>)
             .map((e) => e == null ? null : User.fromJson(e))
             .toList(),
         receiver: json['receiver'] == null ? null : User.fromJson(json['receiver']),

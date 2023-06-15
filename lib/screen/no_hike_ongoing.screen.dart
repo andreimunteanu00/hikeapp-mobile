@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class NoHikeOngoingScreen extends StatelessWidget {
@@ -9,7 +11,20 @@ class NoHikeOngoingScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Hike'),
       ),
-      body: const Center(child: Text('no hike ongoing!')),
+      body: Stack(children: [
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/background_image.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: const Center(child: Text('No hike ongoing!', style: TextStyle(fontSize: 24, color: Colors.white)))
+        )
+      ]),
     );
   }
 }

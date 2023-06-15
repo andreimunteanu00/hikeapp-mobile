@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/model/hike_history.dart';
@@ -6,6 +7,7 @@ import 'package:hikeappmobile/service/hike_history.service.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import '../util/constants.dart' as constants;
+import '../util/halfbar_progress.dart';
 
 class HikeHistoryScreen extends StatefulWidget {
   final PersistentTabController controller;
@@ -92,88 +94,127 @@ class HikeHistoryScreenState extends State<HikeHistoryScreen> {
 
     return Scaffold(
         appBar: AppBar(title: const Text(constants.appTitle)),
-        body: Column(children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: searchController,
-                    decoration:
-                    const InputDecoration(hintText: 'Search by name'),
-                    onChanged: (value) {
-                      searchTerm = value;
-                      if (searchTerm.isEmpty) {
-                        resetEntities();
-                      }
-                    },
-                  ),
+        body: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background_image.jpg'),
+                  fit: BoxFit.cover,
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      resetEntities();
-                    },
-                    child: const Icon(Icons.search)),
-              ],
+              ),
             ),
-          ),
-          Expanded(
-              child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: hikeHistoryList.length + (hasMore ? 1 : 0),
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == hikeHistoryList.length) {
-                      return isLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : const SizedBox();
-                    }
-                    final HikeHistory entity = hikeHistoryList[index];
-                    return Card(
-                        child: Row(
-                          children: [
-                            SizedBox(
-                                width: 100,
-                                height: 150,
-                                // TODO change it with default
-                                child: entity.hike!.mainPicture?.base64 != null
-                                    ? Image.memory(base64Decode(entity.hike!.mainPicture!.base64!))
-                                    : Image.network(
-                                    'https://www.google.com/search?q=Image+Decoration+deprecated+flutter&rlz=1C1GCEU_enRO1027RO1027&sxsrf=AJOqlzUggdOqsdmzx1JhxFgfupfFaKfDbA:1677518002812&source=lnms&tbm=isch&sa=X&ved=2ahUKEwi5uKXFmbb9AhVUtKQKHbb9B6oQ_AUoAXoECAEQAw&biw=1920&bih=929&dpr=1#imgrc=GfQxngkfsluSLM')),
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          // Add a clear button to the search bar
+                          suffixIcon: IconButton(
+                              icon: Icon(Icons.clear),
+                              onPressed: () {
+                                searchController.clear();
+                                searchTerm = '';
+                                resetEntities();
+                              }
+                          ),
+                          // Add a search icon or button to the search bar
+                          prefixIcon: IconButton(
+                            icon: Icon(Icons.search),
+                            onPressed: () {
+                              resetEntities();
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          searchTerm = value;
+                          if (searchTerm.isEmpty) {
+                            resetEntities();
+                          }
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Expanded(
+                  child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: hikeHistoryList.length + (hasMore ? 1 : 0),
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == hikeHistoryList.length) {
+                          return isLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : const SizedBox();
+                        }
+                        final HikeHistory entity = hikeHistoryList[index];
+                        return Card(
+                            color: const Color.fromRGBO(96, 137, 110, 0.5),
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0), // Set the border radius
+                              side: const BorderSide(
+                                color: Color.fromRGBO(96, 137, 110, 0.5), // Set the border color
+                                width: 1.0, // Set the border width
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Row(
                                 children: [
-                                  Text(
-                                    entity.hike!.title!,
-                                    style: const TextStyle(
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16.0),
+                                  SizedBox(
+                                      width: 100,
+                                      height: 150,
+                                      child: entity.hike!.mainPicture?.base64 != null
+                                          ? Image.memory(base64Decode(entity.hike!.mainPicture!.base64!))
+                                          : Image.asset('assets/images/default_avatar.png')),
+                                  const SizedBox(width: 25),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.timer),
-                                      const SizedBox(width: 8.0),
-                                      Text(formatDuration(entity.elapsedTime!)),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16.0),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.star),
-                                      const SizedBox(width: 8.0),
-                                      Text(entity.hikePoints!.toStringAsFixed(2)),
-                                    ],
-                                  ),
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          entity.hike!.title!,
+                                          style: const TextStyle(
+                                            fontSize: 24.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10.0),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(Icons.timer, color: Colors.white),
+                                            Text(formatDuration(entity.elapsedTime!)),
+                                          ],
+                                        ),
+                                        const SizedBox(width: 10.0),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(Icons.star, color: Colors.amber),
+                                            Text(entity.hikePoints!.toStringAsFixed(2)),
+                                          ],
+                                        ),
+                                      ],
+                                    )
                                 ],
-                              )
-                          ],
-                        ));
-                  })),
-          SizedBox(height: screenHeight / 100),
-        ]));
+                              ),
+                            ));
+                      })),
+              SizedBox(height: screenHeight / 100),
+          ]),
+            )
+          ],
+        ));
   }
 }

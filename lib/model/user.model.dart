@@ -23,7 +23,7 @@ class User {
         'username': username,
         'firstLogin': firstLogin,
         'active': active,
-        'hike_points': hikePoints,
+        'hikePoints': hikePoints,
         'email': email,
         'profilePicture': profilePicture
       };
@@ -35,7 +35,7 @@ class User {
         active: json['active'],
         googleId: json['googleId'],
         email: json['email'],
-        hikePoints: json['hike_points'],
+        hikePoints: json['hikePoints'],
         profilePicture: Picture.fromJson(json['profilePicture']));
   }
 }

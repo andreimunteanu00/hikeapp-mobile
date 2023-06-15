@@ -49,7 +49,7 @@ class AvatarWidgetState extends State<AvatarWidget> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: Colors.green.shade300,
+            color: Colors.blueGrey.shade800,
             width: 2.0,
           ),
         ),

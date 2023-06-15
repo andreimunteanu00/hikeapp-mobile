@@ -29,6 +29,8 @@ class ChatRoomService {
     } else {
       body = jsonEncode(googleIds);
     }
+    print('xxxx');
+    print(body);
     final response = await MyHttp.getClient()
       .post(Uri.parse('${constants.localhost}/chat-room/create-or-get/${chatType.name}'),
       headers: <String, String>{

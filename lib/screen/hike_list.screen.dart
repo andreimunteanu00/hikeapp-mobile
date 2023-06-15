@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
@@ -91,80 +93,112 @@ class HikeListScreenState extends State<HikeListScreen> {
 
     return Scaffold(
         appBar: AppBar(title: const Text(constants.appTitle)),
-        body: Column(children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: searchController,
-                    decoration:
-                        const InputDecoration(hintText: 'Search by name'),
-                    onChanged: (value) {
-                      searchTerm = value;
-                      if (searchTerm.isEmpty) {
-                        resetEntities();
-                      }
-                    },
+        body: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background_image.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Column(children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon: !searchTerm.isEmpty ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                searchController.clear();
+                                searchTerm = '';
+                                resetEntities();
+                              }
+                            ) : null,
+                            // Add a search icon or button to the search bar
+                            prefixIcon: IconButton(
+                              icon: const Icon(Icons.search),
+                              onPressed: () {
+                                resetEntities();
+                              },
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                          ),
+                          onEditingComplete: () {
+                            resetEntities();
+                          },
+                          onChanged: (value) {
+                            searchTerm = value;
+                            if (searchTerm.isEmpty) {
+                              resetEntities();
+                            }
+                          },
+                        ),
+                      ),
+                      SizedBox(width: screenWidth / 20),
+                      DropdownButton<String>(
+                        value: sortBy,
+                        borderRadius: BorderRadius.circular(20.0),
+                        items: const [
+                          DropdownMenuItem(
+                              value: 'title', child: Icon(Icons.abc_rounded)),
+                          DropdownMenuItem(
+                              value: 'allRatings', child: Icon(Icons.star_rate)),
+                          DropdownMenuItem(
+                              value: 'numberRatings', child: Icon(Icons.numbers_rounded)),
+                        ],
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            sortBy = value;
+                            resetEntities();
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      resetEntities();
-                    },
-                    child: const Icon(Icons.search)),
-                // TODO make a dropdown with icons
-                DropdownButton<String>(
-                  value: sortBy,
-                  items: const [
-                    DropdownMenuItem(
-                        value: 'title', child: Icon(Icons.abc_rounded)),
-                    DropdownMenuItem(
-                        value: 'allRatings', child: Icon(Icons.star_rate)),
-                    DropdownMenuItem(
-                        value: 'numberRatings', child: Icon(Icons.numbers_rounded)),
-                  ],
-                  onChanged: (String? value) {
-                    if (value != null) {
-                      sortBy = value;
-                      resetEntities();
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-              child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: hikeList.length + (hasMore ? 1 : 0),
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == hikeList.length) {
-                      return isLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : const SizedBox();
-                    }
-                    final Hike entity = hikeList[index];
-                    return GestureDetector(
-                        onTap: () {
-                          PersistentNavBarNavigator.pushNewScreen(
-                            context,
-                            screen: HikeDetailScreen(
-                                hikeTitle: entity.title!,
-                                controller: widget.controller,
-                                handleOnGoingHike: widget.handleOnGoingHike,
-                                handleStartNewHike: handleStartNewHike,
-                                startNewHike: startNewHike),
-                            withNavBar: true,
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.fade,
-                          );
-                        },
-                        child: HikeItemList(
-                            entity: entity, screenWidth: screenWidth));
-                  })),
-          SizedBox(height: screenHeight / 100),
-        ]));
+                Expanded(
+                    child: ListView.builder(
+                        controller: scrollController,
+                        itemCount: hikeList.length + (hasMore ? 1 : 0),
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == hikeList.length) {
+                            return isLoading
+                                ? const Center(child: CircularProgressIndicator())
+                                : const SizedBox();
+                          }
+                          final Hike entity = hikeList[index];
+                          return GestureDetector(
+                              onTap: () {
+                                PersistentNavBarNavigator.pushNewScreen(
+                                  context,
+                                  screen: HikeDetailScreen(
+                                      hikeTitle: entity.title!,
+                                      controller: widget.controller,
+                                      handleOnGoingHike: widget.handleOnGoingHike,
+                                      handleStartNewHike: handleStartNewHike,
+                                      startNewHike: startNewHike),
+                                  withNavBar: true,
+                                  pageTransitionAnimation:
+                                      PageTransitionAnimation.fade,
+                                );
+                              },
+                              child: HikeItemList(
+                                  entity: entity, screenWidth: screenWidth));
+                        })),
+                SizedBox(height: screenHeight / 100),
+          ]))],
+        ));
   }
 }

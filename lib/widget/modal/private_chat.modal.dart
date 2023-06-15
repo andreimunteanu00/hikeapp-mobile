@@ -88,8 +88,28 @@ class PrivateChatModalState extends State<PrivateChatModal> {
               Expanded(
                 child: TextField(
                   controller: searchController,
-                  decoration:
-                  const InputDecoration(hintText: 'Search by username'),
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    // Add a clear button to the search bar
+                    suffixIcon: !searchTerm.isEmpty ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          searchController.clear();
+                          searchTerm = '';
+                          resetEntities();
+                        }
+                    ) : null,
+                    // Add a search icon or button to the search bar
+                    prefixIcon: IconButton(
+                      icon: const Icon(Icons.search),
+                      onPressed: () {
+                        resetEntities();
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
                   onChanged: (value) {
                     searchTerm = value;
                     if (searchTerm.isEmpty) {
@@ -98,12 +118,6 @@ class PrivateChatModalState extends State<PrivateChatModal> {
                   },
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  resetEntities();
-                },
-                child: const Icon(Icons.search)
-              )
             ],
           ),
         ),

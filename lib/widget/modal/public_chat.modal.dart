@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/model/picture.model.dart';
+import 'package:hikeappmobile/util/colors.dart';
 import 'package:hikeappmobile/util/enum/chat_type.enum.dart';
 import 'package:hikeappmobile/widget/avatar.widget.dart';
 
@@ -89,15 +90,23 @@ class PublicChatModalState extends State<PublicChatModal> {
       width: screenWidth,
       height: screenHeight,
       child: Column(children: [
-        TextField(
-        controller: groupNameController,
-        decoration:
-          const InputDecoration(
-            labelText: 'Enter chat group name'
+        AvatarWidget(publicChatPhoto),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+              controller: groupNameController,
+              decoration: InputDecoration(
+                  labelText: 'Enter chat group name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(
+                      color: background,
+                      width: 1.0,
+                    ),
+                  ))
           ),
         ),
-        SizedBox(height: 20),
-        AvatarWidget(publicChatPhoto),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -105,8 +114,28 @@ class PublicChatModalState extends State<PublicChatModal> {
               Expanded(
                 child: TextField(
                   controller: searchController,
-                  decoration:
-                  const InputDecoration(hintText: 'Search by username'),
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    // Add a clear button to the search bar
+                    suffixIcon: !searchTerm.isEmpty ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          searchController.clear();
+                          searchTerm = '';
+                          resetEntities();
+                        }
+                    ) : null,
+                    // Add a search icon or button to the search bar
+                    prefixIcon: IconButton(
+                      icon: const Icon(Icons.search),
+                      onPressed: () {
+                        resetEntities();
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
                   onChanged: (value) {
                     searchTerm = value;
                     if (searchTerm.isEmpty) {
@@ -114,12 +143,6 @@ class PublicChatModalState extends State<PublicChatModal> {
                     }
                   },
                 ),
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    resetEntities();
-                  },
-                  child: const Icon(Icons.search)
               )
             ],
           ),
@@ -170,7 +193,7 @@ class PublicChatModalState extends State<PublicChatModal> {
           await chatRoomService.createOrGetChatRoom(googleIds, name, publicChatPhoto, ChatType.public);
           Navigator.pop(context);
           setState(() {});
-        }, child: const Text('next'))
+        }, child: const Text('CREATE'))
       ]),
     );
   }

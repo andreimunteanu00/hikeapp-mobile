@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hikeappmobile/screen/first_login.screen.dart';
 import 'package:hikeappmobile/screen/log_in_screen.dart';
 import 'package:hikeappmobile/service/auth.service.dart';
+import 'package:hikeappmobile/util/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './util/constants.dart' as constants;
@@ -13,10 +15,12 @@ void main() {
   runApp(
     MaterialApp(
       title: constants.appTitle,
-      home: const Main(),
       theme: ThemeData(
+        fontFamily: GoogleFonts.roboto().fontFamily,
         colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.green,
+          primarySwatch: background,
+          backgroundColor: Colors.white,
+          accentColor: background,
         ),
       ),
       initialRoute: '/',

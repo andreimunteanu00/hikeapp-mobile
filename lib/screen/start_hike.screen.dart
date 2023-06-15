@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' show cos, sqrt, asin;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -234,11 +235,23 @@ class StartHikeScreenState extends State<StartHikeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text(constants.appTitle)),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : !canStart
-              ? Center(
-                  child: Column(
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background_image.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Adjust the blur intensity as desired
+            child:isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : !canStart
+                ? Center(
+                child: Column(
                   children: [
                     const Text('Can\'t start'),
                     ElevatedButton(
@@ -247,59 +260,62 @@ class StartHikeScreenState extends State<StartHikeScreen> {
                     ),
                   ],
                 ))
-              : WillPopScope(
-                  onWillPop: onBackPressed,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                : WillPopScope(
+              onWillPop: onBackPressed,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TimerWidget(
-                              secondsElapsed: secondsElapsed,
-                              minutesElapsed: minutesElapsed,
-                              hoursElapsed: hoursElapsed),
-                          const SizedBox(height: 8.0),
-                          Center(
-                            child: Text(
-                              'Distance: ${distance.toStringAsFixed(0)} meters',
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                              ),
-                            ),
+                      TimerWidget(
+                          secondsElapsed: secondsElapsed,
+                          minutesElapsed: minutesElapsed,
+                          hoursElapsed: hoursElapsed),
+                      const SizedBox(height: 8.0),
+                      Center(
+                        child: Text(
+                          'Distance: ${distance.toStringAsFixed(0)} meters',
+                          style: const TextStyle(
+                            fontSize: 18.0,
                           ),
-                          const SizedBox(height: 8.0),
-                          WeatherWidget(
-                              position: userLocation,
-                              handleValueChanged: handleTempChanged)
-                        ],
-                      ),
-                      Expanded(
-                        child: GoogleMap(
-                          onMapCreated: onMapCreated,
-                          markers: markers,
-                          initialCameraPosition: CameraPosition(
-                              target: LatLng(
-                                  (userLocation.latitude +
-                                          widget.endPoint.latitude) /
-                                      2,
-                                  (userLocation.longitude +
-                                          widget.endPoint.longitude) /
-                                      2),
-                              zoom: 11),
-                          polylines: Set<Polyline>.of(polylineMap.values),
-                          myLocationEnabled: true,
-                          mapToolbarEnabled: true,
-                          buildingsEnabled: false,
-                          myLocationButtonEnabled: true,
-                          mapType: MapType.normal,
-                          zoomControlsEnabled: true,
                         ),
                       ),
+                      const SizedBox(height: 8.0),
+                      WeatherWidget(
+                          position: userLocation,
+                          handleValueChanged: handleTempChanged)
                     ],
                   ),
-                ),
+                  Expanded(
+                    child: GoogleMap(
+                      onMapCreated: onMapCreated,
+                      markers: markers,
+                      initialCameraPosition: CameraPosition(
+                          target: LatLng(
+                              (userLocation.latitude +
+                                  widget.endPoint.latitude) /
+                                  2,
+                              (userLocation.longitude +
+                                  widget.endPoint.longitude) /
+                                  2),
+                          zoom: 11),
+                      polylines: Set<Polyline>.of(polylineMap.values),
+                      myLocationEnabled: true,
+                      mapToolbarEnabled: true,
+                      buildingsEnabled: false,
+                      myLocationButtonEnabled: true,
+                      mapType: MapType.normal,
+                      zoomControlsEnabled: true,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      )
     );
   }
 }

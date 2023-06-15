@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hikeappmobile/util/colors.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final double? labelWidth;
@@ -31,20 +32,20 @@ class CustomTextFormField extends StatelessWidget {
           initialValue: initialValue,
           decoration: InputDecoration(
             filled: readOnly,
-            fillColor: Colors.grey.shade200,
+            fillColor: Colors.grey.shade200.withOpacity(0.25),
             labelText: labelText,
-            labelStyle: TextStyle(
-              color: Colors.green.shade500,
+            labelStyle: const TextStyle(
+              color: Colors.white,
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(color: Colors.green.shade300),
+              borderSide: const BorderSide(color: Colors.white),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(color: Colors.green.shade500),
+              borderSide: const BorderSide(color: Colors.white),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
@@ -57,7 +58,7 @@ class CustomTextFormField extends StatelessWidget {
           ),
           style: const TextStyle(
             fontSize: 16.0,
-            color: Colors.black,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
           keyboardType: keyboardType,

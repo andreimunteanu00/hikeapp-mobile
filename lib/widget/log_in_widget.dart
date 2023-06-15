@@ -11,9 +11,14 @@ class LogInWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-        child: const Text('Log In'),
-        onPressed: () async {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return SizedBox(
+      height: screenHeight,
+      width: screenWidth,
+      child: InkWell(
+        onTap: () async {
           await authService.signIn();
           Navigator.pushReplacement(
             context,
@@ -21,6 +26,26 @@ class LogInWidget extends StatelessWidget {
               widget: const Main(),
             ),
           );
-        });
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/background_image.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: ColorFiltered(
+            colorFilter: ColorFilter.mode(Colors.transparent, BlendMode.dst), // Apply transparent color filter
+            child: Opacity(
+              opacity: 0.75, // Adjust the opacity value between 0.0 and 1.0
+              child: Image.asset(
+                'assets/images/login.png',
+                fit: BoxFit.scaleDown,
+              ),
+            )
+          )
+        ),
+      ),
+    );
   }
 }
