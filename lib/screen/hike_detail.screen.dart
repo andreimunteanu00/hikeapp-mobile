@@ -137,6 +137,7 @@ class HikeDetailScrenState extends State<HikeDetailScreen> {
                                         hikeTitle: hike.title!,
                                         startPoint: hike.startPoint!,
                                         endPoint: hike.endPoint!,
+                                        controller: widget.controller,
                                         handleOnGoingHike: widget.handleOnGoingHike,
                                         handleStartNewHike:
                                             widget.handleStartNewHike));

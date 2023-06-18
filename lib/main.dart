@@ -89,6 +89,6 @@ class MainState extends State<Main> {
         ? const Scaffold(body: Center(child: CircularProgressIndicator()))
         : !isLogged
             ? const LogInScreen()
-            : (afterFirstLogIn ? const MainScreen() : FirstLoginScreen());
+            : (afterFirstLogIn ? const MainScreen() : FirstLoginScreen(fromSetup: true));
   }
 }

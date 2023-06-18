@@ -7,7 +7,10 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikeappmobile/model/hike_summary.dart';
+import 'package:hikeappmobile/screen/no_hike_ongoing.screen.dart';
 import 'package:hikeappmobile/service/hike_history.service.dart';
+import 'package:hikeappmobile/util/colors.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import '../util/constants.dart' as constants;
 import '../widget/timer.widget.dart';
@@ -18,6 +21,7 @@ class StartHikeScreen extends StatefulWidget {
   final String hikeTitle;
   final LatLng startPoint;
   final LatLng endPoint;
+  final PersistentTabController controller;
   final Function(Widget) handleOnGoingHike;
   final Function(bool) handleStartNewHike;
 
@@ -26,6 +30,7 @@ class StartHikeScreen extends StatefulWidget {
     required this.endPoint,
     required this.startPoint,
     required this.hikeTitle,
+    required this.controller,
     required this.handleOnGoingHike,
     required this.handleStartNewHike
   });
@@ -219,9 +224,11 @@ class StartHikeScreenState extends State<StartHikeScreen> {
   void initState() {
     super.initState();
     checkCanStart();
-    getUserLocation();
-    getTime();
-    setMarkers();
+    if (canStart) {
+      getUserLocation();
+      getTime();
+      setMarkers();
+    }
   }
 
   @override
@@ -233,6 +240,9 @@ class StartHikeScreenState extends State<StartHikeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(title: const Text(constants.appTitle)),
       body: Stack(
@@ -252,65 +262,107 @@ class StartHikeScreenState extends State<StartHikeScreen> {
                 : !canStart
                 ? Center(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text('Can\'t start'),
+                    SizedBox(
+                      width: screenWidth * 0.9,
+                      child: const Text(
+                          'In order to commence, it is necessary for you to be in closer proximity to the start point.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20, color: Colors.white)
+                      ),
+                    ),
+                    SizedBox(height: 16),
                     ElevatedButton(
                       child: const Text('Retry'),
                       onPressed: () => checkCanStart(),
+                    ),
+                    ElevatedButton(
+                      child: const Text('Exit'),
+                      onPressed: () {
+                        widget.controller.jumpToTab(1);
+                        widget.handleStartNewHike(true);
+                        widget.handleOnGoingHike(const NoHikeOngoingScreen());
+                      }
                     ),
                   ],
                 ))
                 : WillPopScope(
               onWillPop: onBackPressed,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TimerWidget(
-                          secondsElapsed: secondsElapsed,
-                          minutesElapsed: minutesElapsed,
-                          hoursElapsed: hoursElapsed),
-                      const SizedBox(height: 8.0),
-                      Center(
-                        child: Text(
-                          'Distance: ${distance.toStringAsFixed(0)} meters',
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                          ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TimerWidget(
+                              secondsElapsed: secondsElapsed,
+                              minutesElapsed: minutesElapsed,
+                              hoursElapsed: hoursElapsed,
+                            ),
+                            const SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                const SizedBox(width: 8.0),
+                                const Icon(
+                                  Icons.directions_run,
+                                  size: 24.0,
+                                  color: primary,
+                                ),
+                                const SizedBox(width: 8.0),
+                                Text(
+                                  '${distance.toStringAsFixed(0)} meters',
+                                  style: const TextStyle(
+                                    fontSize: 18.0, color: primary
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        WeatherWidget(
+                          position: userLocation,
+                          handleValueChanged: handleTempChanged,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: screenHeight / 75),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        height: screenHeight / 1.6,
+                        width: screenWidth,
+                        child: GoogleMap(
+                          onMapCreated: onMapCreated,
+                          markers: markers,
+                          initialCameraPosition: CameraPosition(
+                              target: LatLng(
+                                  (userLocation.latitude +
+                                      widget.endPoint.latitude) /
+                                      2,
+                                  (userLocation.longitude +
+                                      widget.endPoint.longitude) /
+                                      2),
+                              zoom: 11),
+                          polylines: Set<Polyline>.of(polylineMap.values),
+                          myLocationEnabled: true,
+                          mapToolbarEnabled: true,
+                          buildingsEnabled: false,
+                          myLocationButtonEnabled: true,
+                          mapType: MapType.normal,
+                          zoomControlsEnabled: true,
                         ),
                       ),
-                      const SizedBox(height: 8.0),
-                      WeatherWidget(
-                          position: userLocation,
-                          handleValueChanged: handleTempChanged)
-                    ],
-                  ),
-                  Expanded(
-                    child: GoogleMap(
-                      onMapCreated: onMapCreated,
-                      markers: markers,
-                      initialCameraPosition: CameraPosition(
-                          target: LatLng(
-                              (userLocation.latitude +
-                                  widget.endPoint.latitude) /
-                                  2,
-                              (userLocation.longitude +
-                                  widget.endPoint.longitude) /
-                                  2),
-                          zoom: 11),
-                      polylines: Set<Polyline>.of(polylineMap.values),
-                      myLocationEnabled: true,
-                      mapToolbarEnabled: true,
-                      buildingsEnabled: false,
-                      myLocationButtonEnabled: true,
-                      mapType: MapType.normal,
-                      zoomControlsEnabled: true,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           )

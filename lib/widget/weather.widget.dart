@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hikeappmobile/util/colors.dart';
 import 'package:http/http.dart' as http;
 import '../util/constants.dart' as constants;
 
@@ -99,70 +100,75 @@ class WeatherWidgetState extends State<WeatherWidget> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Column(
                       children: [
-                        const Icon(
-                          Icons.opacity,
-                          size: 32.0,
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.opacity,
+                              size: 32.0, color: primary
+                            ),
+                            const SizedBox(width: 10),
+                            const Text('Humidity', style: TextStyle(color: primary)),
+                            const SizedBox(width: 10),
+                            Text(
+                              '$humidity%',
+                              style: const TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold, color: primary
+                              ),
+                            ),
+                            const SizedBox(width: 8.0),
+                          ],
                         ),
                         const SizedBox(height: 8.0),
-                        Text(
-                          '$humidity%',
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          'Humidity',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.grey[600],
-                          ),
-                        ),
                       ],
                     ),
-                    Column(children: [
+                    Row(children: [
                       Icon(
                         weatherIcon,
-                        size: 64.0,
+                        size: 32.0, color: primary
                       ),
-                      const SizedBox(height: 16.0),
+                      const SizedBox(width: 10),
+                      const Text('Temperature', style: TextStyle(color: primary)),
+                      const SizedBox(width: 10),
                       Text(
                         '${temperature.toStringAsFixed(1)}°C',
                         style: const TextStyle(
-                          fontSize: 36.0,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold, color: primary
                         ),
                       ),
-                      const SizedBox(height: 16.0),
+                      const SizedBox(width: 8.0),
                     ]),
-                    Column(
+                    const SizedBox(height: 8.0),
+                    Row(
                       children: [
                         const Icon(
                           Icons.air,
-                          size: 32.0,
+                          size: 32.0, color: primary
                         ),
-                        const SizedBox(height: 8.0),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Wind Speed',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: primary,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
                         Text(
                           '${windSpeed.toStringAsFixed(1)} km/h',
                           style: const TextStyle(
                             fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.bold, color: primary
                           ),
                         ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          'Wind Speed',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.grey[600],
-                          ),
-                        ),
+                        const SizedBox(width: 10),
                       ],
                     ),
                   ],

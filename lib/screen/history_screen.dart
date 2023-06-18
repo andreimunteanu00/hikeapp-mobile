@@ -171,6 +171,7 @@ class HikeHistoryScreenState extends State<HikeHistoryScreen> {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SizedBox(
                                       width: 100,
@@ -179,7 +180,8 @@ class HikeHistoryScreenState extends State<HikeHistoryScreen> {
                                           ? Image.memory(base64Decode(entity.hike!.mainPicture!.base64!))
                                           : Image.asset('assets/images/default_avatar.png')),
                                   const SizedBox(width: 25),
-                                  Row(
+                                  Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Text(
@@ -189,22 +191,26 @@ class HikeHistoryScreenState extends State<HikeHistoryScreen> {
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        const SizedBox(width: 10.0),
+                                        const SizedBox(height: 10.0),
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            const Icon(Icons.timer, color: Colors.white),
-                                            Text(formatDuration(entity.elapsedTime!)),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(Icons.timer, color: Colors.white),
+                                                Text(formatDuration(entity.elapsedTime!)),
+                                              ],
+                                            ),
+                                            const SizedBox(width: 10.0),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(Icons.star, color: Colors.amber),
+                                                Text(entity.hikePoints!.toStringAsFixed(2)),
+                                              ],
+                                            ),
                                           ],
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            const Icon(Icons.star, color: Colors.amber),
-                                            Text(entity.hikePoints!.toStringAsFixed(2)),
-                                          ],
-                                        ),
+                                        )
                                       ],
                                     )
                                 ],

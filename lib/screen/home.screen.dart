@@ -11,6 +11,7 @@ import '../model/user.model.dart';
 import '../service/auth.service.dart';
 import '../util/colors.dart';
 import '../util/constants.dart' as constants;
+import 'first_login.screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final PersistentTabController controller;
@@ -168,7 +169,7 @@ class HomeScreenState extends State<HomeScreen> {
                                       onPressed: () {
                                         PersistentNavBarNavigator.pushNewScreen(
                                           context,
-                                          screen: HikeHistoryScreen(controller: widget.controller, handleOnGoingHike: widget.handleOnGoingHike),
+                                          screen: FirstLoginScreen(fromSetup: false),
                                           withNavBar: true,
                                           pageTransitionAnimation: PageTransitionAnimation.fade,
                                         );
@@ -216,7 +217,8 @@ class HomeScreenState extends State<HomeScreen> {
                                     ),
                                     SizedBox(height: 16),
                                     Text(
-                                      '   Discover breathtaking new hiking trails that have just been opened in your area. These trails offer stunning views, diverse terrains, and unique experiences for all hiking enthusiasts.\n\n    Lace up your boots and embark on an adventure through nature like never before!\n\n   Stay tuned for a breathtaking journey through nature\'s wonders, where rugged landscapes meet hidden treasures.',
+                                      'Discover breathtaking new hiking trails that have just been opened in your area. These trails offer stunning views, diverse terrains, and unique experiences for all hiking enthusiasts.\n\nLace up your boots and embark on an adventure through nature like never before!\n\nStay tuned for a breathtaking journey through nature\'s wonders, where rugged landscapes meet hidden treasures.',
+                                      textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.white,

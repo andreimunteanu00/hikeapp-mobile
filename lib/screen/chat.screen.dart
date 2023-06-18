@@ -36,7 +36,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final scrollController = ScrollController();
   bool isScrolledToTop = false;
   bool isUserAdmin = false;
-  bool showedToday = false;
 
   getUser() async {
     currentUser = await authService.getCurrentUser();
@@ -49,14 +48,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> getMessages() async {
     List<ChatMessage> newMessages = await chatMessageService.getCurrentUserMessageForCurrentRoom(widget.chatRoom.id!, pageNumber);
-    print(newMessages.length);
     if (newMessages.isNotEmpty) {
-      if (messages.isNotEmpty) {
-        pageNumber++;
-      } else {
+      if (messages.isEmpty) {
         isLoading = false;
       }
       messages.insertAll(0, newMessages);
+      pageNumber++;
     }
     setState(() {
       isScrolledToTop = false;
@@ -74,9 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = DateTime(now.year, now.month, now.day - 1);
 
-    print(showedToday);
-    if (dateTime.isAfter(today) && !showedToday) {
-      showedToday = true;
+    if (dateTime.isAfter(today)) {
       return 'Today';
     } else if (dateTime.isAfter(yesterday)) {
       return 'Yesterday';
@@ -88,7 +83,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    showedToday = false;
     webSocketService = WebSocketService(token: widget.token, toggleMessages: toggleMessages, chatRoomId: widget.chatRoom.id!);
     webSocketService.connect(widget.token);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -223,12 +217,17 @@ class _ChatScreenState extends State<ChatScreen> {
                             (message.timestamp!.day != messages[messageIndex + 1].timestamp!.day ||
                                 message.timestamp!.month != messages[messageIndex + 1].timestamp!.month ||
                                 message.timestamp!.year != messages[messageIndex + 1].timestamp!.year);
-                        final bool isToday = message.timestamp!.day == now.day &&
+                        bool isLastMessageToday = message.timestamp!.day == now.day &&
                             message.timestamp!.month == now.month &&
-                            message.timestamp!.year == now.year;
+                            message.timestamp!.year == now.year &&
+                            (messageIndex == 0 ||
+                                (messageIndex > 0 &&
+                                    (messages[messageIndex - 1].timestamp!.day != now.day ||
+                                        messages[messageIndex - 1].timestamp!.month != now.month ||
+                                        messages[messageIndex - 1].timestamp!.year != now.year)));
                         return Column(
                           children: [
-                            if (showDate || (isToday && !showedToday)) ...[
+                            if (showDate || isLastMessageToday) ...[
                               const SizedBox(height: 8.0),
                               Text(
                                 _formatDate(message.timestamp!),

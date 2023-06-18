@@ -95,7 +95,7 @@ class MemberModalState extends State<MemberModal> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return AlertDialog(
-      title: const Text('Select Chat Type'),
+      title: const Text('Edit group members'),
       content: SizedBox(
         width: screenWidth,
         height: screenHeight,
@@ -166,8 +166,28 @@ class MemberModalState extends State<MemberModal> {
                 Expanded(
                   child: TextField(
                     controller: searchController,
-                    decoration:
-                    const InputDecoration(hintText: 'Search by username'),
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      // Add a clear button to the search bar
+                      suffixIcon: !searchTerm.isEmpty ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            searchController.clear();
+                            searchTerm = '';
+                            resetEntities();
+                          }
+                      ) : null,
+                      // Add a search icon or button to the search bar
+                      prefixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          resetEntities();
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
                     onChanged: (value) {
                       searchTerm = value;
                       if (searchTerm.isEmpty) {
@@ -175,12 +195,6 @@ class MemberModalState extends State<MemberModal> {
                       }
                     },
                   ),
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      resetEntities();
-                    },
-                    child: const Icon(Icons.search)
                 )
               ],
             ),
@@ -236,8 +250,9 @@ class MemberModalState extends State<MemberModal> {
                 members.add(userList[index]);
               }
             });
+            Navigator.pop(context);
             setState(() {});
-          }, child: const Text('add'))
+          }, child: const Text('ADD'))
         ]),
       )
     );

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:hikeappmobile/model/hike_history.dart';
 import 'package:hikeappmobile/screen/no_hike_ongoing.screen.dart';
@@ -38,63 +40,83 @@ class FinishHikeScreenState extends State<FinishHikeScreen> {
       appBar: AppBar(
         title: const Text(constants.appTitle),
       ),
-      body: Center(
-          child: FutureBuilder(
-              future: hikeHistoryService.getLastHikeHistory(widget.hikeTitle!),
-              builder: (_, snapshot) {
-                if (snapshot.hasData) {
-                  HikeHistory hikeHistory = snapshot.data!;
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        hikeHistory.hike!.title!,
-                        style: const TextStyle(
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16.0),
-                      Row(
+      body: Stack(children: [
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/background_image.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Center(
+              child: FutureBuilder(
+                  future: hikeHistoryService.getLastHikeHistory(widget.hikeTitle!),
+                  builder: (_, snapshot) {
+                    if (snapshot.hasData) {
+                      HikeHistory hikeHistory = snapshot.data!;
+                      return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.timer),
-                          const SizedBox(width: 8.0),
-                          Text(formatDuration(hikeHistory.elapsedTime!)),
+                          const Text('Summary', style: TextStyle(fontSize: 32, color: Colors.white)),
+                          const SizedBox(height: 32),
+                          Text(
+                            hikeHistory.hike!.title!,
+                            style: const TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.timer, color: Colors.white),
+                              const SizedBox(width: 8.0),
+                              Text(formatDuration(hikeHistory.elapsedTime!),
+                                  style: const TextStyle(color: Colors.white)),
+                            ],
+                          ),
+                          const SizedBox(height: 16.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.point_of_sale, color: Colors.white),
+                              const SizedBox(width: 8.0),
+                              Text(hikeHistory.hikePoints!.toStringAsFixed(2),
+                              style: TextStyle(color: Colors.white)),
+                            ],
+                          ),
+                          const SizedBox(height: 16.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.thermostat_outlined, color: Colors.white),
+                              const SizedBox(width: 8.0),
+                              Text("${widget.temperatureAverage} °C",
+                              style: const TextStyle(color: Colors.white)),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                              onPressed: () {
+                                widget.handleOnGoingHike!(
+                                    const NoHikeOngoingScreen());
+                              },
+                              child: const Text('Finish'))
                         ],
-                      ),
-                      const SizedBox(height: 16.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.star),
-                          const SizedBox(width: 8.0),
-                          Text(hikeHistory.hikePoints!.toStringAsFixed(2)),
-                        ],
-                      ),
-                      const SizedBox(height: 16.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.thermostat_outlined),
-                          const SizedBox(width: 8.0),
-                          Text("${widget.temperatureAverage} °C"),
-                        ],
-                      ),
-                      ElevatedButton(
-                          onPressed: () {
-                            widget.handleOnGoingHike!(
-                                const NoHikeOngoingScreen());
-                          },
-                          child: const Text('Finish'))
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                } else {
-                  return const CircularProgressIndicator();
-                }
-              })),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  })),
+        ),
+      ])
     );
   }
 }

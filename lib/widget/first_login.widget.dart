@@ -10,9 +10,10 @@ import 'sign_out.widget.dart';
 
 class FirstLoginWidget extends StatefulWidget {
   final User user;
+  final bool fromSetup;
   final UserService userService = UserService.instance;
 
-  FirstLoginWidget(this.user, {super.key});
+  FirstLoginWidget(this.user, this.fromSetup, {super.key});
 
   @override
   FirstLoginState createState() => FirstLoginState();
@@ -31,8 +32,16 @@ class FirstLoginState extends State<FirstLoginWidget> {
     if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value)) {
       return 'Username should only have letters and digits';
     }
-    if (usernameCheckDuplicate == true) {
-      return 'Username already exists';
+    print(widget.fromSetup);
+    if (widget.fromSetup == false) {
+      print(widget.user.username);
+      if (usernameCheckDuplicate == true && widget.user.username != value) {
+        return 'Username already exists';
+      }
+    } else {
+      if (usernameCheckDuplicate == true) {
+        return 'Username already exists';
+      }
     }
     return null;
   }
@@ -45,7 +54,7 @@ class FirstLoginState extends State<FirstLoginWidget> {
 
     return SingleChildScrollView(
         child: Column(
-      children: [
+        children: [
         Form(
           key: formKey,
           child: Column(
@@ -100,24 +109,29 @@ class FirstLoginState extends State<FirstLoginWidget> {
                     try {
                       widget.user.firstLogin = false;
                       await widget.userService.saveUserData(widget.user);
-                      Navigator.pushReplacement(
-                        context,
-                        SlidePageRoute(
-                          widget: const Main(),
-                        ),
-                      );
+                      if (widget.fromSetup) {
+                        Navigator.pushReplacement(
+                          context,
+                          SlidePageRoute(
+                            widget: const Main(),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Updated')));
+                      }
                     } catch (error) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(error.toString())));
                     }
                   }
                 },
-                child: const Text('Finish setup'),
+                child: widget.fromSetup ? const Text('Finish setup') : const Text('Update'),
               )
             ],
           ),
         ),
-        SignOutWidget()
+        widget.fromSetup ? SignOutWidget() : const SizedBox.shrink()
       ],
     ));
   }

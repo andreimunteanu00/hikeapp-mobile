@@ -33,10 +33,18 @@ class GroupEditModalState extends State<GroupEditModal> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormField(
-            controller: nameController,
-            decoration: const InputDecoration(
-              labelText: 'Group Name',
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              border: Border.all(color: Colors.grey),
+            ),
+            child: TextFormField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: 'Group Name',
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+              ),
             ),
           ),
           const SizedBox(height: 16),
